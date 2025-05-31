@@ -172,3 +172,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **프로젝트 관리**: 안양 박달초 김문정  
 **버전**: 2.0.0 (웹 버전)  
 **최종 업데이트**: 2025년 1월
+
+## 🚀 Quick Deploy
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/reallygood83/richstudent)
