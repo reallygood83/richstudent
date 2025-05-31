@@ -1,16 +1,9 @@
-'use client'
-
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { BookOpen, Users, TrendingUp, Shield, LogOut } from 'lucide-react'
-import { useAuth } from '@/hooks/useAuth'
-export default function HomePage() {
-  const { teacher, isAuthenticated, logout } = useAuth()
+import { BookOpen, Users, TrendingUp, Shield } from 'lucide-react'
 
-  const handleLogout = async () => {
-    await logout()
-  }
+export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -22,34 +15,12 @@ export default function HomePage() {
             <h1 className="text-2xl font-bold text-gray-900">RichStudent</h1>
           </div>
           <div className="space-x-4">
-            {isAuthenticated && teacher ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600">
-                  {teacher.name} 선생님
-                </span>
-                <Link href="/teacher/dashboard">
-                  <Button variant="outline">대시보드</Button>
-                </Link>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={handleLogout}
-                  className="flex items-center space-x-1"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>로그아웃</span>
-                </Button>
-              </div>
-            ) : (
-              <div className="space-x-4">
-                <Link href="/auth/login">
-                  <Button variant="outline">로그인</Button>
-                </Link>
-                <Link href="/auth/register">
-                  <Button>회원가입</Button>
-                </Link>
-              </div>
-            )}
+            <Link href="/auth/login">
+              <Button variant="outline">로그인</Button>
+            </Link>
+            <Link href="/auth/register">
+              <Button>회원가입</Button>
+            </Link>
           </div>
         </nav>
       </header>
