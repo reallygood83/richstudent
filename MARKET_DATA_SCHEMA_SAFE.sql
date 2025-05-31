@@ -138,30 +138,70 @@ BEGIN
     END IF;
 END $$;
 
--- 기본 시장 자산 데이터 삽입 (중복 시 무시)
-INSERT INTO market_assets (symbol, name, asset_type, category, currency, min_quantity) VALUES
--- 한국 주식
-('005930', '삼성전자', 'stock', 'technology', 'KRW', 1),
-('000660', 'SK하이닉스', 'stock', 'technology', 'KRW', 1),
-('035420', 'NAVER', 'stock', 'technology', 'KRW', 1),
-('051910', 'LG화학', 'stock', 'chemical', 'KRW', 1),
-('006400', '삼성SDI', 'stock', 'battery', 'KRW', 1),
+-- UNIQUE 제약 조건 추가 (없는 경우만)
+DO $$ 
+BEGIN
+    -- symbol 컬럼에 UNIQUE 제약 조건이 없으면 추가
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints 
+        WHERE table_name = 'market_assets' 
+        AND constraint_type = 'UNIQUE' 
+        AND constraint_name LIKE '%symbol%'
+    ) THEN
+        -- 기존 중복 데이터가 있는지 확인하고 정리
+        DELETE FROM market_assets a USING market_assets b 
+        WHERE a.id > b.id AND a.symbol = b.symbol;
+        
+        -- UNIQUE 제약 조건 추가
+        ALTER TABLE market_assets ADD CONSTRAINT unique_market_assets_symbol UNIQUE (symbol);
+        RAISE NOTICE 'Added UNIQUE constraint to symbol column';
+    END IF;
+END $$;
 
--- 미국 주식 (원화 환산)
-('AAPL', 'Apple Inc.', 'stock', 'technology', 'USD', 1),
-('GOOGL', 'Alphabet Inc.', 'stock', 'technology', 'USD', 1),
-('MSFT', 'Microsoft Corp.', 'stock', 'technology', 'USD', 1),
-('TSLA', 'Tesla Inc.', 'stock', 'automotive', 'USD', 1),
-('NVDA', 'NVIDIA Corp.', 'stock', 'technology', 'USD', 1),
-
--- 암호화폐
-('BTC-USD', '비트코인', 'crypto', 'cryptocurrency', 'USD', 0.0001),
-('ETH-USD', '이더리움', 'crypto', 'cryptocurrency', 'USD', 0.001),
-('BNB-USD', '바이낸스 코인', 'crypto', 'cryptocurrency', 'USD', 0.01),
-
--- 원자재
-('GLD', '금 ETF', 'commodity', 'precious_metals', 'USD', 0.1),
-('SLV', '은 ETF', 'commodity', 'precious_metals', 'USD', 1),
-('USO', '석유 ETF', 'commodity', 'energy', 'USD', 1)
-
-ON CONFLICT (symbol) DO NOTHING;
+-- 기본 시장 자산 데이터 안전하게 삽입
+DO $$ 
+DECLARE
+    asset_data RECORD;
+    asset_exists BOOLEAN;
+BEGIN
+    -- 각 자산을 개별적으로 확인하고 삽입
+    FOR asset_data IN 
+        SELECT * FROM (VALUES
+            -- 한국 주식
+            ('005930', '삼성전자', 'stock', 'technology', 'KRW', 1),
+            ('000660', 'SK하이닉스', 'stock', 'technology', 'KRW', 1),
+            ('035420', 'NAVER', 'stock', 'technology', 'KRW', 1),
+            ('051910', 'LG화학', 'stock', 'chemical', 'KRW', 1),
+            ('006400', '삼성SDI', 'stock', 'battery', 'KRW', 1),
+            
+            -- 미국 주식 (원화 환산)
+            ('AAPL', 'Apple Inc.', 'stock', 'technology', 'USD', 1),
+            ('GOOGL', 'Alphabet Inc.', 'stock', 'technology', 'USD', 1),
+            ('MSFT', 'Microsoft Corp.', 'stock', 'technology', 'USD', 1),
+            ('TSLA', 'Tesla Inc.', 'stock', 'automotive', 'USD', 1),
+            ('NVDA', 'NVIDIA Corp.', 'stock', 'technology', 'USD', 1),
+            
+            -- 암호화폐
+            ('BTC-USD', '비트코인', 'crypto', 'cryptocurrency', 'USD', 0.0001),
+            ('ETH-USD', '이더리움', 'crypto', 'cryptocurrency', 'USD', 0.001),
+            ('BNB-USD', '바이낸스 코인', 'crypto', 'cryptocurrency', 'USD', 0.01),
+            
+            -- 원자재
+            ('GLD', '금 ETF', 'commodity', 'precious_metals', 'USD', 0.1),
+            ('SLV', '은 ETF', 'commodity', 'precious_metals', 'USD', 1),
+            ('USO', '석유 ETF', 'commodity', 'energy', 'USD', 1)
+        ) AS t(symbol, name, asset_type, category, currency, min_quantity)
+    LOOP
+        -- 이미 존재하는지 확인
+        SELECT EXISTS(SELECT 1 FROM market_assets WHERE symbol = asset_data.symbol) INTO asset_exists;
+        
+        -- 존재하지 않으면 삽입
+        IF NOT asset_exists THEN
+            INSERT INTO market_assets (symbol, name, asset_type, category, currency, min_quantity) 
+            VALUES (asset_data.symbol, asset_data.name, asset_data.asset_type, asset_data.category, asset_data.currency, asset_data.min_quantity);
+            RAISE NOTICE 'Inserted asset: %', asset_data.symbol;
+        ELSE
+            RAISE NOTICE 'Asset already exists: %', asset_data.symbol;
+        END IF;
+    END LOOP;
+END $$;
