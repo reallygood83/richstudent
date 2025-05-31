@@ -1,6 +1,125 @@
 import { supabase } from './supabase/client'
 import type { Teacher, LoginRequest, RegisterRequest, AuthResponse } from '@/types/auth'
 
+// 구글 로그인
+export async function signInWithGoogle(): Promise<AuthResponse> {
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/callback`
+      }
+    })
+
+    if (error) {
+      return {
+        success: false,
+        error: error.message
+      }
+    }
+
+    return {
+      success: true
+    }
+  } catch (error) {
+    console.error('Google sign in error:', error)
+    return {
+      success: false,
+      error: '구글 로그인 중 오류가 발생했습니다.'
+    }
+  }
+}
+
+// Supabase Auth 세션에서 교사 정보 동기화
+export async function syncSupabaseAuthUser(): Promise<AuthResponse> {
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser()
+    
+    if (error || !user) {
+      return {
+        success: false,
+        error: '인증되지 않은 사용자입니다.'
+      }
+    }
+
+    // 기존 교사 정보 확인
+    const { data: existingTeacher, error: teacherError } = await supabase
+      .from('teachers')
+      .select('*')
+      .eq('email', user.email!)
+      .single()
+
+    if (existingTeacher) {
+      // 기존 교사가 있으면 구글 정보 업데이트
+      const { data: updatedTeacher, error: updateError } = await supabase
+        .from('teachers')
+        .update({
+          google_id: user.id,
+          auth_provider: 'google',
+          email_verified: user.email_confirmed_at ? true : false,
+          profile_image_url: user.user_metadata?.avatar_url || null,
+        })
+        .eq('id', existingTeacher.id)
+        .select()
+        .single()
+
+      if (updateError) {
+        console.error('Teacher update error:', updateError)
+        return {
+          success: false,
+          error: '교사 정보 업데이트 중 오류가 발생했습니다.'
+        }
+      }
+
+      return {
+        success: true,
+        teacher: updatedTeacher
+      }
+    } else {
+      // 새 교사 생성
+      const sessionCode = generateSessionCode()
+      
+      const { data: newTeacher, error: createError } = await supabase
+        .from('teachers')
+        .insert({
+          email: user.email!,
+          name: user.user_metadata?.full_name || user.email!.split('@')[0],
+          google_id: user.id,
+          auth_provider: 'google',
+          email_verified: user.email_confirmed_at ? true : false,
+          profile_image_url: user.user_metadata?.avatar_url || null,
+          session_code: sessionCode,
+          plan: 'free',
+          student_limit: 30
+        })
+        .select()
+        .single()
+
+      if (createError) {
+        console.error('Teacher creation error:', createError)
+        return {
+          success: false,
+          error: '새 교사 계정 생성 중 오류가 발생했습니다.'
+        }
+      }
+
+      // 기본 경제 주체 생성
+      await createDefaultEconomicEntities(newTeacher.id)
+
+      return {
+        success: true,
+        teacher: newTeacher
+      }
+    }
+  } catch (error) {
+    console.error('Auth sync error:', error)
+    return {
+      success: false,
+      error: '인증 동기화 중 오류가 발생했습니다.'
+    }
+  }
+}
+
 // 비밀번호 해싱을 위한 간단한 유틸리티
 async function hashPassword(password: string, email: string): Promise<string> {
   const encoder = new TextEncoder()

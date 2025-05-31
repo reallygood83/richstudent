@@ -2,6 +2,14 @@
 
 ## 📋 설정 순서
 
+### 0. Google OAuth 설정 (Supabase 대시보드)
+1. **Supabase 대시보드** → **Authentication** → **Providers** 이동
+2. **Google** 활성화
+3. Google Cloud Console에서:
+   - OAuth 2.0 클라이언트 ID 생성
+   - **승인된 리디렉션 URI** 추가: `https://awaqxwydesqmorbglnam.supabase.co/auth/v1/callback`
+4. Client ID와 Client Secret을 Supabase에 입력
+
 ### 1. 기본 스키마 설정 (안전 버전)
 ```sql
 -- Supabase SQL Editor에서 실행
@@ -11,7 +19,14 @@
 2. `supabase-schema-safe.sql` 파일 내용 복사
 3. **Run** 버튼 클릭하여 실행
 
-### 2. RLS 정책 설정 (선택사항)
+### 2. Google OAuth 스키마 업데이트
+```sql
+-- 파일: supabase-google-auth-update.sql
+```
+1. `supabase-google-auth-update.sql` 파일 내용 복사
+2. **Run** 버튼 클릭하여 실행
+
+### 3. RLS 정책 설정 (선택사항)
 ```sql
 -- 파일: supabase-rls-policies.sql
 ```
