@@ -118,8 +118,8 @@ export async function syncSupabaseAuthUser(): Promise<AuthResponse> {
         }
       }
 
-      // 기본 경제 주체 생성
-      await createDefaultEconomicEntities(newTeacher.id)
+      // 기본 경제 주체 생성 (일시적으로 비활성화 - 테이블 미생성)
+      // await createDefaultEconomicEntities(newTeacher.id)
 
       return {
         success: true,
@@ -201,8 +201,8 @@ export async function registerTeacher(data: RegisterRequest): Promise<AuthRespon
       }
     }
 
-    // 기본 경제 주체 생성
-    await createDefaultEconomicEntities(teacher.id)
+    // 기본 경제 주체 생성 (일시적으로 비활성화 - 테이블 미생성)
+    // await createDefaultEconomicEntities(teacher.id)
 
     return {
       success: true,
