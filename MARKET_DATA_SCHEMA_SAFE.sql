@@ -86,6 +86,58 @@ BEGIN
     END IF;
 END $$;
 
+-- 기존 market_assets 테이블에 필요한 컬럼 추가
+DO $$ 
+BEGIN
+    -- category 컬럼이 없으면 추가
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'market_assets' AND column_name = 'category') THEN
+        ALTER TABLE market_assets ADD COLUMN category VARCHAR(50);
+        RAISE NOTICE 'Added category column to market_assets table';
+    END IF;
+    
+    -- current_price 컬럼이 없으면 추가
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'market_assets' AND column_name = 'current_price') THEN
+        ALTER TABLE market_assets ADD COLUMN current_price DECIMAL(15,2) DEFAULT 0;
+        RAISE NOTICE 'Added current_price column to market_assets table';
+    END IF;
+    
+    -- previous_price 컬럼이 없으면 추가
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'market_assets' AND column_name = 'previous_price') THEN
+        ALTER TABLE market_assets ADD COLUMN previous_price DECIMAL(15,2) DEFAULT 0;
+        RAISE NOTICE 'Added previous_price column to market_assets table';
+    END IF;
+    
+    -- price_change 컬럼이 없으면 추가
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'market_assets' AND column_name = 'price_change') THEN
+        ALTER TABLE market_assets ADD COLUMN price_change DECIMAL(15,2) DEFAULT 0;
+        RAISE NOTICE 'Added price_change column to market_assets table';
+    END IF;
+    
+    -- price_change_percent 컬럼이 없으면 추가
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'market_assets' AND column_name = 'price_change_percent') THEN
+        ALTER TABLE market_assets ADD COLUMN price_change_percent DECIMAL(5,2) DEFAULT 0;
+        RAISE NOTICE 'Added price_change_percent column to market_assets table';
+    END IF;
+    
+    -- min_quantity 컬럼이 없으면 추가
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'market_assets' AND column_name = 'min_quantity') THEN
+        ALTER TABLE market_assets ADD COLUMN min_quantity DECIMAL(10,4) DEFAULT 1;
+        RAISE NOTICE 'Added min_quantity column to market_assets table';
+    END IF;
+    
+    -- is_active 컬럼이 없으면 추가
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'market_assets' AND column_name = 'is_active') THEN
+        ALTER TABLE market_assets ADD COLUMN is_active BOOLEAN DEFAULT true;
+        RAISE NOTICE 'Added is_active column to market_assets table';
+    END IF;
+    
+    -- last_updated 컬럼이 없으면 추가
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'market_assets' AND column_name = 'last_updated') THEN
+        ALTER TABLE market_assets ADD COLUMN last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+        RAISE NOTICE 'Added last_updated column to market_assets table';
+    END IF;
+END $$;
+
 -- 기본 시장 자산 데이터 삽입 (중복 시 무시)
 INSERT INTO market_assets (symbol, name, asset_type, category, currency, min_quantity) VALUES
 -- 한국 주식
