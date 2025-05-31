@@ -1,32 +1,46 @@
 import { supabase } from './supabase/client'
 import type { Teacher, LoginRequest, RegisterRequest, AuthResponse } from '@/types/auth'
 
-// 구글 로그인
+// 새로운 Google OAuth 시스템
 export async function signInWithGoogle(): Promise<AuthResponse> {
   try {
-    // Supabase OAuth 콜백 URL을 직접 사용 (localhost 문제 해결)
-    const { error } = await supabase.auth.signInWithOAuth({
+    console.log('Starting new Google OAuth system...')
+    
+    // 현재 환경에 따른 리다이렉트 URL 설정
+    const redirectUrl = process.env.NODE_ENV === 'production' 
+      ? 'https://richstudent.vercel.app/auth/google/callback'
+      : `${window.location.origin}/auth/google/callback`
+    
+    console.log('Redirect URL:', redirectUrl)
+    
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://richstudent.vercel.app/auth/callback'
+        redirectTo: redirectUrl,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
       }
     })
 
     if (error) {
+      console.error('Google OAuth initialization error:', error)
       return {
         success: false,
-        error: error.message
+        error: `구글 로그인 초기화 실패: ${error.message}`
       }
     }
 
+    console.log('Google OAuth initialized successfully')
     return {
       success: true
     }
   } catch (error) {
-    console.error('Google sign in error:', error)
+    console.error('Google OAuth error:', error)
     return {
       success: false,
-      error: '구글 로그인 중 오류가 발생했습니다.'
+      error: '구글 로그인 중 예상치 못한 오류가 발생했습니다.'
     }
   }
 }
