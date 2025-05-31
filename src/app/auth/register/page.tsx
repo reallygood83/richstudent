@@ -18,14 +18,14 @@ export default function RegisterPage() {
     school: ''
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [error, setError] = useState('')
+  const [globalError, setGlobalError] = useState('')
   const { register, isLoading } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrors({})
-    setError('')
+    setGlobalError('')
 
     // 기본 검증
     const newErrors: Record<string, string> = {}
@@ -53,7 +53,7 @@ export default function RegisterPage() {
     if (result.success) {
       router.push('/teacher/dashboard')
     } else {
-      setError(result.error || '회원가입에 실패했습니다.')
+      setGlobalError(result.error || '회원가입에 실패했습니다.')
     }
   }
 
@@ -156,6 +156,12 @@ export default function RegisterPage() {
                 <p className="text-sm text-red-600">{errors.confirmPassword}</p>
               )}
             </div>
+            
+            {globalError && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-600">{globalError}</p>
+              </div>
+            )}
             
             <Button 
               type="submit" 

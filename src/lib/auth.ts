@@ -1,5 +1,4 @@
 import { supabase } from './supabase/client'
-import { createClient } from './supabase/server'
 import type { Teacher, LoginRequest, RegisterRequest, AuthResponse } from '@/types/auth'
 
 // 비밀번호 해싱을 위한 간단한 유틸리티
@@ -26,7 +25,7 @@ function generateSessionCode(): string {
 export async function registerTeacher(data: RegisterRequest): Promise<AuthResponse> {
   try {
     // 이메일 중복 확인
-    const { data: existingTeacher, error: checkError } = await supabase
+    const { data: existingTeacher } = await supabase
       .from('teachers')
       .select('id')
       .eq('email', data.email)
@@ -175,20 +174,22 @@ export async function validateSession(sessionToken: string): Promise<Teacher | n
       .gt('expires_at', new Date().toISOString())
       .single()
 
-    if (error || !session) {
+    if (error || !session || !session.teachers) {
       return null
     }
 
+    const teacher = Array.isArray(session.teachers) ? session.teachers[0] : session.teachers
+
     return {
-      id: session.teachers.id,
-      email: session.teachers.email,
-      name: session.teachers.name,
-      school: session.teachers.school,
-      session_code: session.teachers.session_code,
-      plan: session.teachers.plan,
-      student_limit: session.teachers.student_limit,
-      created_at: session.teachers.created_at,
-      updated_at: session.teachers.updated_at
+      id: teacher.id,
+      email: teacher.email,
+      name: teacher.name,
+      school: teacher.school,
+      session_code: teacher.session_code,
+      plan: teacher.plan,
+      student_limit: teacher.student_limit,
+      created_at: teacher.created_at,
+      updated_at: teacher.updated_at
     }
   } catch (error) {
     console.error('Session validation error:', error)
@@ -254,7 +255,7 @@ export async function setupDemoAccount(): Promise<AuthResponse> {
     if (loginResult.success) {
       return loginResult
     }
-  } catch (error) {
+  } catch {
     // 데모 계정이 없으면 생성
   }
 

@@ -5,11 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { BookOpen, Users, TrendingUp, Shield, LogOut } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
-import { useRouter } from 'next/navigation'
-
 export default function HomePage() {
   const { teacher, isAuthenticated, logout } = useAuth()
-  const router = useRouter()
 
   const handleLogout = async () => {
     await logout()
