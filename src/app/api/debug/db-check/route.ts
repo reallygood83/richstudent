@@ -6,7 +6,7 @@ export async function GET() {
     console.log('Checking database connection and schema...')
 
     // 1. 기본 연결 테스트
-    const { data: connectionTest, error: connectionError } = await supabase
+    const { error: connectionError } = await supabase
       .from('teachers')
       .select('count')
       .limit(1)
