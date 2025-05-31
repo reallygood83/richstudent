@@ -5,9 +5,12 @@ import type { Teacher, LoginRequest, RegisterRequest, AuthResponse } from '@/typ
 export async function signInWithGoogle(): Promise<AuthResponse> {
   try {
     // 프로덕션 환경에서는 무조건 Vercel URL 사용
-    const baseUrl = typeof window !== 'undefined' 
-      ? window.location.origin 
-      : process.env.NEXT_PUBLIC_APP_URL || 'https://richstudent.vercel.app'
+    const isProduction = process.env.NODE_ENV === 'production' || 
+                        (typeof window !== 'undefined' && window.location.hostname !== 'localhost')
+    
+    const baseUrl = isProduction 
+      ? 'https://richstudent.vercel.app'
+      : (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')
     
     console.log('OAuth redirect URL:', `${baseUrl}/auth/callback`)
     

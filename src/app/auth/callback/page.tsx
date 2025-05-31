@@ -16,6 +16,28 @@ export default function AuthCallbackPage() {
       try {
         setDebugInfo('인증 세션 확인 중...')
         
+        // URL fragment에서 OAuth 토큰 처리 (Google OAuth implicit flow)
+        const hashParams = new URLSearchParams(window.location.hash.substring(1))
+        const accessToken = hashParams.get('access_token')
+        
+        if (accessToken) {
+          setDebugInfo('OAuth 토큰 감지됨. Supabase 세션 설정 중...')
+          
+          // Supabase에 OAuth 세션 설정
+          const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: hashParams.get('refresh_token') || ''
+          })
+          
+          if (sessionError) {
+            console.error('Session setup error:', sessionError)
+            setError(`세션 설정 오류: ${sessionError.message}`)
+            return
+          }
+          
+          console.log('Session setup successful:', sessionData)
+        }
+        
         // URL에서 인증 코드 처리
         const { data, error } = await supabase.auth.getSession()
         
