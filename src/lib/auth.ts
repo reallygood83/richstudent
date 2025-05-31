@@ -4,7 +4,7 @@ import type { Teacher, LoginRequest, RegisterRequest, AuthResponse } from '@/typ
 // 구글 로그인
 export async function signInWithGoogle(): Promise<AuthResponse> {
   try {
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/callback`
@@ -43,7 +43,7 @@ export async function syncSupabaseAuthUser(): Promise<AuthResponse> {
     }
 
     // 기존 교사 정보 확인
-    const { data: existingTeacher, error: teacherError } = await supabase
+    const { data: existingTeacher } = await supabase
       .from('teachers')
       .select('*')
       .eq('email', user.email!)
