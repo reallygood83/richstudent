@@ -162,7 +162,10 @@ export default function TeacherDashboard() {
 
         {/* Quick Actions */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+          <Card 
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => router.push('/teacher/students')}
+          >
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <Users className="w-5 h-5" />
@@ -173,8 +176,8 @@ export default function TeacherDashboard() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full" disabled>
-                학생 관리 (곧 출시)
+              <Button className="w-full">
+                학생 관리하기
               </Button>
             </CardContent>
           </Card>
@@ -222,11 +225,11 @@ export default function TeacherDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-yellow-700 space-y-2">
-                <p><strong>✅ 완료:</strong> 교사 인증 시스템, 기본 대시보드</p>
-                <p><strong>🔄 진행 중:</strong> 학생 관리 시스템 (Phase 2)</p>
-                <p><strong>📋 예정:</strong> 거래 시스템, 투자 기능, 고급 기능</p>
+                <p><strong>✅ 완료:</strong> 교사 인증 시스템, 기본 대시보드, 학생 관리 시스템</p>
+                <p><strong>🔄 진행 중:</strong> 거래 시스템, 계좌 이체 기능 (Phase 3)</p>
+                <p><strong>📋 예정:</strong> 투자 기능, 시장 데이터, 대출 시스템</p>
                 <p className="mt-4 text-sm">
-                  현재 Phase 1이 완료되었습니다. 곧 학생 관리 기능이 추가될 예정입니다!
+                  Phase 2 완료! 이제 학생을 추가하고 경제 교육을 시작할 수 있습니다.
                 </p>
               </div>
             </CardContent>
