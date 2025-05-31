@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/hooks/useAuth'
-import { signInWithGoogle } from '@/lib/auth'
+// import { signInWithGoogle } from '@/lib/auth' // Google OAuth 비활성화
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -39,15 +39,15 @@ export default function LoginPage() {
     }))
   }
 
-  const handleGoogleLogin = async () => {
-    setError('')
-    const result = await signInWithGoogle()
-    
-    if (!result.success) {
-      setError(result.error || '구글 로그인에 실패했습니다.')
-    }
-    // 성공 시 자동으로 /auth/callback으로 리다이렉트됨
-  }
+  // Google OAuth는 현재 비활성화됨
+  // const handleGoogleLogin = async () => {
+  //   setError('')
+  //   const result = await signInWithGoogle()
+  //   
+  //   if (!result.success) {
+  //     setError(result.error || '구글 로그인에 실패했습니다.')
+  //   }
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
