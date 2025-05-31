@@ -50,7 +50,14 @@ export default function GoogleCallbackPage() {
       }
     }
 
-    const processSuccessfulAuth = async (user: any) => {
+    const processSuccessfulAuth = async (user: { 
+      id: string; 
+      email: string; 
+      user_metadata?: { 
+        full_name?: string; 
+        avatar_url?: string; 
+      } 
+    }) => {
       try {
         console.log('Processing successful authentication for user:', user.email)
         setStatus('계정 정보 동기화 중...')

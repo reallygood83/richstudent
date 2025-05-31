@@ -13,7 +13,7 @@ export async function signInWithGoogle(): Promise<AuthResponse> {
     
     console.log('Redirect URL:', redirectUrl)
     
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: redirectUrl,
