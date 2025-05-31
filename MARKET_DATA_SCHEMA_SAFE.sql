@@ -136,6 +136,34 @@ BEGIN
         ALTER TABLE market_assets ADD COLUMN last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW();
         RAISE NOTICE 'Added last_updated column to market_assets table';
     END IF;
+    
+    -- 기존 NOT NULL 제약 조건 완화 (필요한 경우)
+    BEGIN
+        -- current_price 컬럼이 NOT NULL인 경우 NULL 허용으로 변경
+        IF EXISTS (
+            SELECT 1 FROM information_schema.columns 
+            WHERE table_name = 'market_assets' 
+            AND column_name = 'current_price' 
+            AND is_nullable = 'NO'
+        ) THEN
+            ALTER TABLE market_assets ALTER COLUMN current_price DROP NOT NULL;
+            RAISE NOTICE 'Removed NOT NULL constraint from current_price column';
+        END IF;
+        
+        -- previous_price 컬럼 NOT NULL 제약 제거
+        IF EXISTS (
+            SELECT 1 FROM information_schema.columns 
+            WHERE table_name = 'market_assets' 
+            AND column_name = 'previous_price' 
+            AND is_nullable = 'NO'
+        ) THEN
+            ALTER TABLE market_assets ALTER COLUMN previous_price DROP NOT NULL;
+            RAISE NOTICE 'Removed NOT NULL constraint from previous_price column';
+        END IF;
+    EXCEPTION
+        WHEN OTHERS THEN
+            RAISE NOTICE 'Could not modify NOT NULL constraints: %', SQLERRM;
+    END;
 END $$;
 
 -- UNIQUE 제약 조건 추가 (없는 경우만)
@@ -197,8 +225,32 @@ BEGIN
         
         -- 존재하지 않으면 삽입
         IF NOT asset_exists THEN
-            INSERT INTO market_assets (symbol, name, asset_type, category, currency, min_quantity) 
-            VALUES (asset_data.symbol, asset_data.name, asset_data.asset_type, asset_data.category, asset_data.currency, asset_data.min_quantity);
+            INSERT INTO market_assets (
+                symbol, 
+                name, 
+                asset_type, 
+                category, 
+                currency, 
+                min_quantity,
+                current_price,
+                previous_price,
+                price_change,
+                price_change_percent,
+                is_active
+            ) 
+            VALUES (
+                asset_data.symbol, 
+                asset_data.name, 
+                asset_data.asset_type, 
+                asset_data.category, 
+                asset_data.currency, 
+                asset_data.min_quantity,
+                0.00,  -- current_price
+                0.00,  -- previous_price  
+                0.00,  -- price_change
+                0.00,  -- price_change_percent
+                true   -- is_active
+            );
             RAISE NOTICE 'Inserted asset: %', asset_data.symbol;
         ELSE
             RAISE NOTICE 'Asset already exists: %', asset_data.symbol;
