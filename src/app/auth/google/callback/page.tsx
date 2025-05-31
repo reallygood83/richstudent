@@ -52,21 +52,28 @@ export default function GoogleCallbackPage() {
 
     const processSuccessfulAuth = async (user: { 
       id: string; 
-      email: string; 
+      email?: string; 
       user_metadata?: { 
         full_name?: string; 
         avatar_url?: string; 
       } 
     }) => {
       try {
+        if (!user.email) {
+          setError('사용자 이메일 정보를 찾을 수 없습니다.')
+          return
+        }
+
         console.log('Processing successful authentication for user:', user.email)
         setStatus('계정 정보 동기화 중...')
+
+        const userEmail = user.email! // 이미 위에서 null 체크 완료
 
         // 기존 교사 계정 확인
         const { data: existingTeacher } = await supabase
           .from('teachers')
           .select('*')
-          .eq('email', user.email)
+          .eq('email', userEmail)
           .single()
 
         if (existingTeacher) {
@@ -81,7 +88,7 @@ export default function GoogleCallbackPage() {
               profile_image_url: user.user_metadata?.avatar_url || null,
               updated_at: new Date().toISOString()
             })
-            .eq('email', user.email)
+            .eq('email', userEmail)
 
           if (updateError) {
             console.error('Teacher update error:', updateError)
@@ -94,8 +101,8 @@ export default function GoogleCallbackPage() {
           const { error: insertError } = await supabase
             .from('teachers')
             .insert({
-              email: user.email,
-              name: user.user_metadata?.full_name || user.email.split('@')[0],
+              email: userEmail,
+              name: user.user_metadata?.full_name || userEmail.split('@')[0],
               school: '',
               google_id: user.id,
               auth_provider: 'google',
@@ -123,7 +130,7 @@ export default function GoogleCallbackPage() {
         const { data: teacher } = await supabase
           .from('teachers')
           .select('*')
-          .eq('email', user.email)
+          .eq('email', userEmail)
           .single()
 
         if (!teacher) {
