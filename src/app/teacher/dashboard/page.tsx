@@ -1,21 +1,48 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAuth } from '@/hooks/useAuth'
-import { Users, TrendingUp, DollarSign, Settings, LogOut } from 'lucide-react'
+import { Users, TrendingUp, DollarSign, Settings, LogOut, ArrowRightLeft } from 'lucide-react'
+import StudentList from '@/components/teacher/StudentList'
+import CreateStudentModal from '@/components/teacher/CreateStudentModal'
+import TransactionManager from '@/components/teacher/TransactionManager'
+import { Student } from '@/types'
 
 export default function TeacherDashboard() {
   const { teacher, isAuthenticated, isLoading, logout } = useAuth()
   const router = useRouter()
+  const [students, setStudents] = useState<Student[]>([])
+  const [showCreateModal, setShowCreateModal] = useState(false)
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push('/auth/login')
+    } else if (isAuthenticated) {
+      fetchStudents()
     }
   }, [isAuthenticated, isLoading, router])
+
+  const fetchStudents = async () => {
+    try {
+      const response = await fetch('/api/students/list')
+      const data = await response.json()
+      
+      if (data.success) {
+        setStudents(data.students || [])
+      }
+    } catch (error) {
+      console.error('Failed to fetch students:', error)
+    }
+  }
+
+  const handleCreateSuccess = () => {
+    setShowCreateModal(false)
+    fetchStudents()
+  }
 
   const handleLogout = async () => {
     await logout()
@@ -113,7 +140,7 @@ export default function TeacherDashboard() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">{students.length}</div>
               <p className="text-xs text-muted-foreground">
                 최대 {teacher.student_limit}명
               </p>
@@ -139,7 +166,12 @@ export default function TeacherDashboard() {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">₩0</div>
+              <div className="text-2xl font-bold">
+                ₩{students.length > 0 
+                  ? Math.round(students.reduce((sum, s) => sum + (s.total_balance || 0), 0) / students.length).toLocaleString()
+                  : '0'
+                }
+              </div>
               <p className="text-xs text-muted-foreground">
                 학생 평균 보유 자산
               </p>
@@ -160,62 +192,53 @@ export default function TeacherDashboard() {
           </Card>
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => router.push('/teacher/students')}
-          >
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Users className="w-5 h-5" />
-                <span>학생 관리</span>
-              </CardTitle>
-              <CardDescription>
-                학생 계정을 생성하고 관리합니다
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full">
-                학생 관리하기
-              </Button>
-            </CardContent>
-          </Card>
+        {/* Main Tabs */}
+        <Tabs defaultValue="students" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="students" className="flex items-center space-x-2">
+              <Users className="w-4 h-4" />
+              <span>학생 관리</span>
+            </TabsTrigger>
+            <TabsTrigger value="transactions" className="flex items-center space-x-2">
+              <ArrowRightLeft className="w-4 h-4" />
+              <span>거래 관리</span>
+            </TabsTrigger>
+            <TabsTrigger value="market" className="flex items-center space-x-2" disabled>
+              <TrendingUp className="w-4 h-4" />
+              <span>시장 데이터</span>
+            </TabsTrigger>
+          </TabsList>
 
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <TrendingUp className="w-5 h-5" />
-                <span>시장 데이터</span>
-              </CardTitle>
-              <CardDescription>
-                실시간 시장 데이터를 관리합니다
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full" disabled>
-                시장 데이터 (곧 출시)
-              </Button>
-            </CardContent>
-          </Card>
+          <TabsContent value="students" className="mt-6">
+            <div className="space-y-6">
+              <StudentList onCreateStudent={() => setShowCreateModal(true)} />
+            </div>
+          </TabsContent>
 
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <DollarSign className="w-5 h-5" />
-                <span>경제 활동</span>
-              </CardTitle>
-              <CardDescription>
-                세금, 주급 등 경제 활동을 관리합니다
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full" disabled>
-                경제 활동 (곧 출시)
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+          <TabsContent value="transactions" className="mt-6">
+            <TransactionManager students={students} onRefreshStudents={fetchStudents} />
+          </TabsContent>
+
+          <TabsContent value="market" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>시장 데이터</CardTitle>
+                <CardDescription>
+                  실시간 주식, 암호화폐, 상품 가격 데이터를 제공합니다
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-12">
+                  <TrendingUp className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">곧 출시 예정</h3>
+                  <p className="text-gray-500">
+                    시장 데이터 기능은 Phase 4에서 구현될 예정입니다.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
         {/* Development Notice */}
         <div className="mt-8">
@@ -236,6 +259,15 @@ export default function TeacherDashboard() {
           </Card>
         </div>
       </main>
+
+      {/* Create Student Modal */}
+      {showCreateModal && (
+        <CreateStudentModal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={handleCreateSuccess}
+        />
+      )}
     </div>
   )
 }
