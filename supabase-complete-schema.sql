@@ -26,22 +26,46 @@ $$ language 'plpgsql';
 -- ====================
 -- 2. 교사 테이블 (Google OAuth 지원 포함)
 -- ====================
+-- 기본 교사 테이블 먼저 생성
 CREATE TABLE IF NOT EXISTS teachers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) UNIQUE NOT NULL,
     name VARCHAR(100) NOT NULL,
     school VARCHAR(100),
-    password_hash VARCHAR(255), -- OAuth 사용자는 NULL 가능
+    password_hash VARCHAR(255) NOT NULL,
     session_code VARCHAR(10) UNIQUE,
     plan VARCHAR(20) DEFAULT 'free' CHECK (plan IN ('free', 'basic', 'premium')),
     student_limit INTEGER DEFAULT 30,
-    auth_provider VARCHAR(20) DEFAULT 'email',
-    google_id VARCHAR(255),
-    profile_image_url TEXT,
-    email_verified BOOLEAN DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Google OAuth 컬럼들을 안전하게 추가 (이미 존재하면 무시)
+DO $$
+BEGIN
+    -- auth_provider 컬럼 추가
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'teachers' AND column_name = 'auth_provider') THEN
+        ALTER TABLE teachers ADD COLUMN auth_provider VARCHAR(20) DEFAULT 'email';
+    END IF;
+    
+    -- google_id 컬럼 추가
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'teachers' AND column_name = 'google_id') THEN
+        ALTER TABLE teachers ADD COLUMN google_id VARCHAR(255);
+    END IF;
+    
+    -- profile_image_url 컬럼 추가
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'teachers' AND column_name = 'profile_image_url') THEN
+        ALTER TABLE teachers ADD COLUMN profile_image_url TEXT;
+    END IF;
+    
+    -- email_verified 컬럼 추가
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'teachers' AND column_name = 'email_verified') THEN
+        ALTER TABLE teachers ADD COLUMN email_verified BOOLEAN DEFAULT false;
+    END IF;
+END $$;
+
+-- password_hash를 nullable로 변경 (OAuth 사용자는 비밀번호 불필요)
+ALTER TABLE teachers ALTER COLUMN password_hash DROP NOT NULL;
 
 -- 교사 테이블 인덱스
 CREATE INDEX IF NOT EXISTS idx_teachers_email ON teachers(email);
@@ -49,25 +73,24 @@ CREATE INDEX IF NOT EXISTS idx_teachers_session_code ON teachers(session_code);
 CREATE INDEX IF NOT EXISTS idx_teachers_google_id ON teachers(google_id);
 CREATE INDEX IF NOT EXISTS idx_teachers_auth_provider ON teachers(auth_provider);
 
--- OAuth 관련 제약 조건
+-- OAuth 관련 제약 조건 (기존 제약조건 제거 후 추가)
 DO $$
 BEGIN
     -- 기존 제약 조건이 있으면 제거
-    IF EXISTS (SELECT 1 FROM information_schema.constraint_column_usage WHERE constraint_name = 'check_auth_requirements') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.table_constraints WHERE constraint_name = 'check_auth_requirements' AND table_name = 'teachers') THEN
         ALTER TABLE teachers DROP CONSTRAINT check_auth_requirements;
     END IF;
     
-    -- 새 제약 조건 추가
-    ALTER TABLE teachers 
-    ADD CONSTRAINT check_auth_requirements 
-    CHECK (
-        (auth_provider = 'email' AND password_hash IS NOT NULL) OR
-        (auth_provider = 'google' AND google_id IS NOT NULL)
-    );
+    -- 새 제약 조건 추가 (컬럼이 존재할 때만)
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'teachers' AND column_name = 'auth_provider') THEN
+        ALTER TABLE teachers 
+        ADD CONSTRAINT check_auth_requirements 
+        CHECK (
+            (auth_provider = 'email' AND password_hash IS NOT NULL) OR
+            (auth_provider = 'google' AND google_id IS NOT NULL)
+        );
+    END IF;
 END $$;
-
--- password_hash를 nullable로 변경 (OAuth 사용자는 비밀번호 불필요)
-ALTER TABLE teachers ALTER COLUMN password_hash DROP NOT NULL;
 
 -- ====================
 -- 3. 교사 세션 테이블
