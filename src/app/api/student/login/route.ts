@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     console.log('Looking for student with code:', student_code.toUpperCase(), 'for teacher:', teacher.id)
     const { data: student, error: studentError } = await supabase
       .from('students')
-      .select('id, name, student_code, password_hash')
+      .select('id, name, student_code, password')
       .eq('teacher_id', teacher.id)
       .eq('student_code', student_code.toUpperCase())
       .single()
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 비밀번호 확인 (설정된 경우)
-    if (student.password_hash) {
+    if (student.password) {
       if (!password) {
         return NextResponse.json(
           { success: false, error: '비밀번호를 입력해주세요.' },
@@ -68,14 +68,8 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // 간단한 비밀번호 해시 확인 (실제로는 bcrypt 등 사용 권장)
-      const crypto = await import('crypto')
-      const hashedPassword = crypto
-        .createHash('sha256')
-        .update(password + student.student_code)
-        .digest('hex')
-
-      if (hashedPassword !== student.password_hash) {
+      // 간단한 비밀번호 확인 (평문 저장된 경우)
+      if (password !== student.password) {
         return NextResponse.json(
           { success: false, error: '비밀번호가 올바르지 않습니다.' },
           { status: 400 }
