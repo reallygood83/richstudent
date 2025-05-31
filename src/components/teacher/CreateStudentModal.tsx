@@ -51,7 +51,7 @@ export default function CreateStudentModal({ isOpen, onClose, onSuccess }: Creat
       } else {
         setError(data.error || '학생 생성에 실패했습니다.')
       }
-    } catch (err) {
+    } catch {
       setError('서버 연결에 실패했습니다.')
     } finally {
       setLoading(false)

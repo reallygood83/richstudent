@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     // 데이터 정리 및 총 자산 계산
     const studentsWithTotals = students?.map(student => {
       const accounts = student.accounts || []
-      const totalBalance = accounts.reduce((sum: number, account: any) => sum + (account.balance || 0), 0)
+      const totalBalance = accounts.reduce((sum: number, account: { balance?: number }) => sum + (account.balance || 0), 0)
       
       return {
         id: student.id,
@@ -54,9 +54,9 @@ export async function GET(request: NextRequest) {
         weekly_allowance: student.weekly_allowance,
         created_at: student.created_at,
         accounts: {
-          checking: accounts.find((acc: any) => acc.account_type === 'checking')?.balance || 0,
-          savings: accounts.find((acc: any) => acc.account_type === 'savings')?.balance || 0,
-          investment: accounts.find((acc: any) => acc.account_type === 'investment')?.balance || 0
+          checking: accounts.find((acc: { account_type: string; balance?: number }) => acc.account_type === 'checking')?.balance || 0,
+          savings: accounts.find((acc: { account_type: string; balance?: number }) => acc.account_type === 'savings')?.balance || 0,
+          investment: accounts.find((acc: { account_type: string; balance?: number }) => acc.account_type === 'investment')?.balance || 0
         },
         total_balance: totalBalance
       }

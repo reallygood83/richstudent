@@ -45,7 +45,7 @@ export default function StudentList({ onCreateStudent }: StudentListProps) {
       } else {
         setError(data.error || '학생 목록을 불러오는데 실패했습니다.')
       }
-    } catch (err) {
+    } catch {
       setError('서버 연결에 실패했습니다.')
     } finally {
       setLoading(false)
@@ -74,7 +74,7 @@ export default function StudentList({ onCreateStudent }: StudentListProps) {
       } else {
         alert(data.error || '학생 삭제에 실패했습니다.')
       }
-    } catch (err) {
+    } catch {
       alert('서버 연결에 실패했습니다.')
     }
   }
