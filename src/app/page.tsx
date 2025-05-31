@@ -1,103 +1,159 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { BookOpen, Users, TrendingUp, Shield, LogOut } from 'lucide-react'
+import { useAuth } from '@/hooks/useAuth'
+import { useRouter } from 'next/navigation'
+
+export default function HomePage() {
+  const { teacher, isAuthenticated, logout } = useAuth()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    await logout()
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Header */}
+      <header className="container mx-auto px-4 py-6">
+        <nav className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="text-2xl">💰</div>
+            <h1 className="text-2xl font-bold text-gray-900">RichStudent</h1>
+          </div>
+          <div className="space-x-4">
+            {isAuthenticated && teacher ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-gray-600">
+                  {teacher.name} 선생님
+                </span>
+                <Link href="/teacher/dashboard">
+                  <Button variant="outline">대시보드</Button>
+                </Link>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleLogout}
+                  className="flex items-center space-x-1"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>로그아웃</span>
+                </Button>
+              </div>
+            ) : (
+              <div className="space-x-4">
+                <Link href="/auth/login">
+                  <Button variant="outline">로그인</Button>
+                </Link>
+                <Link href="/auth/register">
+                  <Button>회원가입</Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </nav>
+      </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Hero Section */}
+      <main className="container mx-auto px-4 py-12">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl font-bold text-gray-900 mb-6">
+            경제 교육의 새로운 시작
+          </h2>
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            학생들이 가상 경제 환경에서 투자, 거래, 대출을 경험하며 
+            실용적인 경제 지식을 배울 수 있는 교육 플랫폼입니다.
+          </p>
+          <div className="space-x-4">
+            <Link href="/auth/register">
+              <Button size="lg" className="text-lg px-8 py-3">
+                무료로 시작하기
+              </Button>
+            </Link>
+            <Link href="/demo">
+              <Button variant="outline" size="lg" className="text-lg px-8 py-3">
+                데모 체험하기
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Features */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          <Card className="text-center">
+            <CardHeader>
+              <BookOpen className="w-12 h-12 text-blue-600 mx-auto mb-4" />
+              <CardTitle>실습 중심 학습</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>
+                이론이 아닌 직접적인 경험을 통해 경제 원리를 자연스럽게 습득합니다.
+              </CardDescription>
+            </CardContent>
+          </Card>
+
+          <Card className="text-center">
+            <CardHeader>
+              <Users className="w-12 h-12 text-green-600 mx-auto mb-4" />
+              <CardTitle>멀티 클래스</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>
+                여러 학급을 독립적으로 관리하며 각각의 경제 환경을 운영할 수 있습니다.
+              </CardDescription>
+            </CardContent>
+          </Card>
+
+          <Card className="text-center">
+            <CardHeader>
+              <TrendingUp className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+              <CardTitle>실시간 시장</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>
+                실제 주식, 암호화폐 시장 데이터를 활용한 생생한 투자 체험을 제공합니다.
+              </CardDescription>
+            </CardContent>
+          </Card>
+
+          <Card className="text-center">
+            <CardHeader>
+              <Shield className="w-12 h-12 text-red-600 mx-auto mb-4" />
+              <CardTitle>안전한 환경</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <CardDescription>
+                가상 화폐로 진행되는 안전한 교육 환경에서 실수를 통해 배웁니다.
+              </CardDescription>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* CTA Section */}
+        <div className="text-center bg-white rounded-lg shadow-lg p-12">
+          <h3 className="text-3xl font-bold text-gray-900 mb-4">
+            지금 바로 시작해보세요
+          </h3>
+          <p className="text-lg text-gray-600 mb-8">
+            무료 계정으로 학생 30명까지 모든 기능을 사용할 수 있습니다.
+          </p>
+          <Link href="/auth/register">
+            <Button size="lg" className="text-lg px-12 py-4">
+              교사 계정 만들기
+            </Button>
+          </Link>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      {/* Footer */}
+      <footer className="container mx-auto px-4 py-8 mt-16 border-t border-gray-200">
+        <div className="text-center text-gray-600">
+          <p>&copy; 2025 RichStudent. 모든 권리 보유.</p>
+        </div>
       </footer>
     </div>
-  );
+  )
 }
