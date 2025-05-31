@@ -57,7 +57,11 @@ export default function StudentLogin() {
         // 로그인 성공시 학생 대시보드로 이동
         router.push('/student/dashboard')
       } else {
+        console.error('Login error:', data)
         setError(data.error || '로그인에 실패했습니다.')
+        if (data.debug) {
+          console.error('Debug info:', data.debug)
+        }
       }
     } catch {
       setError('서버 연결에 실패했습니다.')
@@ -163,6 +167,36 @@ export default function StudentLogin() {
               </Button>
             </form>
 
+            {/* Test Data Button */}
+            <div className="mt-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/debug/create-test-data', {
+                      method: 'POST'
+                    })
+                    const data = await response.json()
+                    console.log('Test data result:', data)
+                    if (data.success) {
+                      setFormData({
+                        session_code: data.testCredentials.sessionCode,
+                        student_code: data.testCredentials.studentCode,
+                        password: ''
+                      })
+                      alert('테스트 데이터가 생성되었습니다!')
+                    }
+                  } catch (error) {
+                    console.error('Test data creation failed:', error)
+                  }
+                }}
+              >
+                🧪 테스트 데이터 생성 및 자동 입력
+              </Button>
+            </div>
+
             {/* Help Section */}
             <div className="mt-6 p-4 bg-blue-50 rounded-lg">
               <h4 className="font-medium text-blue-900 mb-2">도움말</h4>
@@ -170,6 +204,7 @@ export default function StudentLogin() {
                 <li>• 세션 코드는 선생님 화면에서 확인할 수 있습니다</li>
                 <li>• 학생 코드는 선생님이 부여한 고유 번호입니다</li>
                 <li>• 비밀번호는 선택사항입니다</li>
+                <li>• 개발 중에는 위의 테스트 버튼을 사용할 수 있습니다</li>
               </ul>
             </div>
           </CardContent>

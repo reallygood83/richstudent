@@ -7,8 +7,15 @@ export async function POST(request: NextRequest) {
   try {
     const { session_code, student_code, password = '' } = await request.json()
 
+    console.log('Student login attempt:', {
+      session_code,
+      student_code,
+      hasPassword: !!password
+    })
+
     // 입력 검증
     if (!session_code || !student_code) {
+      console.log('Missing required fields')
       return NextResponse.json(
         { success: false, error: '세션 코드와 학생 코드를 모두 입력해주세요.' },
         { status: 400 }
@@ -16,20 +23,25 @@ export async function POST(request: NextRequest) {
     }
 
     // 세션 코드로 교사 찾기
+    console.log('Looking for teacher with session code:', session_code.toUpperCase())
     const { data: teacher, error: teacherError } = await supabase
       .from('teachers')
       .select('id, name, session_code')
       .eq('session_code', session_code.toUpperCase())
       .single()
 
+    console.log('Teacher query result:', { teacher, teacherError })
+
     if (teacherError || !teacher) {
+      console.log('Teacher not found or error:', teacherError)
       return NextResponse.json(
-        { success: false, error: '유효하지 않은 세션 코드입니다.' },
+        { success: false, error: '유효하지 않은 세션 코드입니다.', debug: { teacherError: teacherError?.message } },
         { status: 400 }
       )
     }
 
     // 학생 코드로 학생 찾기 (해당 교사의 학생만)
+    console.log('Looking for student with code:', student_code.toUpperCase(), 'for teacher:', teacher.id)
     const { data: student, error: studentError } = await supabase
       .from('students')
       .select('id, name, student_code, password_hash')
@@ -37,9 +49,12 @@ export async function POST(request: NextRequest) {
       .eq('student_code', student_code.toUpperCase())
       .single()
 
+    console.log('Student query result:', { student, studentError })
+
     if (studentError || !student) {
+      console.log('Student not found or error:', studentError)
       return NextResponse.json(
-        { success: false, error: '존재하지 않는 학생 코드입니다.' },
+        { success: false, error: '존재하지 않는 학생 코드입니다.', debug: { studentError: studentError?.message } },
         { status: 400 }
       )
     }
