@@ -347,36 +347,37 @@ export async function logoutTeacher(sessionToken: string): Promise<boolean> {
 }
 
 // 기본 경제 주체 생성 (정부, 은행, 증권사)
-async function createDefaultEconomicEntities(teacherId: string) {
-  const entities = [
-    {
-      teacher_id: teacherId,
-      entity_type: 'government',
-      name: '정부',
-      balance: 100000000 // 1억원
-    },
-    {
-      teacher_id: teacherId,
-      entity_type: 'bank',
-      name: '은행',
-      balance: 1000000000 // 10억원
-    },
-    {
-      teacher_id: teacherId,
-      entity_type: 'securities',
-      name: '증권사',
-      balance: 0
-    }
-  ]
+// 경제 주체 생성 함수 (Phase 3에서 재활성화 예정)
+// async function createDefaultEconomicEntities(teacherId: string) {
+//   const entities = [
+//     {
+//       teacher_id: teacherId,
+//       entity_type: 'government',
+//       name: '정부',
+//       balance: 100000000 // 1억원
+//     },
+//     {
+//       teacher_id: teacherId,
+//       entity_type: 'bank',
+//       name: '은행',
+//       balance: 1000000000 // 10억원
+//     },
+//     {
+//       teacher_id: teacherId,
+//       entity_type: 'securities',
+//       name: '증권사',
+//       balance: 0
+//     }
+//   ]
 
-  const { error } = await supabase
-    .from('economic_entities')
-    .insert(entities)
+//   const { error } = await supabase
+//     .from('economic_entities')
+//     .insert(entities)
 
-  if (error) {
-    console.error('Failed to create economic entities:', error)
-  }
-}
+//   if (error) {
+//     console.error('Failed to create economic entities:', error)
+//   }
+// }
 
 // 데모 계정 생성/조회
 export async function setupDemoAccount(): Promise<AuthResponse> {
