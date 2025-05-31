@@ -94,9 +94,24 @@ export async function POST() {
       }
     }
 
+    // 시장 데이터 초기화
+    try {
+      const marketResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'}/api/market/update-prices`, {
+        method: 'POST'
+      })
+      
+      if (marketResponse.ok) {
+        console.log('Market data initialized successfully')
+      } else {
+        console.warn('Failed to initialize market data')
+      }
+    } catch (error) {
+      console.warn('Market data initialization error:', error)
+    }
+
     return NextResponse.json({
       success: true,
-      message: '테스트 데이터 생성/확인 완료',
+      message: '테스트 데이터 생성/확인 완료 (시장 데이터 포함)',
       testCredentials: {
         sessionCode: sessionCode,
         studentCode: 'S001',

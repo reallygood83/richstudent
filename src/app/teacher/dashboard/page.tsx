@@ -10,6 +10,7 @@ import { Users, TrendingUp, DollarSign, Settings, LogOut, ArrowRightLeft } from 
 import StudentList from '@/components/teacher/StudentList'
 import CreateStudentModal from '@/components/teacher/CreateStudentModal'
 import TransactionManager from '@/components/teacher/TransactionManager'
+import MarketDataView from '@/components/teacher/MarketDataView'
 import { Student } from '@/types'
 
 export default function TeacherDashboard() {
@@ -203,7 +204,7 @@ export default function TeacherDashboard() {
               <ArrowRightLeft className="w-4 h-4" />
               <span>거래 관리</span>
             </TabsTrigger>
-            <TabsTrigger value="market" className="flex items-center space-x-2" disabled>
+            <TabsTrigger value="market" className="flex items-center space-x-2">
               <TrendingUp className="w-4 h-4" />
               <span>시장 데이터</span>
             </TabsTrigger>
@@ -220,23 +221,7 @@ export default function TeacherDashboard() {
           </TabsContent>
 
           <TabsContent value="market" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>시장 데이터</CardTitle>
-                <CardDescription>
-                  실시간 주식, 암호화폐, 상품 가격 데이터를 제공합니다
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <TrendingUp className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">곧 출시 예정</h3>
-                  <p className="text-gray-500">
-                    시장 데이터 기능은 Phase 4에서 구현될 예정입니다.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <MarketDataView />
           </TabsContent>
         </Tabs>
 
@@ -248,11 +233,11 @@ export default function TeacherDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-yellow-700 space-y-2">
-                <p><strong>✅ 완료:</strong> 교사 인증 시스템, 기본 대시보드, 학생 관리 시스템</p>
-                <p><strong>🔄 진행 중:</strong> 거래 시스템, 계좌 이체 기능 (Phase 3)</p>
-                <p><strong>📋 예정:</strong> 투자 기능, 시장 데이터, 대출 시스템</p>
+                <p><strong>✅ 완료:</strong> 교사/학생 인증, 학생 관리, 거래 시스템, 시장 데이터</p>
+                <p><strong>🔄 진행 중:</strong> 투자 시스템, 포트폴리오 관리 (Phase 5)</p>
+                <p><strong>📋 예정:</strong> 대출 시스템, 부동산 거래, 고급 분석</p>
                 <p className="mt-4 text-sm">
-                  Phase 2 완료! 이제 학생을 추가하고 경제 교육을 시작할 수 있습니다.
+                  Phase 5 시작! 이제 실시간 시장 데이터와 함께 완전한 경제 시뮬레이션이 가능합니다.
                 </p>
               </div>
             </CardContent>
