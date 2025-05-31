@@ -4,20 +4,11 @@ import type { Teacher, LoginRequest, RegisterRequest, AuthResponse } from '@/typ
 // 구글 로그인
 export async function signInWithGoogle(): Promise<AuthResponse> {
   try {
-    // 프로덕션 환경에서는 무조건 Vercel URL 사용
-    const isProduction = process.env.NODE_ENV === 'production' || 
-                        (typeof window !== 'undefined' && window.location.hostname !== 'localhost')
-    
-    const baseUrl = isProduction 
-      ? 'https://richstudent.vercel.app'
-      : (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')
-    
-    console.log('OAuth redirect URL:', `${baseUrl}/auth/callback`)
-    
+    // Supabase OAuth 콜백 URL을 직접 사용 (localhost 문제 해결)
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${baseUrl}/auth/callback`
+        redirectTo: 'https://richstudent.vercel.app/auth/callback'
       }
     })
 
