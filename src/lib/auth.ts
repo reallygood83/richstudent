@@ -4,10 +4,17 @@ import type { Teacher, LoginRequest, RegisterRequest, AuthResponse } from '@/typ
 // 구글 로그인
 export async function signInWithGoogle(): Promise<AuthResponse> {
   try {
+    // 프로덕션 환경에서는 무조건 Vercel URL 사용
+    const baseUrl = typeof window !== 'undefined' 
+      ? window.location.origin 
+      : process.env.NEXT_PUBLIC_APP_URL || 'https://richstudent.vercel.app'
+    
+    console.log('OAuth redirect URL:', `${baseUrl}/auth/callback`)
+    
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/callback`
+        redirectTo: `${baseUrl}/auth/callback`
       }
     })
 
