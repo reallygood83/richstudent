@@ -59,15 +59,20 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
   const fetchSeats = async () => {
     try {
       const response = await fetch('/api/real-estate/seats');
+      console.log('Seats API response status:', response.status);
       const data = await response.json();
+      console.log('Seats API response data:', data);
       
       if (data.seats) {
         setSeats(data.seats);
+        console.log('Seats loaded:', data.seats.length);
         // 첫 번째 빈 좌석의 가격을 현재 가격으로 설정
         const emptySeat = data.seats.find((seat: Seat) => !seat.owner_id);
         if (emptySeat) {
           setCurrentPrice(emptySeat.current_price);
         }
+      } else {
+        console.error('No seats data in response:', data);
       }
     } catch (error) {
       console.error('Error fetching seats:', error);
@@ -173,6 +178,27 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
       <Card>
         <CardContent className="p-6">
           <div className="text-center">좌석 정보를 불러오는 중...</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // 좌석이 없는 경우
+  if (seats.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-center">📍 교실 좌석 거래소</CardTitle>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="text-center space-y-4">
+            <div className="text-lg text-gray-600">
+              아직 좌석 데이터가 없습니다
+            </div>
+            <div className="text-sm text-gray-500">
+              교사에게 좌석 시스템 설정을 요청하세요
+            </div>
+          </div>
         </CardContent>
       </Card>
     );

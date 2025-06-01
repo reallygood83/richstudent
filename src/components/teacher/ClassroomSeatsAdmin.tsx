@@ -36,6 +36,7 @@ export default function ClassroomSeatsAdmin() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [manualStudentCount, setManualStudentCount] = useState('');
+  const [debugging, setDebugging] = useState(false);
   const [stats, setStats] = useState<SeatStats>({
     total_seats: 30,
     owned_seats: 0,
@@ -128,6 +129,50 @@ export default function ClassroomSeatsAdmin() {
     return () => clearInterval(interval);
   }, [fetchSeats]);
 
+  const testSeatsData = async () => {
+    setDebugging(true);
+    try {
+      const response = await fetch('/api/debug/seats-test');
+      const result = await response.json();
+      
+      if (result.message) {
+        alert(`좌석 테스트 완료: ${result.message}`);
+        await fetchSeats(); // 좌석 정보 새로고침
+      } else {
+        alert('좌석 테스트에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error testing seats:', error);
+      alert('좌석 테스트 중 오류가 발생했습니다.');
+    } finally {
+      setDebugging(false);
+    }
+  };
+
+  const recreateSeats = async () => {
+    if (!confirm('모든 좌석을 삭제하고 다시 생성하시겠습니까?')) return;
+    
+    setDebugging(true);
+    try {
+      const response = await fetch('/api/debug/seats-test', {
+        method: 'POST'
+      });
+      const result = await response.json();
+      
+      if (result.message) {
+        alert(`좌석 재생성 완료: ${result.message}`);
+        await fetchSeats(); // 좌석 정보 새로고침
+      } else {
+        alert('좌석 재생성에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error recreating seats:', error);
+      alert('좌석 재생성 중 오류가 발생했습니다.');
+    } finally {
+      setDebugging(false);
+    }
+  };
+
   if (loading) {
     return (
       <Card>
@@ -217,6 +262,28 @@ export default function ClassroomSeatsAdmin() {
               >
                 {updating ? '가격 업데이트 중...' : '가격 업데이트'}
               </Button>
+
+              {/* 디버그 버튼들 */}
+              <div className="flex gap-2">
+                <Button 
+                  onClick={testSeatsData}
+                  disabled={debugging}
+                  variant="outline"
+                  size="sm"
+                  className="flex-1"
+                >
+                  {debugging ? '테스트 중...' : '좌석 데이터 확인'}
+                </Button>
+                <Button 
+                  onClick={recreateSeats}
+                  disabled={debugging}
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 text-red-600 border-red-300 hover:bg-red-50"
+                >
+                  {debugging ? '재생성 중...' : '좌석 재생성'}
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
