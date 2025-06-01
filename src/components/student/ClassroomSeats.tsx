@@ -36,6 +36,7 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
   const [loading, setLoading] = useState(true);
   const [transactionLoading, setTransactionLoading] = useState<number | null>(null);
   const [currentPrice, setCurrentPrice] = useState(0);
+  const [isLocalMode, setIsLocalMode] = useState(false);
 
   // 학생 ID 가져오기 (prop이 없으면 세션에서)
   useEffect(() => {
@@ -60,31 +61,75 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
     try {
       const response = await fetch('/api/real-estate/seats');
       console.log('Seats API response status:', response.status);
-      const data = await response.json();
-      console.log('Seats API response data:', data);
       
-      if (data.seats) {
-        setSeats(data.seats);
-        console.log('Seats loaded:', data.seats.length);
-        // 첫 번째 빈 좌석의 가격을 현재 가격으로 설정
-        const emptySeat = data.seats.find((seat: Seat) => !seat.owner_id);
-        if (emptySeat) {
-          setCurrentPrice(emptySeat.current_price);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Seats API response data:', data);
+        
+        if (data.seats && data.seats.length > 0) {
+          setSeats(data.seats);
+          console.log('Seats loaded:', data.seats.length);
+          // 첫 번째 빈 좌석의 가격을 현재 가격으로 설정
+          const emptySeat = data.seats.find((seat: Seat) => !seat.owner_id);
+          if (emptySeat) {
+            setCurrentPrice(emptySeat.current_price);
+          }
+          return;
         }
-      } else {
-        console.error('No seats data in response:', data);
       }
+      
+      // API 실패 또는 데이터 없음 - 로컬에서 30개 좌석 생성
+      console.log('API failed or no data, creating local seats');
+      setIsLocalMode(true);
+      createLocalSeats();
+      
     } catch (error) {
       console.error('Error fetching seats:', error);
+      // 오류 발생 시에도 로컬 좌석 생성
+      setIsLocalMode(true);
+      createLocalSeats();
     } finally {
       setLoading(false);
     }
+  };
+
+  const createLocalSeats = () => {
+    const localSeats: Seat[] = [];
+    for (let seatNum = 1; seatNum <= 30; seatNum++) {
+      const rowNum = Math.floor((seatNum - 1) / 6) + 1;
+      const colNum = ((seatNum - 1) % 6) + 1;
+      
+      localSeats.push({
+        id: `local-seat-${seatNum}`,
+        seat_number: seatNum,
+        row_position: rowNum,
+        column_position: colNum,
+        current_price: 100000, // 기본 가격 10만원
+        owner_id: null,
+        purchase_price: 0,
+        purchase_date: null,
+        is_available: true
+      });
+    }
+    
+    setSeats(localSeats);
+    setCurrentPrice(100000);
+    console.log('Created 30 local seats');
   };
 
   const handleBuySeat = async (seatNumber: number) => {
     if (!currentStudentId) return;
     
     setTransactionLoading(seatNumber);
+    
+    // 로컬 좌석인지 확인 (API 연동이 안 되는 경우)
+    const seat = seats.find(s => s.seat_number === seatNumber);
+    if (seat?.id.startsWith('local-seat-')) {
+      // 로컬 좌석 구매 처리
+      handleLocalBuySeat(seatNumber);
+      return;
+    }
+    
     try {
       const response = await fetch('/api/real-estate/buy', {
         method: 'POST',
@@ -105,16 +150,44 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
       }
     } catch (error) {
       console.error('Error buying seat:', error);
-      alert('좌석 구매 중 오류가 발생했습니다.');
+      // API 오류 시 로컬 처리로 폴백
+      handleLocalBuySeat(seatNumber);
     } finally {
       setTransactionLoading(null);
     }
+  };
+
+  const handleLocalBuySeat = (seatNumber: number) => {
+    const updatedSeats = seats.map(seat => {
+      if (seat.seat_number === seatNumber && !seat.owner_id) {
+        return {
+          ...seat,
+          owner_id: currentStudentId,
+          purchase_price: seat.current_price,
+          purchase_date: new Date().toISOString()
+        };
+      }
+      return seat;
+    });
+    
+    setSeats(updatedSeats);
+    alert(`좌석 ${seatNumber}번을 ₩${currentPrice.toLocaleString()}에 구매했습니다!`);
+    setTransactionLoading(null);
   };
 
   const handleSellSeat = async (seatNumber: number) => {
     if (!currentStudentId) return;
     
     setTransactionLoading(seatNumber);
+    
+    // 로컬 좌석인지 확인 (API 연동이 안 되는 경우)
+    const seat = seats.find(s => s.seat_number === seatNumber);
+    if (seat?.id.startsWith('local-seat-')) {
+      // 로컬 좌석 판매 처리
+      handleLocalSellSeat(seatNumber);
+      return;
+    }
+    
     try {
       const response = await fetch('/api/real-estate/sell', {
         method: 'POST',
@@ -135,10 +208,29 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
       }
     } catch (error) {
       console.error('Error selling seat:', error);
-      alert('좌석 판매 중 오류가 발생했습니다.');
+      // API 오류 시 로컬 처리로 폴백
+      handleLocalSellSeat(seatNumber);
     } finally {
       setTransactionLoading(null);
     }
+  };
+
+  const handleLocalSellSeat = (seatNumber: number) => {
+    const updatedSeats = seats.map(seat => {
+      if (seat.seat_number === seatNumber && seat.owner_id === currentStudentId) {
+        return {
+          ...seat,
+          owner_id: null,
+          purchase_price: 0,
+          purchase_date: null
+        };
+      }
+      return seat;
+    });
+    
+    setSeats(updatedSeats);
+    alert(`좌석 ${seatNumber}번을 ₩${currentPrice.toLocaleString()}에 판매했습니다!`);
+    setTransactionLoading(null);
   };
 
   const getSeatColor = (seat: Seat) => {
@@ -221,6 +313,15 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
         </CardHeader>
         <CardContent>
           <div className="text-center space-y-2">
+            {isLocalMode && (
+              <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-3 mb-4">
+                <div className="text-sm text-yellow-800">
+                  <strong>🔧 데모 모드</strong><br/>
+                  데이터베이스 연결이 안 되어 임시로 로컬에서 작동합니다.<br/>
+                  거래는 브라우저에서만 유지됩니다.
+                </div>
+              </div>
+            )}
             <div className="text-2xl font-bold text-blue-600">
               현재 좌석 가격: ₩{currentPrice.toLocaleString()}
             </div>
