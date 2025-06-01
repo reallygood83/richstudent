@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { 
@@ -17,7 +17,8 @@ import {
   ArrowLeft
 } from 'lucide-react'
 import InvestmentPortfolio from '@/components/student/InvestmentPortfolio'
-import InvestmentTrading from '@/components/student/InvestmentTrading'
+import InvestmentTradingFull from '@/components/student/InvestmentTradingFull'
+import InvestmentHistory from '@/components/student/InvestmentHistory'
 
 interface StudentSession {
   studentId: string
@@ -275,27 +276,14 @@ export default function StudentInvestments() {
           </TabsContent>
 
           <TabsContent value="trading" className="mt-6">
-            <InvestmentTrading 
+            <InvestmentTradingFull 
               cashBalance={portfolioSummary?.cash_balance || 0}
               onTradeComplete={fetchData}
             />
           </TabsContent>
 
           <TabsContent value="history" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>거래 내역</CardTitle>
-                <CardDescription>
-                  투자 거래 내역을 확인할 수 있습니다
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <History className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">거래 내역 컴포넌트를 구현 중입니다</p>
-                </div>
-              </CardContent>
-            </Card>
+            <InvestmentHistory onRefresh={fetchData} />
           </TabsContent>
         </Tabs>
       </main>

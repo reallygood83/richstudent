@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { Student, Transaction } from '@/types'
 import TransferForm from '@/components/student/TransferForm'
+import AccountTransfer from '@/components/student/AccountTransfer'
 
 interface StudentSession {
   studentId: string
@@ -280,7 +281,7 @@ export default function StudentDashboard() {
 
         {/* Tabs for Activities */}
         <Tabs defaultValue="transactions" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="transactions" className="flex items-center space-x-2">
               <History className="w-4 h-4" />
               <span>거래 내역</span>
@@ -288,6 +289,10 @@ export default function StudentDashboard() {
             <TabsTrigger value="transfer" className="flex items-center space-x-2">
               <ArrowRightLeft className="w-4 h-4" />
               <span>송금하기</span>
+            </TabsTrigger>
+            <TabsTrigger value="account-transfer" className="flex items-center space-x-2">
+              <ArrowRightLeft className="w-4 h-4" />
+              <span>계좌 이체</span>
             </TabsTrigger>
           </TabsList>
 
@@ -353,6 +358,13 @@ export default function StudentDashboard() {
           <TabsContent value="transfer" className="mt-6">
             <TransferForm 
               currentStudent={student}
+              onTransferSuccess={fetchStudentData}
+            />
+          </TabsContent>
+
+          <TabsContent value="account-transfer" className="mt-6">
+            <AccountTransfer 
+              accounts={student.accounts}
               onTransferSuccess={fetchStudentData}
             />
           </TabsContent>
