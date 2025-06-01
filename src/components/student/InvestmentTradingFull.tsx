@@ -17,6 +17,7 @@ import {
   AlertTriangle,
   RefreshCw
 } from 'lucide-react'
+import TradeCompletionModal from './TradeCompletionModal'
 
 interface Asset {
   id: string
@@ -52,6 +53,20 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
   const [trading, setTrading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  
+  // 거래 완료 모달 상태
+  const [showCompletionModal, setShowCompletionModal] = useState(false)
+  const [completedTrade, setCompletedTrade] = useState<{
+    type: 'buy' | 'sell'
+    assetType: 'stock' | 'real_estate'
+    assetName: string
+    assetSymbol?: string
+    quantity: number
+    price: number
+    totalAmount: number
+    fee?: number
+    remainingBalance?: number
+  } | null>(null)
 
   // 선택된 자산 상태
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null)
@@ -133,7 +148,22 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
       const data = await response.json()
 
       if (data.success) {
-        setSuccess(data.message)
+        // 거래 완료 모달 데이터 설정
+        const selectedAssetData = assets.find(a => a.id === buyForm.asset_id)
+        setCompletedTrade({
+          type: 'buy',
+          assetType: 'stock',
+          assetName: selectedAssetData?.name || '자산',
+          assetSymbol: selectedAssetData?.symbol,
+          quantity: Number(buyForm.quantity),
+          price: Number(buyForm.price),
+          totalAmount: data.transaction.total_amount,
+          fee: data.transaction.fee,
+          remainingBalance: data.transaction.remaining_balance
+        })
+        setShowCompletionModal(true)
+        
+        // 폼 초기화
         setBuyForm({
           asset_id: '',
           quantity: '',
@@ -181,7 +211,22 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
       const data = await response.json()
 
       if (data.success) {
-        setSuccess(data.message)
+        // 거래 완료 모달 데이터 설정
+        const selectedHoldingData = portfolio.find(h => h.market_assets.id === sellForm.asset_id)
+        setCompletedTrade({
+          type: 'sell',
+          assetType: 'stock',
+          assetName: selectedHoldingData?.market_assets.name || '자산',
+          assetSymbol: selectedHoldingData?.market_assets.symbol,
+          quantity: Number(sellForm.quantity),
+          price: Number(sellForm.price),
+          totalAmount: data.transaction.total_amount,
+          fee: data.transaction.fee,
+          remainingBalance: data.transaction.remaining_balance
+        })
+        setShowCompletionModal(true)
+        
+        // 폼 초기화
         setSellForm({
           asset_id: '',
           quantity: '',
@@ -638,6 +683,16 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* 거래 완료 모달 */}
+      <TradeCompletionModal
+        isOpen={showCompletionModal}
+        onClose={() => {
+          setShowCompletionModal(false)
+          setCompletedTrade(null)
+        }}
+        tradeData={completedTrade}
+      />
     </div>
   )
 }
