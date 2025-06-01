@@ -47,7 +47,7 @@ export async function POST() {
             sell_quantity: 0,
             total_invested: 0,
             total_sold: 0,
-            current_price: tx.market_assets?.current_price || 0
+            current_price: (tx.market_assets as any)?.current_price || 0
           })
         }
 
