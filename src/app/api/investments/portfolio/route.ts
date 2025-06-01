@@ -27,7 +27,7 @@ export async function GET() {
       }, { status: 404 })
     }
 
-    const sessionData = students[0]
+    const sessionData = { student_id: students[0].id, teacher_id: students[0].teacher_id }
 
     // 포트폴리오 조회 (자산 정보 포함)
     const { data: portfolio, error: portfolioError } = await supabase

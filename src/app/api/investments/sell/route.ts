@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       }, { status: 404 })
     }
 
-    const sessionData = students[0]
+    const sessionData = { student_id: students[0].id, teacher_id: students[0].teacher_id }
 
     const body = await request.json()
     const { asset_id, quantity, price, account_type = 'investment' } = body
