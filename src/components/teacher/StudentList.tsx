@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Users, Plus, Trash2, CreditCard, TrendingUp } from 'lucide-react'
+import { Users, Plus, Trash2, CreditCard, TrendingUp, Edit } from 'lucide-react'
+import EditStudentModal from './EditStudentModal'
 
 interface Student {
   id: string
@@ -31,6 +32,8 @@ export default function StudentList({ onCreateStudent }: StudentListProps) {
   const [error, setError] = useState('')
   const [totalCount, setTotalCount] = useState(0)
   const [limit, setLimit] = useState(30)
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null)
+  const [showEditModal, setShowEditModal] = useState(false)
 
   const fetchStudents = async () => {
     try {
@@ -77,6 +80,17 @@ export default function StudentList({ onCreateStudent }: StudentListProps) {
     } catch {
       alert('서버 연결에 실패했습니다.')
     }
+  }
+
+  const handleEditStudent = (student: Student) => {
+    setEditingStudent(student)
+    setShowEditModal(true)
+  }
+
+  const handleEditSuccess = () => {
+    setShowEditModal(false)
+    setEditingStudent(null)
+    fetchStudents() // 학생 목록 새로고침
   }
 
   const formatCurrency = (amount: number) => {
@@ -199,6 +213,14 @@ export default function StudentList({ onCreateStudent }: StudentListProps) {
                     <Button
                       variant="outline"
                       size="sm"
+                      onClick={() => handleEditStudent(student)}
+                      className="text-blue-600 hover:bg-blue-50"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={() => deleteStudent(student.id, student.name)}
                       className="text-red-600 hover:bg-red-50"
                     >
@@ -211,6 +233,14 @@ export default function StudentList({ onCreateStudent }: StudentListProps) {
           </div>
         )}
       </CardContent>
+
+      {/* Edit Student Modal */}
+      <EditStudentModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        student={editingStudent}
+        onSuccess={handleEditSuccess}
+      />
     </Card>
   )
 }

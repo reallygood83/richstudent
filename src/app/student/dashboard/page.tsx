@@ -17,6 +17,7 @@ import {
   User
 } from 'lucide-react'
 import { Student, Transaction } from '@/types'
+import TransferForm from '@/components/student/TransferForm'
 
 interface StudentSession {
   studentId: string
@@ -262,7 +263,7 @@ export default function StudentDashboard() {
               <History className="w-4 h-4" />
               <span>거래 내역</span>
             </TabsTrigger>
-            <TabsTrigger value="transfer" className="flex items-center space-x-2" disabled>
+            <TabsTrigger value="transfer" className="flex items-center space-x-2">
               <ArrowRightLeft className="w-4 h-4" />
               <span>송금하기</span>
             </TabsTrigger>
@@ -328,20 +329,10 @@ export default function StudentDashboard() {
           </TabsContent>
 
           <TabsContent value="transfer" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>송금하기</CardTitle>
-                <CardDescription>
-                  다른 학생에게 돈을 보낼 수 있습니다
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-8">
-                  <ArrowRightLeft className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">송금 기능은 곧 제공될 예정입니다</p>
-                </div>
-              </CardContent>
-            </Card>
+            <TransferForm 
+              currentStudent={student}
+              onTransferSuccess={fetchStudentData}
+            />
           </TabsContent>
         </Tabs>
       </main>
