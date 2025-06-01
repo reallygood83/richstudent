@@ -104,6 +104,10 @@ export async function GET() {
       .select('current_price')
       .limit(1);
 
+    if (fetchError) {
+      console.error('Error fetching current seats:', fetchError);
+    }
+
     const currentDbPrice = currentSeats?.[0]?.current_price || 0;
 
     return NextResponse.json({

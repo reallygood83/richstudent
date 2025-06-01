@@ -87,7 +87,7 @@ export default function ClassroomSeatsAdmin() {
     });
   };
 
-  const updateSeatPrices = async () => {
+  const updateSeatPrices = useCallback(async () => {
     setUpdating(true);
     try {
       const requestBody: { manual_student_count?: number } = {};
@@ -120,7 +120,7 @@ export default function ClassroomSeatsAdmin() {
     } finally {
       setUpdating(false);
     }
-  };
+  }, [manualStudentCount, fetchSeats]);
 
   const getSeatColor = (seat: Seat) => {
     if (seat.owner_id) {
