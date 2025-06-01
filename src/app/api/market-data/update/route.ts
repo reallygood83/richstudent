@@ -50,6 +50,11 @@ async function fetchRealTimePrice(symbol: string): Promise<number | null> {
     const price = result.meta.regularMarketPrice || result.meta.previousClose
     const currency = result.meta.currency
 
+    // 환율 데이터는 그대로 사용 (이미 KRW 단위)
+    if (symbol.includes('KRW=X')) {
+      return Math.round(price * 100) / 100 // 소수점 2자리까지
+    }
+
     // USD 자산인 경우 KRW로 환율 변환
     if (currency === 'USD') {
       const exchangeRate = await fetchExchangeRate()
@@ -130,7 +135,14 @@ export async function POST() {
       'GLD': 'GLD',
       'SLV': 'SLV',
       'SPY': 'SPY',
-      'QQQ': 'QQQ'
+      'QQQ': 'QQQ',
+      
+      // 환율 (Yahoo Finance 형식)
+      'USDKRW=X': 'USDKRW=X',
+      'JPYKRW=X': 'JPYKRW=X', 
+      'EURKRW=X': 'EURKRW=X',
+      'GBPKRW=X': 'GBPKRW=X',
+      'CNYKRW=X': 'CNYKRW=X'
     }
 
     // 각 자산의 실시간 가격 업데이트

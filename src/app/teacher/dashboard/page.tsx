@@ -6,13 +6,14 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAuth } from '@/hooks/useAuth'
-import { Users, TrendingUp, DollarSign, Settings, LogOut, ArrowRightLeft, Building2 } from 'lucide-react'
+import { Users, TrendingUp, DollarSign, Settings, LogOut, ArrowRightLeft, Building2, MapPin } from 'lucide-react'
 import StudentList from '@/components/teacher/StudentList'
 import CreateStudentModal from '@/components/teacher/CreateStudentModal'
 import TransactionManager from '@/components/teacher/TransactionManager'
 import MarketDataView from '@/components/teacher/MarketDataView'
 import EconomicEntitiesManager from '@/components/teacher/EconomicEntitiesManager'
 import StudentInvestmentMonitor from '@/components/teacher/StudentInvestmentMonitor'
+import ClassroomSeatsAdmin from '@/components/teacher/ClassroomSeatsAdmin'
 import { Student } from '@/types'
 
 export default function TeacherDashboard() {
@@ -197,7 +198,7 @@ export default function TeacherDashboard() {
 
         {/* Main Tabs */}
         <Tabs defaultValue="students" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="students" className="flex items-center space-x-2">
               <Users className="w-4 h-4" />
               <span>학생 관리</span>
@@ -205,6 +206,10 @@ export default function TeacherDashboard() {
             <TabsTrigger value="transactions" className="flex items-center space-x-2">
               <ArrowRightLeft className="w-4 h-4" />
               <span>거래 관리</span>
+            </TabsTrigger>
+            <TabsTrigger value="real-estate" className="flex items-center space-x-2">
+              <MapPin className="w-4 h-4" />
+              <span>좌석 관리</span>
             </TabsTrigger>
             <TabsTrigger value="economic-entities" className="flex items-center space-x-2">
               <Building2 className="w-4 h-4" />
@@ -230,6 +235,10 @@ export default function TeacherDashboard() {
             <TransactionManager students={students} onRefreshStudents={fetchStudents} />
           </TabsContent>
 
+          <TabsContent value="real-estate" className="mt-6">
+            <ClassroomSeatsAdmin />
+          </TabsContent>
+
           <TabsContent value="economic-entities" className="mt-6">
             <EconomicEntitiesManager onDataChange={fetchStudents} />
           </TabsContent>
@@ -251,11 +260,11 @@ export default function TeacherDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-yellow-700 space-y-2">
-                <p><strong>✅ 완료:</strong> 교사/학생 인증, 학생 관리, 거래 시스템, 시장 데이터</p>
-                <p><strong>🔄 진행 중:</strong> 투자 시스템, 포트폴리오 관리 (Phase 5)</p>
-                <p><strong>📋 예정:</strong> 대출 시스템, 부동산 거래, 고급 분석</p>
+                <p><strong>✅ 완료:</strong> 교사/학생 인증, 학생 관리, 거래 시스템, 투자 시스템, 대출 시스템, 교실 좌석 거래</p>
+                <p><strong>🔄 진행 중:</strong> 그룹 거래, 고급 분석 도구</p>
+                <p><strong>📋 예정:</strong> 실시간 업데이트, 모바일 최적화</p>
                 <p className="mt-4 text-sm">
-                  Phase 5 시작! 이제 실시간 시장 데이터와 함께 완전한 경제 시뮬레이션이 가능합니다.
+                  🎉 Phase 6 완료! 이제 교실 좌석을 부동산처럼 거래할 수 있는 완전한 경제 시뮬레이션이 가능합니다.
                 </p>
               </div>
             </CardContent>

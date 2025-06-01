@@ -15,11 +15,13 @@ import {
   History,
   LogOut,
   User,
-  Building2
+  Building2,
+  MapPin
 } from 'lucide-react'
 import { Student, Transaction } from '@/types'
 import TransferForm from '@/components/student/TransferForm'
 import AccountTransfer from '@/components/student/AccountTransfer'
+import ClassroomSeats from '@/components/student/ClassroomSeats'
 
 interface StudentSession {
   studentId: string
@@ -305,9 +307,31 @@ export default function StudentDashboard() {
           </Card>
         </div>
 
+        {/* Real Estate Section */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <MapPin className="w-5 h-5" />
+              <span>부동산 거래</span>
+            </CardTitle>
+            <CardDescription>
+              교실 좌석을 거래하고 수익을 창출해보세요
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              onClick={() => router.push('/student/real-estate')}
+              className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700"
+            >
+              <MapPin className="w-4 h-4 mr-2" />
+              교실 좌석 거래소
+            </Button>
+          </CardContent>
+        </Card>
+
         {/* Tabs for Activities */}
         <Tabs defaultValue="transactions" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="transactions" className="flex items-center space-x-2">
               <History className="w-4 h-4" />
               <span>거래 내역</span>
@@ -319,6 +343,10 @@ export default function StudentDashboard() {
             <TabsTrigger value="account-transfer" className="flex items-center space-x-2">
               <ArrowRightLeft className="w-4 h-4" />
               <span>계좌 이체</span>
+            </TabsTrigger>
+            <TabsTrigger value="real-estate" className="flex items-center space-x-2">
+              <MapPin className="w-4 h-4" />
+              <span>좌석 거래</span>
             </TabsTrigger>
           </TabsList>
 
@@ -393,6 +421,10 @@ export default function StudentDashboard() {
               accounts={student.accounts}
               onTransferSuccess={fetchStudentData}
             />
+          </TabsContent>
+
+          <TabsContent value="real-estate" className="mt-6">
+            <ClassroomSeats studentId={student?.id} />
           </TabsContent>
         </Tabs>
       </main>
