@@ -137,7 +137,7 @@ BEGIN
         RAISE NOTICE 'Added last_updated column to market_assets table';
     END IF;
     
-    -- 기존 NOT NULL 제약 조건 완화 (필요한 경우)
+    -- 기존 제약 조건 완화 (필요한 경우)
     BEGIN
         -- current_price 컬럼이 NOT NULL인 경우 NULL 허용으로 변경
         IF EXISTS (
@@ -160,9 +160,40 @@ BEGIN
             ALTER TABLE market_assets ALTER COLUMN previous_price DROP NOT NULL;
             RAISE NOTICE 'Removed NOT NULL constraint from previous_price column';
         END IF;
+        
+        -- CHECK 제약 조건 제거 (current_price > 0 등)
+        IF EXISTS (
+            SELECT 1 FROM information_schema.check_constraints 
+            WHERE constraint_name = 'market_assets_current_price_check'
+        ) THEN
+            ALTER TABLE market_assets DROP CONSTRAINT market_assets_current_price_check;
+            RAISE NOTICE 'Removed CHECK constraint from current_price column';
+        END IF;
+        
+        -- 모든 CHECK 제약 조건들 제거
+        DECLARE
+            constraint_rec RECORD;
+        BEGIN
+            -- 모든 CHECK 제약 조건 조회 및 제거
+            FOR constraint_rec IN 
+                SELECT tc.constraint_name
+                FROM information_schema.table_constraints tc
+                WHERE tc.table_name = 'market_assets' 
+                AND tc.constraint_type = 'CHECK'
+            LOOP
+                BEGIN
+                    EXECUTE 'ALTER TABLE market_assets DROP CONSTRAINT ' || quote_ident(constraint_rec.constraint_name);
+                    RAISE NOTICE 'Removed CHECK constraint: %', constraint_rec.constraint_name;
+                EXCEPTION
+                    WHEN OTHERS THEN
+                        RAISE NOTICE 'Could not remove CHECK constraint %: %', constraint_rec.constraint_name, SQLERRM;
+                END;
+            END LOOP;
+        END;
+        
     EXCEPTION
         WHEN OTHERS THEN
-            RAISE NOTICE 'Could not modify NOT NULL constraints: %', SQLERRM;
+            RAISE NOTICE 'Could not modify constraints: %', SQLERRM;
     END;
 END $$;
 

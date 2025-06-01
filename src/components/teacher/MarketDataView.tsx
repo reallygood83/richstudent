@@ -95,20 +95,15 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
     }
   }
 
-  const formatPrice = (price: number, currency: string) => {
-    if (currency === 'KRW') {
-      return new Intl.NumberFormat('ko-KR', {
-        style: 'currency',
-        currency: 'KRW',
-        minimumFractionDigits: 0
-      }).format(price)
-    } else {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: currency,
-        minimumFractionDigits: 2
-      }).format(price)
-    }
+  const formatPrice = (price: number, currency: string = 'KRW') => {
+    // 모든 가격을 한국 원화로 표시 (일의 자리까지 반올림)
+    const roundedPrice = Math.round(price)
+    return new Intl.NumberFormat('ko-KR', {
+      style: 'currency',
+      currency: 'KRW',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(roundedPrice)
   }
 
   const formatChangePercent = (change: number) => {
@@ -131,7 +126,8 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
   const groupedAssets = {
     stock: assets.filter(a => a.asset_type === 'stock'),
     crypto: assets.filter(a => a.asset_type === 'crypto'),
-    commodity: assets.filter(a => a.asset_type === 'commodity')
+    commodity: assets.filter(a => a.asset_type === 'commodity'),
+    currency: assets.filter(a => a.asset_type === 'currency')
   }
 
   if (loading && assets.length === 0) {
@@ -155,7 +151,7 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">실시간 시장 데이터</h2>
-          <p className="text-gray-600">학생들이 투자할 수 있는 자산의 현재 가격입니다</p>
+          <p className="text-gray-600">학생들이 투자할 수 있는 자산의 현재 가격입니다 (모든 가격은 한국 원화로 표시)</p>
         </div>
         <div className="flex items-center space-x-4">
           {lastUpdate && (
@@ -190,7 +186,7 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
 
       {/* 시장 데이터 탭 */}
       <Tabs defaultValue="stock" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="stock" className="flex items-center space-x-2">
             <BarChart3 className="w-4 h-4" />
             <span>주식 ({groupedAssets.stock.length})</span>
@@ -202,6 +198,10 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
           <TabsTrigger value="commodity" className="flex items-center space-x-2">
             <TrendingUp className="w-4 h-4" />
             <span>원자재 ({groupedAssets.commodity.length})</span>
+          </TabsTrigger>
+          <TabsTrigger value="currency" className="flex items-center space-x-2">
+            <Activity className="w-4 h-4" />
+            <span>환율 ({groupedAssets.currency.length})</span>
           </TabsTrigger>
         </TabsList>
 
@@ -223,7 +223,7 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold">
-                        {formatPrice(asset.current_price, asset.currency)}
+                        {formatPrice(asset.current_price, 'KRW')}
                       </span>
                       <div className={`flex items-center space-x-1 ${getPriceChangeColor(asset.price_change)}`}>
                         {getChangeIcon(asset.price_change)}
@@ -299,6 +299,43 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
                           {formatChangePercent(asset.price_change_percent)}
                         </span>
                       </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* 환율 탭 */}
+        <TabsContent value="currency">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {groupedAssets.currency.map((asset) => (
+              <Card key={asset.id} className="hover:shadow-md transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg">{asset.symbol}</CardTitle>
+                      <CardDescription className="text-sm">{asset.name}</CardDescription>
+                    </div>
+                    <Badge variant="outline">{asset.category}</Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold">
+                        {formatPrice(asset.current_price, 'KRW')}
+                      </span>
+                      <div className={`flex items-center space-x-1 ${getPriceChangeColor(asset.price_change)}`}>
+                        {getChangeIcon(asset.price_change)}
+                        <span className="text-sm font-medium">
+                          {formatChangePercent(asset.price_change_percent)}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      1 USD = {Math.round(asset.current_price)} KRW
                     </div>
                   </div>
                 </CardContent>

@@ -42,6 +42,19 @@ export async function getExchangeRate(): Promise<number> {
 // Yahoo Finance에서 단일 자산 가격 조회
 export async function fetchAssetPrice(symbol: string): Promise<MarketData | null> {
   try {
+    // 환율 데이터 특별 처리
+    if (symbol === 'USDKRW=X') {
+      const exchangeRate = await getExchangeRate()
+      return {
+        symbol,
+        price: exchangeRate,
+        change: 0, // 환율 변화는 별도 계산 필요
+        changePercent: 0,
+        currency: 'KRW',
+        lastUpdate: new Date().toISOString()
+      }
+    }
+
     // Yahoo Finance API 호출
     const response = await fetch(
       `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=2d`,
@@ -64,10 +77,10 @@ export async function fetchAssetPrice(symbol: string): Promise<MarketData | null
     }
 
     const meta = result.meta
-    const currentPrice = meta.regularMarketPrice
-    const previousClose = meta.previousClose
+    const currentPrice = meta.regularMarketPrice || meta.chartPreviousClose || 0
+    const previousClose = meta.previousClose || meta.chartPreviousClose || currentPrice
     const change = currentPrice - previousClose
-    const changePercent = (change / previousClose) * 100
+    const changePercent = previousClose > 0 ? (change / previousClose) * 100 : 0
 
     return {
       symbol,
