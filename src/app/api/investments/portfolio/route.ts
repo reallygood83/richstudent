@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase/client'
 import { cookies } from 'next/headers'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const cookieStore = await cookies()
     const sessionToken = cookieStore.get('student_session')?.value
@@ -110,19 +110,7 @@ export async function GET(request: NextRequest) {
       weight: totalCurrentValue > 0 ? (Number(item.current_value) / totalCurrentValue) * 100 : 0
     })) || []
 
-    // 자산 카테고리별 분포
-    const categoryDistribution = portfolio?.reduce((acc, item) => {
-      const category = item.market_assets?.category || '기타'
-      const value = Number(item.current_value)
-      
-      if (!acc[category]) {
-        acc[category] = { value: 0, count: 0 }
-      }
-      acc[category].value += value
-      acc[category].count += 1
-      
-      return acc
-    }, {} as Record<string, { value: number, count: number }>) || {}
+    // 자산 카테고리별 분포는 나중에 구현
 
     return NextResponse.json({
       success: true,
@@ -138,12 +126,7 @@ export async function GET(request: NextRequest) {
         holdings: portfolioWithWeight,
         transactions: transactions || [],
         distribution: {
-          by_category: Object.entries(categoryDistribution).map(([category, data]) => ({
-            category,
-            value: data.value,
-            count: data.count,
-            weight: totalCurrentValue > 0 ? (data.value / totalCurrentValue) * 100 : 0
-          }))
+          by_category: []
         }
       }
     })
@@ -158,7 +141,7 @@ export async function GET(request: NextRequest) {
 }
 
 // 포트폴리오 현재 가치 업데이트 API
-export async function PUT(request: NextRequest) {
+export async function PUT() {
   try {
     const cookieStore = await cookies()
     const sessionToken = cookieStore.get('student_session')?.value

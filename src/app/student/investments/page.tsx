@@ -111,10 +111,10 @@ export default function StudentInvestments() {
 
   if (loading) {
     return (
-      <div className=\"min-h-screen bg-gray-50 flex items-center justify-center\">
-        <div className=\"text-center\">
-          <div className=\"animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4\"></div>
-          <p className=\"text-gray-600\">투자 정보를 불러오는 중...</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">투자 정보를 불러오는 중...</p>
         </div>
       </div>
     )
@@ -122,9 +122,9 @@ export default function StudentInvestments() {
 
   if (error) {
     return (
-      <div className=\"min-h-screen bg-gray-50 flex items-center justify-center p-4\">
-        <Alert className=\"max-w-md border-red-200 bg-red-50\">
-          <AlertDescription className=\"text-red-600\">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <Alert className="max-w-md border-red-200 bg-red-50">
+          <AlertDescription className="text-red-600">
             {error}
           </AlertDescription>
         </Alert>
@@ -138,42 +138,42 @@ export default function StudentInvestments() {
   }
 
   return (
-    <div className=\"min-h-screen bg-gray-50\">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className=\"bg-white shadow-sm border-b\">
-        <div className=\"max-w-6xl mx-auto px-4 sm:px-6 lg:px-8\">
-          <div className=\"flex justify-between items-center h-16\">
-            <div className=\"flex items-center space-x-4\">
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-4">
               <Button
-                variant=\"ghost\"
-                size=\"sm\"
+                variant="ghost"
+                size="sm"
                 onClick={() => router.push('/student/dashboard')}
-                className=\"flex items-center space-x-2\"
+                className="flex items-center space-x-2"
               >
-                <ArrowLeft className=\"w-4 h-4\" />
+                <ArrowLeft className="w-4 h-4" />
                 <span>대시보드로</span>
               </Button>
-              <div className=\"text-2xl\">📈</div>
+              <div className="text-2xl">📈</div>
               <div>
-                <h1 className=\"text-lg font-bold text-gray-900\">투자 관리</h1>
-                <p className=\"text-xs text-gray-500\">{session.teacherName} 선생님 ({session.sessionCode})</p>
+                <h1 className="text-lg font-bold text-gray-900">투자 관리</h1>
+                <p className="text-xs text-gray-500">{session.teacherName} 선생님 ({session.sessionCode})</p>
               </div>
             </div>
             
-            <div className=\"flex items-center space-x-4\">
+            <div className="flex items-center space-x-4">
               <Button
-                variant=\"outline\"
-                size=\"sm\"
+                variant="outline"
+                size="sm"
                 onClick={handleRefresh}
                 disabled={refreshing}
-                className=\"flex items-center space-x-2\"
+                className="flex items-center space-x-2"
               >
                 <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
                 <span>새로고침</span>
               </Button>
-              <div className=\"text-right\">
-                <p className=\"text-sm font-medium text-gray-900\">{session.studentName}</p>
-                <p className=\"text-xs text-gray-500\">{session.studentCode}</p>
+              <div className="text-right">
+                <p className="text-sm font-medium text-gray-900">{session.studentName}</p>
+                <p className="text-xs text-gray-500">{session.studentCode}</p>
               </div>
             </div>
           </div>
@@ -181,31 +181,31 @@ export default function StudentInvestments() {
       </header>
 
       {/* Main Content */}
-      <main className=\"max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8\">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Portfolio Summary Cards */}
         {portfolioSummary && (
-          <div className=\"grid md:grid-cols-4 gap-6 mb-8\">
-            <Card className=\"bg-gradient-to-r from-blue-500 to-blue-600 text-white\">
-              <CardHeader className=\"flex flex-row items-center justify-between space-y-0 pb-2\">
-                <CardTitle className=\"text-sm font-medium text-blue-100\">투자 원금</CardTitle>
-                <DollarSign className=\"h-4 w-4 text-blue-100\" />
+          <div className="grid md:grid-cols-4 gap-6 mb-8">
+            <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-blue-100">투자 원금</CardTitle>
+                <DollarSign className="h-4 w-4 text-blue-100" />
               </CardHeader>
               <CardContent>
-                <div className=\"text-2xl font-bold\">{formatCurrency(portfolioSummary.total_invested)}</div>
-                <p className=\"text-xs text-blue-100\">
+                <div className="text-2xl font-bold">{formatCurrency(portfolioSummary.total_invested)}</div>
+                <p className="text-xs text-blue-100">
                   총 투자한 금액
                 </p>
               </CardContent>
             </Card>
 
-            <Card className=\"bg-gradient-to-r from-green-500 to-green-600 text-white\">
-              <CardHeader className=\"flex flex-row items-center justify-between space-y-0 pb-2\">
-                <CardTitle className=\"text-sm font-medium text-green-100\">현재 가치</CardTitle>
-                <TrendingUp className=\"h-4 w-4 text-green-100\" />
+            <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-green-100">현재 가치</CardTitle>
+                <TrendingUp className="h-4 w-4 text-green-100" />
               </CardHeader>
               <CardContent>
-                <div className=\"text-2xl font-bold\">{formatCurrency(portfolioSummary.current_value)}</div>
-                <p className=\"text-xs text-green-100\">
+                <div className="text-2xl font-bold">{formatCurrency(portfolioSummary.current_value)}</div>
+                <p className="text-xs text-green-100">
                   현재 포트폴리오 가치
                 </p>
               </CardContent>
@@ -216,20 +216,20 @@ export default function StudentInvestments() {
                 ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' 
                 : 'bg-gradient-to-r from-red-500 to-red-600'
             }`}>
-              <CardHeader className=\"flex flex-row items-center justify-between space-y-0 pb-2\">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className={`text-sm font-medium ${
                   portfolioSummary.profit_loss >= 0 ? 'text-emerald-100' : 'text-red-100'
                 }`}>
                   손익
                 </CardTitle>
                 {portfolioSummary.profit_loss >= 0 ? (
-                  <TrendingUp className=\"h-4 w-4 text-emerald-100\" />
+                  <TrendingUp className="h-4 w-4 text-emerald-100" />
                 ) : (
-                  <TrendingDown className=\"h-4 w-4 text-red-100\" />
+                  <TrendingDown className="h-4 w-4 text-red-100" />
                 )}
               </CardHeader>
               <CardContent>
-                <div className=\"text-2xl font-bold\">{formatCurrency(portfolioSummary.profit_loss)}</div>
+                <div className="text-2xl font-bold">{formatCurrency(portfolioSummary.profit_loss)}</div>
                 <p className={`text-xs ${
                   portfolioSummary.profit_loss >= 0 ? 'text-emerald-100' : 'text-red-100'
                 }`}>
@@ -238,14 +238,14 @@ export default function StudentInvestments() {
               </CardContent>
             </Card>
 
-            <Card className=\"bg-gradient-to-r from-purple-500 to-purple-600 text-white\">
-              <CardHeader className=\"flex flex-row items-center justify-between space-y-0 pb-2\">
-                <CardTitle className=\"text-sm font-medium text-purple-100\">투자 가능 금액</CardTitle>
-                <PieChart className=\"h-4 w-4 text-purple-100\" />
+            <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-purple-100">투자 가능 금액</CardTitle>
+                <PieChart className="h-4 w-4 text-purple-100" />
               </CardHeader>
               <CardContent>
-                <div className=\"text-2xl font-bold\">{formatCurrency(portfolioSummary.cash_balance)}</div>
-                <p className=\"text-xs text-purple-100\">
+                <div className="text-2xl font-bold">{formatCurrency(portfolioSummary.cash_balance)}</div>
+                <p className="text-xs text-purple-100">
                   투자계좌 현금 잔액
                 </p>
               </CardContent>
@@ -254,34 +254,34 @@ export default function StudentInvestments() {
         )}
 
         {/* Investment Tabs */}
-        <Tabs defaultValue=\"portfolio\" className=\"w-full\">
-          <TabsList className=\"grid w-full grid-cols-3\">
-            <TabsTrigger value=\"portfolio\" className=\"flex items-center space-x-2\">
-              <PieChart className=\"w-4 h-4\" />
+        <Tabs defaultValue="portfolio" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="portfolio" className="flex items-center space-x-2">
+              <PieChart className="w-4 h-4" />
               <span>포트폴리오</span>
             </TabsTrigger>
-            <TabsTrigger value=\"trading\" className=\"flex items-center space-x-2\">
-              <ShoppingCart className=\"w-4 h-4\" />
+            <TabsTrigger value="trading" className="flex items-center space-x-2">
+              <ShoppingCart className="w-4 h-4" />
               <span>매매하기</span>
             </TabsTrigger>
-            <TabsTrigger value=\"history\" className=\"flex items-center space-x-2\">
-              <History className=\"w-4 h-4\" />
+            <TabsTrigger value="history" className="flex items-center space-x-2">
+              <History className="w-4 h-4" />
               <span>거래내역</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value=\"portfolio\" className=\"mt-6\">
+          <TabsContent value="portfolio" className="mt-6">
             <InvestmentPortfolio onDataChange={fetchData} />
           </TabsContent>
 
-          <TabsContent value=\"trading\" className=\"mt-6\">
+          <TabsContent value="trading" className="mt-6">
             <InvestmentTrading 
               cashBalance={portfolioSummary?.cash_balance || 0}
               onTradeComplete={fetchData}
             />
           </TabsContent>
 
-          <TabsContent value=\"history\" className=\"mt-6\">
+          <TabsContent value="history" className="mt-6">
             <Card>
               <CardHeader>
                 <CardTitle>거래 내역</CardTitle>
@@ -290,9 +290,9 @@ export default function StudentInvestments() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className=\"text-center py-8\">
-                  <History className=\"w-12 h-12 text-gray-300 mx-auto mb-4\" />
-                  <p className=\"text-gray-500\">거래 내역 컴포넌트를 구현 중입니다</p>
+                <div className="text-center py-8">
+                  <History className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500">거래 내역 컴포넌트를 구현 중입니다</p>
                 </div>
               </CardContent>
             </Card>
