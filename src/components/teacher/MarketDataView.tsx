@@ -144,8 +144,8 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
   const groupedAssets = {
     stock: assets.filter(a => a.asset_type === 'stock'),
     crypto: assets.filter(a => a.asset_type === 'crypto'),
-    commodity: assets.filter(a => a.asset_type === 'commodity'),
-    currency: assets.filter(a => a.asset_type === 'currency')
+    commodity: assets.filter(a => a.asset_type === 'commodity' && a.category !== '환율'),
+    currency: assets.filter(a => a.category === '환율')
   }
 
   if (loading && assets.length === 0) {
@@ -365,7 +365,10 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
                       </div>
                     </div>
                     <div className="text-xs text-gray-500">
-                      1 USD = {Math.round(asset.current_price)} KRW
+                      {asset.symbol === 'USDKRW=X' && `1 USD = ${Math.round(asset.current_price)} KRW`}
+                      {asset.symbol === 'EURUKR=X' && `1 EUR = ${Math.round(asset.current_price)} KRW`}
+                      {asset.symbol === 'JPYKRW=X' && `100 JPY = ${Math.round(asset.current_price)} KRW`}
+                      {asset.symbol === 'CNYUKR=X' && `1 CNY = ${Math.round(asset.current_price)} KRW`}
                     </div>
                   </div>
                 </CardContent>
