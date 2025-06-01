@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -44,10 +44,21 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
 
   useEffect(() => {
     fetchMarketData()
-    // 5분마다 자동 업데이트
-    const interval = setInterval(fetchMarketData, 5 * 60 * 1000)
-    return () => clearInterval(interval)
-  }, [])
+    
+    // 30분마다 자동으로 실시간 가격 업데이트
+    const autoUpdateInterval = setInterval(async () => {
+      console.log('Auto-updating market prices...')
+      await updatePrices()
+    }, 30 * 60 * 1000) // 30분
+
+    // 5분마다 데이터 새로고침 (DB에서 최신 데이터 조회)
+    const refreshInterval = setInterval(fetchMarketData, 5 * 60 * 1000)
+    
+    return () => {
+      clearInterval(autoUpdateInterval)
+      clearInterval(refreshInterval)
+    }
+  }, [updatePrices])
 
   const fetchMarketData = async () => {
     try {
@@ -72,7 +83,7 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
     }
   }
 
-  const updatePrices = async () => {
+  const updatePrices = useCallback(async () => {
     try {
       setUpdating(true)
       setError('')
@@ -95,7 +106,7 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
     } finally {
       setUpdating(false)
     }
-  }
+  }, [fetchMarketData])
 
   const formatPrice = (price: number) => {
     // 모든 가격을 한국 원화로 표시 (일의 자리까지 반올림)
@@ -158,7 +169,19 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">실시간 시장 데이터</h2>
-          <p className="text-gray-600">학생들이 투자할 수 있는 자산의 현재 가격입니다 (모든 가격은 한국 원화로 표시)</p>
+          <p className="text-gray-600">
+            학생들이 투자할 수 있는 자산의 현재 가격입니다 (모든 가격은 한국 원화로 표시)
+          </p>
+          <div className="flex items-center mt-2 space-x-4 text-sm text-gray-500">
+            <span className="flex items-center">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+              자동 업데이트: 30분마다
+            </span>
+            <span className="flex items-center">
+              <div className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></div>
+              데이터 새로고침: 5분마다
+            </span>
+          </div>
         </div>
         <div className="flex items-center space-x-4">
           {lastUpdate && (
