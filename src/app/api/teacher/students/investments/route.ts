@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase/client'
 import { cookies } from 'next/headers'
 
 // 교사용 학생 투자 현황 조회 API
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('Investment monitoring API called')
     
@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
           .limit(10)
 
         // 계좌별 잔액 정리
-        const accounts = student.accounts.reduce((acc: any, account: any) => {
+        const accounts = student.accounts.reduce((acc: Record<string, number>, account: Record<string, unknown>) => {
           acc[account.account_type] = account.balance
           return acc
         }, {})

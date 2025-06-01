@@ -106,7 +106,7 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
     } finally {
       setUpdating(false)
     }
-  }, [fetchMarketData])
+  }, [fetchMarketData]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const formatPrice = (price: number) => {
     // 모든 가격을 한국 원화로 표시 (일의 자리까지 반올림)

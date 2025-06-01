@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase/client'
 // 투자 모니터링 디버깅용 API
 export async function GET() {
   try {
-    const results: any = {}
+    const results: Record<string, unknown> = {}
 
     // 1. 모든 테이블 존재 확인
     const { data: tables } = await supabase

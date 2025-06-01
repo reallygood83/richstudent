@@ -7,7 +7,7 @@ export async function POST() {
     console.log('Starting portfolio data recovery...')
 
     // 1. 거래 내역은 있지만 포트폴리오에 누락된 데이터 찾기
-    const { data: missingPortfolios, error: queryError } = await supabase
+    const { error: queryError } = await supabase
       .rpc('get_missing_portfolios', {})
       .select()
 

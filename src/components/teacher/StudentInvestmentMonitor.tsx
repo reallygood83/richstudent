@@ -7,12 +7,10 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
   TrendingUp, 
-  TrendingDown, 
   Users, 
   DollarSign,
   PieChart,
   RefreshCw,
-  Eye,
   ChevronDown,
   ChevronRight
 } from 'lucide-react'
@@ -54,7 +52,7 @@ interface StudentInvestmentData {
     total_profit_loss_percent: number
     holdings_count: number
   }
-  recent_transactions: any[]
+  recent_transactions: Array<Record<string, unknown>>
   total_assets: number
 }
 
@@ -191,7 +189,7 @@ export default function StudentInvestmentMonitor() {
           <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">학생이 없습니다</h3>
           <p className="text-gray-500 mb-4">
-            먼저 "학생 관리" 탭에서 학생을 등록해주세요.
+            먼저 &quot;학생 관리&quot; 탭에서 학생을 등록해주세요.
           </p>
           <Button onClick={fetchInvestmentData} variant="outline">
             새로고침
