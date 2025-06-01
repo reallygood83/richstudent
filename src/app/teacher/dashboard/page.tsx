@@ -12,6 +12,7 @@ import CreateStudentModal from '@/components/teacher/CreateStudentModal'
 import TransactionManager from '@/components/teacher/TransactionManager'
 import MarketDataView from '@/components/teacher/MarketDataView'
 import EconomicEntitiesManager from '@/components/teacher/EconomicEntitiesManager'
+import StudentInvestmentMonitor from '@/components/teacher/StudentInvestmentMonitor'
 import { Student } from '@/types'
 
 export default function TeacherDashboard() {
@@ -234,54 +235,7 @@ export default function TeacherDashboard() {
           </TabsContent>
 
           <TabsContent value="investments" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <TrendingUp className="w-5 h-5" />
-                  <span>학생 투자 현황</span>
-                </CardTitle>
-                <CardDescription>
-                  학생들의 투자 포트폴리오와 거래 현황을 모니터링할 수 있습니다
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <TrendingUp className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Phase 6: 투자 시스템 구현 완료</h3>
-                  <p className="text-gray-500 mb-4">
-                    학생들은 이제 다양한 자산에 투자할 수 있습니다:
-                  </p>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
-                    <div className="text-center">
-                      <div className="bg-blue-100 text-blue-800 rounded-lg p-3 mb-2">📈</div>
-                      <p className="text-sm font-medium">주식 투자</p>
-                    </div>
-                    <div className="text-center">
-                      <div className="bg-purple-100 text-purple-800 rounded-lg p-3 mb-2">₿</div>
-                      <p className="text-sm font-medium">암호화폐</p>
-                    </div>
-                    <div className="text-center">
-                      <div className="bg-yellow-100 text-yellow-800 rounded-lg p-3 mb-2">🥇</div>
-                      <p className="text-sm font-medium">상품</p>
-                    </div>
-                    <div className="text-center">
-                      <div className="bg-green-100 text-green-800 rounded-lg p-3 mb-2">🏠</div>
-                      <p className="text-sm font-medium">부동산</p>
-                    </div>
-                  </div>
-                  <div className="mt-6">
-                    <p className="text-sm text-gray-600 mb-4">
-                      학생들은 투자계좌에서 자산을 매수/매도할 수 있으며, 실시간 포트폴리오 관리가 가능합니다.
-                    </p>
-                    <div className="text-xs text-gray-500 space-y-1">
-                      <p>• 수수료: 매수 0.1%, 매도 0.3% (중개수수료 0.1% + 거래세 0.2%)</p>
-                      <p>• 실시간 손익 계산 및 포트폴리오 비중 분석</p>
-                      <p>• 자산별 최소 거래 단위 지원</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <StudentInvestmentMonitor />
           </TabsContent>
 
           <TabsContent value="market" className="mt-6">
