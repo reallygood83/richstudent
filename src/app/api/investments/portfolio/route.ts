@@ -52,7 +52,7 @@ export async function GET() {
     }
 
     const studentData = { 
-      student_id: sessionData.students.id, 
+      student_id: sessionData.student_id, 
       teacher_id: sessionData.students.teacher_id 
     }
 
