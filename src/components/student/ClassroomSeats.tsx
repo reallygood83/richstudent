@@ -59,6 +59,7 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
 
   const fetchSeats = useCallback(async () => {
     try {
+      console.log('Fetching seats from API...');
       const response = await fetch('/api/real-estate/seats');
       console.log('Seats API response status:', response.status);
       
@@ -66,26 +67,42 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
         const data = await response.json();
         console.log('Seats API response data:', data);
         
-        if (data.seats && data.seats.length > 0) {
-          setSeats(data.seats);
-          console.log('Seats loaded:', data.seats.length);
-          // 첫 번째 빈 좌석의 가격을 현재 가격으로 설정
-          const emptySeat = data.seats.find((seat: Seat) => !seat.owner_id);
-          if (emptySeat) {
-            setCurrentPrice(emptySeat.current_price);
+        if (data.seats && Array.isArray(data.seats)) {
+          if (data.seats.length > 0) {
+            setSeats(data.seats);
+            console.log('Seats loaded:', data.seats.length);
+            setIsLocalMode(false);
+            
+            // 첫 번째 빈 좌석의 가격을 현재 가격으로 설정
+            const emptySeat = data.seats.find((seat: Seat) => !seat.owner_id);
+            if (emptySeat && emptySeat.current_price > 0) {
+              setCurrentPrice(emptySeat.current_price);
+            } else {
+              // 모든 좌석이 소유되었거나 가격이 0인 경우
+              const firstSeat = data.seats[0];
+              setCurrentPrice(firstSeat?.current_price || 100000);
+            }
+            return;
+          } else {
+            // 빈 배열이 반환된 경우 - 좌석이 아직 생성되지 않음
+            console.log('Empty seats array, switching to local mode');
           }
-          return;
         }
+      } else {
+        // HTTP 에러 응답
+        const errorData = await response.json().catch(() => ({}));
+        console.error('API Error Response:', response.status, errorData);
       }
       
       // API 실패 또는 데이터 없음 - 로컬에서 30개 좌석 생성
-      console.log('API failed or no data, creating local seats');
+      console.log('Switching to local mode due to API issues');
       setIsLocalMode(true);
       createLocalSeats();
       
     } catch (error) {
       console.error('Error fetching seats:', error);
-      // 오류 발생 시에도 로컬 좌석 생성
+      // 네트워크 오류 등 발생 시 로컬 좌석 생성
+      console.log('Network error, switching to local mode');
       setIsLocalMode(true);
       createLocalSeats();
     } finally {
