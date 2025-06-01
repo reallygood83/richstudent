@@ -18,7 +18,7 @@ interface YahooFinanceResponse {
         }>
       }
     }>
-    error?: any
+    error?: unknown
   }
 }
 
@@ -66,9 +66,7 @@ async function fetchRealTimePrice(symbol: string): Promise<number | null> {
 // USD/KRW 환율 조회
 async function fetchExchangeRate(): Promise<number> {
   try {
-    const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD', {
-      timeout: 5000
-    } as any)
+    const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD')
     
     if (!response.ok) {
       return 1300 // 기본 환율
