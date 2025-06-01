@@ -173,8 +173,41 @@ export async function POST(request: NextRequest) {
       }, { status: 500 })
     }
 
-    // 3. 매도 수수료 기록
+    // 3. 매도 수수료를 해당 경제 주체로 이전
     if (totalFee > 0) {
+      // 증권회사와 정부 경제 주체 조회
+      const { data: entities } = await supabase
+        .from('economic_entities')
+        .select('id, entity_type, balance')
+        .eq('teacher_id', sessionData.teacher_id)
+        .in('entity_type', ['securities', 'government'])
+
+      const securities = entities?.find(e => e.entity_type === 'securities')
+      const government = entities?.find(e => e.entity_type === 'government')
+
+      // 중개수수료를 증권회사로
+      if (securities && brokerageFee > 0) {
+        await supabase
+          .from('economic_entities')
+          .update({ 
+            balance: securities.balance + brokerageFee,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', securities.id)
+      }
+
+      // 거래세를 정부로
+      if (government && taxFee > 0) {
+        await supabase
+          .from('economic_entities')
+          .update({ 
+            balance: government.balance + taxFee,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', government.id)
+      }
+
+      // 수수료 거래 기록
       await supabase
         .from('transactions')
         .insert([

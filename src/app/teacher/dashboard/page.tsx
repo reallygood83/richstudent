@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAuth } from '@/hooks/useAuth'
-import { Users, TrendingUp, DollarSign, Settings, LogOut, ArrowRightLeft } from 'lucide-react'
+import { Users, TrendingUp, DollarSign, Settings, LogOut, ArrowRightLeft, Building2 } from 'lucide-react'
 import StudentList from '@/components/teacher/StudentList'
 import CreateStudentModal from '@/components/teacher/CreateStudentModal'
 import TransactionManager from '@/components/teacher/TransactionManager'
 import MarketDataView from '@/components/teacher/MarketDataView'
+import EconomicEntitiesManager from '@/components/teacher/EconomicEntitiesManager'
 import { Student } from '@/types'
 
 export default function TeacherDashboard() {
@@ -195,7 +196,7 @@ export default function TeacherDashboard() {
 
         {/* Main Tabs */}
         <Tabs defaultValue="students" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="students" className="flex items-center space-x-2">
               <Users className="w-4 h-4" />
               <span>학생 관리</span>
@@ -203,6 +204,10 @@ export default function TeacherDashboard() {
             <TabsTrigger value="transactions" className="flex items-center space-x-2">
               <ArrowRightLeft className="w-4 h-4" />
               <span>거래 관리</span>
+            </TabsTrigger>
+            <TabsTrigger value="economic-entities" className="flex items-center space-x-2">
+              <Building2 className="w-4 h-4" />
+              <span>경제 주체</span>
             </TabsTrigger>
             <TabsTrigger value="investments" className="flex items-center space-x-2">
               <TrendingUp className="w-4 h-4" />
@@ -222,6 +227,10 @@ export default function TeacherDashboard() {
 
           <TabsContent value="transactions" className="mt-6">
             <TransactionManager students={students} onRefreshStudents={fetchStudents} />
+          </TabsContent>
+
+          <TabsContent value="economic-entities" className="mt-6">
+            <EconomicEntitiesManager onDataChange={fetchStudents} />
           </TabsContent>
 
           <TabsContent value="investments" className="mt-6">

@@ -155,13 +155,33 @@ export async function POST(request: NextRequest) {
       }, { status: 500 })
     }
 
-    // 3. 수수료 기록 (일반 거래 기록으로)
+    // 3. 수수료를 증권회사 계좌로 이전
     if (fee > 0) {
+      // 증권회사 경제 주체 조회
+      const { data: securities } = await supabase
+        .from('economic_entities')
+        .select('id, balance')
+        .eq('teacher_id', sessionData.teacher_id)
+        .eq('entity_type', 'securities')
+        .single()
+
+      if (securities) {
+        // 증권회사 잔액 증가
+        await supabase
+          .from('economic_entities')
+          .update({ 
+            balance: securities.balance + fee,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', securities.id)
+      }
+
+      // 수수료 거래 기록
       await supabase
         .from('transactions')
         .insert({
           from_student_id: sessionData.student_id,
-          to_student_id: null, // 수수료는 시스템으로
+          to_student_id: null, // 증권회사로
           amount: fee,
           transaction_type: 'investment_fee',
           description: `${asset.symbol} 매수 수수료`,
