@@ -224,12 +224,16 @@ export async function POST(request: NextRequest) {
     }
 
     // 4. 포트폴리오 업데이트 또는 생성
-    const { data: existingPortfolio } = await supabase
+    console.log('Updating portfolio for student:', studentData.student_id, 'asset:', asset_id)
+    
+    const { data: existingPortfolio, error: portfolioFetchError } = await supabase
       .from('portfolio')
       .select('id, quantity, average_price, total_invested')
       .eq('student_id', studentData.student_id)
       .eq('asset_id', asset_id)
       .single()
+
+    console.log('Existing portfolio:', existingPortfolio, 'Error:', portfolioFetchError)
 
     if (existingPortfolio) {
       // 기존 포트폴리오 업데이트 (평균 단가 계산)
@@ -237,7 +241,13 @@ export async function POST(request: NextRequest) {
       const newTotalInvested = existingPortfolio.total_invested + totalAmount
       const newAveragePrice = newTotalInvested / newQuantity
 
-      await supabase
+      console.log('Updating existing portfolio:', {
+        newQuantity,
+        newTotalInvested,
+        newAveragePrice
+      })
+
+      const { error: portfolioUpdateError } = await supabase
         .from('portfolio')
         .update({
           quantity: newQuantity,
@@ -249,20 +259,40 @@ export async function POST(request: NextRequest) {
           updated_at: new Date().toISOString()
         })
         .eq('id', existingPortfolio.id)
+
+      if (portfolioUpdateError) {
+        console.error('Portfolio update error:', portfolioUpdateError)
+        // 포트폴리오 업데이트 실패해도 거래는 성공으로 처리 (수동 수정 가능)
+      } else {
+        console.log('Portfolio updated successfully')
+      }
     } else {
       // 새 포트폴리오 생성
-      await supabase
+      console.log('Creating new portfolio entry')
+      
+      const portfolioData = {
+        student_id: studentData.student_id,
+        asset_id: asset_id,
+        quantity: Number(quantity),
+        average_price: Number(price),
+        total_invested: totalAmount,
+        current_value: Number(quantity) * Number(price),
+        profit_loss: 0,
+        profit_loss_percent: 0
+      }
+
+      console.log('Portfolio data to insert:', portfolioData)
+
+      const { error: portfolioInsertError } = await supabase
         .from('portfolio')
-        .insert({
-          student_id: studentData.student_id,
-          asset_id: asset_id,
-          quantity: Number(quantity),
-          average_price: Number(price),
-          total_invested: totalAmount,
-          current_value: Number(quantity) * Number(price),
-          profit_loss: 0,
-          profit_loss_percent: 0
-        })
+        .insert(portfolioData)
+
+      if (portfolioInsertError) {
+        console.error('Portfolio insert error:', portfolioInsertError)
+        // 포트폴리오 생성 실패해도 거래는 성공으로 처리 (수동 수정 가능)
+      } else {
+        console.log('New portfolio created successfully')
+      }
     }
 
     return NextResponse.json({
