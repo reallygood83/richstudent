@@ -14,7 +14,8 @@ import {
   ArrowRightLeft,
   History,
   LogOut,
-  User
+  User,
+  Building2
 } from 'lucide-react'
 import { Student, Transaction } from '@/types'
 import TransferForm from '@/components/student/TransferForm'
@@ -257,27 +258,52 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
 
-        {/* Investment Section */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <TrendingUp className="w-5 h-5" />
-              <span>투자 관리</span>
-            </CardTitle>
-            <CardDescription>
-              주식, 암호화폐 등 다양한 자산에 투자해보세요
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button
-              onClick={() => router.push('/student/investments')}
-              className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
-            >
-              <TrendingUp className="w-4 h-4 mr-2" />
-              투자 포트폴리오 관리
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Services Section */}
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          {/* Investment Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <TrendingUp className="w-5 h-5" />
+                <span>투자 관리</span>
+              </CardTitle>
+              <CardDescription>
+                주식, 암호화폐 등 다양한 자산에 투자해보세요
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                onClick={() => router.push('/student/investments')}
+                className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
+              >
+                <TrendingUp className="w-4 h-4 mr-2" />
+                투자 포트폴리오 관리
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Loan Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Building2 className="w-5 h-5" />
+                <span>대출 관리</span>
+              </CardTitle>
+              <CardDescription>
+                신용점수에 따른 맞춤형 대출 서비스
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                onClick={() => router.push('/student/loans')}
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+              >
+                <Building2 className="w-4 h-4 mr-2" />
+                대출 신청 및 관리
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Tabs for Activities */}
         <Tabs defaultValue="transactions" className="w-full">
