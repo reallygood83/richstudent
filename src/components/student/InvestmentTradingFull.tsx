@@ -53,6 +53,10 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
+  // 선택된 자산 상태
+  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null)
+  const [selectedHolding, setSelectedHolding] = useState<PortfolioHolding | null>(null)
+
   // 매수 폼 상태
   const [buyForm, setBuyForm] = useState({
     asset_id: '',
@@ -249,6 +253,24 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
     return portfolio.find(holding => holding.market_assets.id === assetId)
   }
 
+  const handleAssetSelect = (asset: Asset) => {
+    setSelectedAsset(asset)
+    setBuyForm(prev => ({
+      ...prev,
+      asset_id: asset.id,
+      price: Math.round(asset.current_price).toString()
+    }))
+  }
+
+  const handleHoldingSelect = (holding: PortfolioHolding) => {
+    setSelectedHolding(holding)
+    setSellForm(prev => ({
+      ...prev,
+      asset_id: holding.market_assets.id,
+      price: Math.round(holding.market_assets.current_price).toString()
+    }))
+  }
+
   if (loading) {
     return (
       <div className="text-center py-8">
@@ -326,40 +348,54 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
             </CardHeader>
             <CardContent>
               <form onSubmit={handleBuy} className="space-y-6">
-                {/* 자산 선택 */}
-                <div className="space-y-2">
-                  <Label htmlFor="buy-asset">투자 자산</Label>
-                  <select
-                    id="buy-asset"
-                    value={buyForm.asset_id}
-                    onChange={(e) => {
-                      const selectedAsset = getSelectedAsset(e.target.value)
-                      setBuyForm(prev => ({
-                        ...prev,
-                        asset_id: e.target.value,
-                        price: selectedAsset ? Math.round(selectedAsset.current_price).toString() : ''
-                      }))
-                    }}
-                    className="w-full p-2 border rounded-md"
-                    required
-                  >
-                    <option value="">자산을 선택하세요</option>
+                {/* 자산 선택 카드 */}
+                <div className="space-y-4">
+                  <Label>투자 자산 선택</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto border rounded-lg p-3">
                     {assets.map((asset) => (
-                      <option key={asset.id} value={asset.id}>
-                        {asset.symbol} - {asset.name} ({formatCurrency(Math.round(asset.current_price))})
-                      </option>
-                    ))}
-                  </select>
-                  {buyForm.asset_id && (
-                    <div className="mt-2">
-                      {(() => {
-                        const asset = getSelectedAsset(buyForm.asset_id)
-                        return asset ? (
-                          <Badge className={getCategoryColor(asset.category)} variant="secondary">
+                      <div
+                        key={asset.id}
+                        onClick={() => handleAssetSelect(asset)}
+                        className={`p-3 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
+                          selectedAsset?.id === asset.id
+                            ? 'border-blue-500 bg-blue-50 shadow-md'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex-1">
+                            <h3 className="font-bold text-sm">{asset.symbol}</h3>
+                            <p className="text-xs text-gray-600 truncate">{asset.name}</p>
+                          </div>
+                          <Badge className={`${getCategoryColor(asset.category)} text-xs`} variant="secondary">
                             {asset.category}
                           </Badge>
-                        ) : null
-                      })()}
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-sm">
+                            {formatCurrency(Math.round(asset.current_price))}
+                          </p>
+                          <p className="text-xs text-gray-500">{asset.currency}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {selectedAsset && (
+                    <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-bold text-blue-900">{selectedAsset.symbol}</h4>
+                          <p className="text-sm text-blue-700">{selectedAsset.name}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-blue-900">
+                            {formatCurrency(Math.round(selectedAsset.current_price))}
+                          </p>
+                          <Badge className={getCategoryColor(selectedAsset.category)} variant="secondary">
+                            {selectedAsset.category}
+                          </Badge>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -378,14 +414,11 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
                       placeholder="구매할 수량"
                       required
                     />
-                    {buyForm.asset_id && (() => {
-                      const asset = getSelectedAsset(buyForm.asset_id)
-                      return asset?.min_quantity ? (
-                        <p className="text-xs text-gray-500">
-                          최소 주문 수량: {asset.min_quantity}
-                        </p>
-                      ) : null
-                    })()}
+                    {selectedAsset?.min_quantity && (
+                      <p className="text-xs text-gray-500">
+                        최소 주문 수량: {selectedAsset.min_quantity}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -441,7 +474,7 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
                 <Button 
                   type="submit" 
                   className="w-full" 
-                  disabled={trading || !buyForm.asset_id || !buyForm.quantity || !buyForm.price}
+                  disabled={trading || !selectedAsset || !buyForm.quantity || !buyForm.price}
                 >
                   {trading ? '매수 중...' : '매수 주문'}
                 </Button>
@@ -467,30 +500,70 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
                 </div>
               ) : (
                 <form onSubmit={handleSell} className="space-y-6">
-                  {/* 보유 자산 선택 */}
-                  <div className="space-y-2">
-                    <Label htmlFor="sell-asset">보유 자산</Label>
-                    <select
-                      id="sell-asset"
-                      value={sellForm.asset_id}
-                      onChange={(e) => {
-                        const holding = getHolding(e.target.value)
-                        setSellForm(prev => ({
-                          ...prev,
-                          asset_id: e.target.value,
-                          price: holding ? Math.round(holding.market_assets.current_price).toString() : ''
-                        }))
-                      }}
-                      className="w-full p-2 border rounded-md"
-                      required
-                    >
-                      <option value="">매도할 자산을 선택하세요</option>
+                  {/* 보유 자산 선택 카드 */}
+                  <div className="space-y-4">
+                    <Label>보유 자산 선택</Label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-64 overflow-y-auto border rounded-lg p-3">
                       {portfolio.map((holding) => (
-                        <option key={holding.id} value={holding.market_assets.id}>
-                          {holding.market_assets.symbol} - {formatQuantity(holding.quantity)}주 보유
-                        </option>
+                        <div
+                          key={holding.id}
+                          onClick={() => handleHoldingSelect(holding)}
+                          className={`p-3 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
+                            selectedHolding?.id === holding.id
+                              ? 'border-green-500 bg-green-50 shadow-md'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="flex-1">
+                              <h3 className="font-bold text-sm">{holding.market_assets.symbol}</h3>
+                              <p className="text-xs text-gray-600 truncate">{holding.market_assets.name}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs text-gray-500">보유량</p>
+                              <p className="font-bold text-sm">{formatQuantity(holding.quantity)}</p>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-end">
+                            <div>
+                              <p className="text-xs text-gray-500">현재가</p>
+                              <p className="font-bold text-sm">
+                                {formatCurrency(Math.round(holding.market_assets.current_price))}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs text-gray-500">손익</p>
+                              <p className={`font-bold text-sm ${
+                                holding.profit_loss >= 0 ? 'text-green-600' : 'text-red-600'
+                              }`}>
+                                {holding.profit_loss >= 0 ? '+' : ''}{formatCurrency(holding.profit_loss)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                       ))}
-                    </select>
+                    </div>
+                    {selectedHolding && (
+                      <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="font-bold text-green-900">{selectedHolding.market_assets.symbol}</h4>
+                            <p className="text-sm text-green-700">{selectedHolding.market_assets.name}</p>
+                            <p className="text-sm text-green-600">보유량: {formatQuantity(selectedHolding.quantity)}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold text-green-900">
+                              {formatCurrency(Math.round(selectedHolding.market_assets.current_price))}
+                            </p>
+                            <p className={`text-sm font-medium ${
+                              selectedHolding.profit_loss >= 0 ? 'text-green-600' : 'text-red-600'
+                            }`}>
+                              {selectedHolding.profit_loss >= 0 ? '+' : ''}{formatCurrency(selectedHolding.profit_loss)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* 수량과 가격 */}
@@ -502,7 +575,7 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
                         type="number"
                         step="0.0001"
                         min="0"
-                        max={sellForm.asset_id ? getHolding(sellForm.asset_id)?.quantity || 0 : 0}
+                        max={selectedHolding?.quantity || 0}
                         value={sellForm.quantity}
                         onChange={(e) => setSellForm(prev => ({ ...prev, quantity: e.target.value }))}
                         placeholder="매도할 수량"
@@ -562,7 +635,7 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
                     type="submit" 
                     className="w-full" 
                     variant="destructive"
-                    disabled={trading || !sellForm.asset_id || !sellForm.quantity || !sellForm.price}
+                    disabled={trading || !selectedHolding || !sellForm.quantity || !sellForm.price}
                   >
                     {trading ? '매도 중...' : '매도 주문'}
                   </Button>
