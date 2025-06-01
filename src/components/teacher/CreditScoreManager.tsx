@@ -53,24 +53,55 @@ export default function CreditScoreManager({ student, onScoreUpdate }: CreditSco
     return 'bg-red-500 hover:bg-red-600 text-white'
   }
 
-  // 성공 애니메이션 (가점)
+  // 성공 애니메이션 (가점) - 더 화려하게!
   const triggerSuccessAnimation = () => {
+    // 첫 번째 confetti
     confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#10B981', '#34D399', '#6EE7B7', '#A7F3D0']
+      particleCount: 150,
+      spread: 100,
+      origin: { y: 0.4 },
+      colors: ['#10B981', '#34D399', '#6EE7B7', '#A7F3D0', '#FBBF24', '#F59E0B']
     })
+    
+    // 연속 confetti 효과
+    setTimeout(() => {
+      confetti({
+        particleCount: 100,
+        spread: 80,
+        origin: { y: 0.7, x: 0.3 },
+        colors: ['#EF4444', '#F87171', '#FCA5A5', '#FECACA']
+      })
+    }, 300)
+    
+    setTimeout(() => {
+      confetti({
+        particleCount: 100,
+        spread: 80,
+        origin: { y: 0.7, x: 0.7 },
+        colors: ['#8B5CF6', '#A78BFA', '#C4B5FD', '#DDD6FE']
+      })
+    }, 600)
   }
 
-  // 실패 애니메이션 (감점)
+  // 실패 애니메이션 (감점) - 더 강력하게!
   const triggerWarningAnimation = () => {
     // 화면 흔들기 효과
     const element = document.body
-    element.style.animation = 'shake 0.5s ease-in-out'
+    element.style.animation = 'shake 0.8s ease-in-out'
+    
+    // 빨간 파티클 효과 (실망 표현)
+    confetti({
+      particleCount: 80,
+      spread: 100,
+      origin: { y: 0.6 },
+      colors: ['#DC2626', '#EF4444', '#F87171', '#374151'],
+      gravity: 1.5,
+      scalar: 0.8
+    })
+    
     setTimeout(() => {
       element.style.animation = ''
-    }, 500)
+    }, 800)
   }
 
   // 신용점수 조정 처리
@@ -99,11 +130,19 @@ export default function CreditScoreManager({ student, onScoreUpdate }: CreditSco
       const data = await response.json()
 
       if (data.success) {
-        // 애니메이션 효과
+        // 애니메이션 효과와 메시지
         if (adjustment > 0) {
           triggerSuccessAnimation()
+          // 축하 메시지
+          setTimeout(() => {
+            alert(`🎉 축하합니다! ${student.name} 학생의 신용점수가 ${adjustment}점 올랐습니다!\n\n이전: ${data.data.previous_score}점 → 현재: ${data.data.new_score}점\n\n계속해서 좋은 모습 보여주세요! ✨`)
+          }, 1000)
         } else {
           triggerWarningAnimation()
+          // 아쉬운 메시지
+          setTimeout(() => {
+            alert(`😔 아쉽게도 ${student.name} 학생의 신용점수가 ${adjustment}점 차감되었습니다.\n\n이전: ${data.data.previous_score}점 → 현재: ${data.data.new_score}점\n\n다음엔 더 좋은 모습 기대할게요! 💪`)
+          }, 1000)
         }
 
         // 상태 초기화
@@ -113,9 +152,6 @@ export default function CreditScoreManager({ student, onScoreUpdate }: CreditSco
         
         // 부모 컴포넌트에 업데이트 알림
         onScoreUpdate()
-
-        // 성공 메시지
-        alert(data.message)
       } else {
         alert(data.error || '신용점수 조정에 실패했습니다.')
       }
@@ -147,47 +183,58 @@ export default function CreditScoreManager({ student, onScoreUpdate }: CreditSco
           <Button
             variant="outline"
             size="sm"
-            className="flex items-center gap-1 hover:scale-105 transition-transform"
+            className={`
+              flex items-center gap-2 hover:scale-105 transition-all duration-200
+              ${currentGrade.color} border-2 font-semibold text-white
+              hover:shadow-lg hover:brightness-110
+            `}
           >
             <Star className="w-4 h-4" />
-            <span className="font-bold">{student.credit_score}</span>
+            <div className="flex flex-col items-start">
+              <span className="text-xs opacity-90">신용점수</span>
+              <span className="font-bold text-sm">{student.credit_score}</span>
+            </div>
+            <Badge variant="secondary" className="bg-white/20 text-white text-xs">
+              {currentGrade.grade}
+            </Badge>
           </Button>
         </DialogTrigger>
         
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-sm max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-lg">
               <Target className="w-5 h-5 text-blue-500" />
               신용점수 관리
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-sm">
               {student.name} 학생의 신용점수를 조정합니다
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* 현재 신용점수 */}
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <div className="text-sm text-gray-500 mb-1">현재 신용점수</div>
-              <div className="flex items-center justify-center gap-3">
-                <span className="text-3xl font-bold">{student.credit_score}</span>
-                <Badge className={`${currentGrade.color} text-white`}>
-                  {currentGrade.grade} ({currentGrade.text})
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+              <div className="text-xs text-gray-500 mb-1">현재 신용점수</div>
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-2xl font-bold">{student.credit_score}</span>
+                <Badge className={`${currentGrade.color} text-white text-xs`}>
+                  {currentGrade.grade}
                 </Badge>
               </div>
-              <div className="text-xs text-gray-400 mt-1">범위: 350 - 850</div>
+              <div className="text-xs text-gray-400 mt-1">{currentGrade.text}</div>
             </div>
 
             {/* 조정값 선택 */}
             <div>
-              <Label className="text-sm font-medium">조정값 선택</Label>
-              <div className="grid grid-cols-4 gap-2 mt-2">
+              <Label className="text-xs font-medium">조정값 선택</Label>
+              <div className="grid grid-cols-4 gap-1 mt-1">
                 {adjustmentButtons.map((value) => (
                   <Button
                     key={value}
                     variant={adjustment === value ? "default" : "outline"}
                     size="sm"
                     className={`
+                      h-8 text-xs
                       ${adjustment === value ? getAdjustmentColor(value) : ''}
                       hover:scale-105 transition-all duration-200
                     `}
@@ -195,9 +242,9 @@ export default function CreditScoreManager({ student, onScoreUpdate }: CreditSco
                   >
                     <span className="flex items-center gap-1">
                       {value > 0 ? (
-                        <Plus className="w-3 h-3" />
+                        <Plus className="w-2 h-2" />
                       ) : (
-                        <Minus className="w-3 h-3" />
+                        <Minus className="w-2 h-2" />
                       )}
                       {Math.abs(value)}
                     </span>
@@ -208,12 +255,12 @@ export default function CreditScoreManager({ student, onScoreUpdate }: CreditSco
 
             {/* 예상 결과 */}
             {adjustment && (
-              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center gap-2 text-sm">
+              <div className="p-2 bg-blue-50 rounded border border-blue-200">
+                <div className="flex items-center gap-2 text-xs">
                   {adjustment > 0 ? (
-                    <TrendingUp className="w-4 h-4 text-green-500" />
+                    <TrendingUp className="w-3 h-3 text-green-500" />
                   ) : (
-                    <TrendingDown className="w-4 h-4 text-red-500" />
+                    <TrendingDown className="w-3 h-3 text-red-500" />
                   )}
                   <span>
                     조정 후: <strong>{Math.max(350, Math.min(850, student.credit_score + adjustment))}점</strong>
@@ -227,16 +274,16 @@ export default function CreditScoreManager({ student, onScoreUpdate }: CreditSco
 
             {/* 사유 입력 */}
             <div>
-              <Label htmlFor="reason" className="text-sm font-medium">
+              <Label htmlFor="reason" className="text-xs font-medium">
                 조정 사유 <span className="text-red-500">*</span>
               </Label>
               <Textarea
                 id="reason"
-                placeholder="신용점수 조정 사유를 입력하세요 (예: 과제 성실 제출, 수업 참여도 우수, 약속 불이행 등)"
+                placeholder="조정 사유를 입력하세요"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="mt-1"
-                rows={3}
+                className="mt-1 text-sm"
+                rows={2}
               />
             </div>
 
