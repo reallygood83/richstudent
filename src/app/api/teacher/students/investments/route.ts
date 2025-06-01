@@ -108,7 +108,9 @@ export async function GET() {
 
         // 계좌별 잔액 정리
         const accounts = student.accounts.reduce((acc: Record<string, number>, account: Record<string, unknown>) => {
-          acc[account.account_type] = account.balance
+          const accountType = account.account_type as string
+          const balance = account.balance as number
+          acc[accountType] = balance
           return acc
         }, {})
 

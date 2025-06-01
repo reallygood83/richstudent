@@ -52,7 +52,15 @@ interface StudentInvestmentData {
     total_profit_loss_percent: number
     holdings_count: number
   }
-  recent_transactions: Array<Record<string, unknown>>
+  recent_transactions: Array<{
+    transaction_type: string
+    quantity: number
+    total_amount: number
+    created_at: string
+    market_assets: {
+      name: string
+    }
+  }>
   total_assets: number
 }
 
