@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Users, Plus, Trash2, CreditCard, TrendingUp, Edit } from 'lucide-react'
 import EditStudentModal from './EditStudentModal'
+import CreditScoreManager from './CreditScoreManager'
 
 interface Student {
   id: string
@@ -101,11 +102,6 @@ export default function StudentList({ onCreateStudent }: StudentListProps) {
     }).format(amount)
   }
 
-  const getCreditScoreColor = (score: number) => {
-    if (score >= 750) return 'bg-green-100 text-green-800'
-    if (score >= 650) return 'bg-yellow-100 text-yellow-800'
-    return 'bg-red-100 text-red-800'
-  }
 
   useEffect(() => {
     fetchStudents()
@@ -180,9 +176,10 @@ export default function StudentList({ onCreateStudent }: StudentListProps) {
                     <div className="flex items-center space-x-3 mb-2">
                       <h3 className="font-semibold text-lg">{student.name}</h3>
                       <Badge variant="outline">#{student.student_code}</Badge>
-                      <Badge className={getCreditScoreColor(student.credit_score)}>
-                        신용점수 {student.credit_score}
-                      </Badge>
+                      <CreditScoreManager 
+                        student={student}
+                        onScoreUpdate={fetchStudents}
+                      />
                     </div>
                     
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
