@@ -17,14 +17,7 @@ export async function GET() {
     // 세션 토큰으로 실제 학생 정보 조회
     const { data: sessionData, error: sessionError } = await supabase
       .from('student_sessions')
-      .select(`
-        student_id,
-        expires_at,
-        students (
-          id,
-          teacher_id
-        )
-      `)
+      .select('student_id, expires_at')
       .eq('session_token', sessionToken)
       .single()
 
@@ -51,9 +44,23 @@ export async function GET() {
       }, { status: 401 })
     }
 
+    // 학생 정보 조회
+    const { data: student } = await supabase
+      .from('students')
+      .select('id, teacher_id')
+      .eq('id', sessionData.student_id)
+      .single()
+
+    if (!student) {
+      return NextResponse.json({
+        success: false,
+        error: '학생 정보를 찾을 수 없습니다.'
+      }, { status: 404 })
+    }
+
     const studentData = { 
-      student_id: sessionData.student_id, 
-      teacher_id: sessionData.students.teacher_id 
+      student_id: student.id, 
+      teacher_id: student.teacher_id 
     }
 
     // 포트폴리오 조회 (자산 정보 포함)
