@@ -16,20 +16,7 @@ export async function GET(request: NextRequest) {
     // 세션 토큰으로 실제 학생 정보 조회
     const { data: sessionData, error: sessionError } = await supabase
       .from('student_sessions')
-      .select(`
-        student_id,
-        expires_at,
-        students (
-          id,
-          teacher_id,
-          student_code,
-          name,
-          password,
-          credit_score,
-          weekly_allowance,
-          last_allowance_date
-        )
-      `)
+      .select('student_id, expires_at')
       .eq('session_token', sessionToken)
       .single()
 
@@ -56,7 +43,19 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const student = sessionData.students
+    // 학생 정보 조회
+    const { data: student, error: studentError } = await supabase
+      .from('students')
+      .select('id, teacher_id, student_code, name, password, credit_score, weekly_allowance, last_allowance_date')
+      .eq('id', sessionData.student_id)
+      .single()
+
+    if (studentError || !student) {
+      return NextResponse.json(
+        { success: false, error: '학생 정보를 찾을 수 없습니다.' },
+        { status: 404 }
+      )
+    }
 
     // 학생 계좌 정보 조회
     const { data: accounts, error: accountError } = await supabase
