@@ -153,9 +153,48 @@ export default function StudentInvestmentMonitor() {
     return (
       <Card className="border-red-200 bg-red-50">
         <CardContent className="p-6">
-          <div className="text-red-700">{error}</div>
-          <Button onClick={fetchInvestmentData} className="mt-4" variant="outline">
-            다시 시도
+          <div className="text-red-700 mb-4">{error}</div>
+          <div className="space-y-2">
+            <Button onClick={fetchInvestmentData} variant="outline">
+              다시 시도
+            </Button>
+            <Button 
+              onClick={() => window.open('/api/debug/investment-test', '_blank')} 
+              variant="outline" 
+              size="sm"
+            >
+              디버그 정보 확인
+            </Button>
+          </div>
+          <div className="mt-4 text-sm text-gray-600">
+            <p><strong>해결 방법:</strong></p>
+            <ol className="list-decimal list-inside space-y-1 mt-2">
+              <li>Supabase에서 <code>COMPLETE_DATABASE_SETUP.sql</code> 실행</li>
+              <li>교사 로그인 상태 확인</li>
+              <li>학생 데이터가 있는지 확인</li>
+            </ol>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // 데이터는 성공적으로 로드되었지만 학생이 없는 경우
+  if (students.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>학생 투자 현황</CardTitle>
+          <CardDescription>현재 등록된 학생이 없습니다</CardDescription>
+        </CardHeader>
+        <CardContent className="text-center py-12">
+          <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">학생이 없습니다</h3>
+          <p className="text-gray-500 mb-4">
+            먼저 "학생 관리" 탭에서 학생을 등록해주세요.
+          </p>
+          <Button onClick={fetchInvestmentData} variant="outline">
+            새로고침
           </Button>
         </CardContent>
       </Card>
