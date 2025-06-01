@@ -256,6 +256,28 @@ export default function StudentDashboard() {
           </CardContent>
         </Card>
 
+        {/* Investment Section */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <TrendingUp className="w-5 h-5" />
+              <span>투자 관리</span>
+            </CardTitle>
+            <CardDescription>
+              주식, 암호화폐 등 다양한 자산에 투자해보세요
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              onClick={() => router.push('/student/investments')}
+              className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
+            >
+              <TrendingUp className="w-4 h-4 mr-2" />
+              투자 포트폴리오 관리
+            </Button>
+          </CardContent>
+        </Card>
+
         {/* Tabs for Activities */}
         <Tabs defaultValue="transactions" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
