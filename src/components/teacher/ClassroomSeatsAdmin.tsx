@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -41,7 +41,7 @@ export default function ClassroomSeatsAdmin() {
     current_price: 0
   });
 
-  const fetchSeats = async () => {
+  const fetchSeats = useCallback(async () => {
     try {
       const response = await fetch('/api/real-estate/seats');
       const data = await response.json();
@@ -55,7 +55,7 @@ export default function ClassroomSeatsAdmin() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const calculateStats = (seatData: Seat[]) => {
     const owned = seatData.filter(seat => seat.owner_id).length;
@@ -111,7 +111,7 @@ export default function ClassroomSeatsAdmin() {
     // 30초마다 자동 새로고침
     const interval = setInterval(fetchSeats, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchSeats]);
 
   if (loading) {
     return (

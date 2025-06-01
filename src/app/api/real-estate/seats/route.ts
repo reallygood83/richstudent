@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
+import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
 
 export async function GET() {
   try {
-    const supabase = await createServerClient();
+    const supabase = createClient();
     
     const { data: seats, error } = await supabase
       .from('classroom_seats')

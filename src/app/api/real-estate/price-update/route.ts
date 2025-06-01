@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
+import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST() {
   try {
-    const supabase = await createServerClient();
+    const supabase = createClient();
 
     // 좌석 가격 업데이트 함수 호출
     const { error } = await supabase.rpc('update_all_seat_prices');
