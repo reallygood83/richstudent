@@ -47,7 +47,7 @@ export async function POST() {
             sell_quantity: 0,
             total_invested: 0,
             total_sold: 0,
-            current_price: (tx.market_assets as { current_price: number })?.current_price || 0
+            current_price: Array.isArray(tx.market_assets) && tx.market_assets.length > 0 ? tx.market_assets[0].current_price : 0
           })
         }
 
