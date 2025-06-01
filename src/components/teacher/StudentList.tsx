@@ -4,9 +4,10 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Users, Plus, Trash2, CreditCard, TrendingUp, Edit } from 'lucide-react'
+import { Users, Plus, Trash2, CreditCard, TrendingUp, Edit, UserPlus } from 'lucide-react'
 import EditStudentModal from './EditStudentModal'
 import CreditScoreManager from './CreditScoreManager'
+import BulkStudentModal from './BulkStudentModal'
 
 interface Student {
   id: string
@@ -35,6 +36,7 @@ export default function StudentList({ onCreateStudent }: StudentListProps) {
   const [limit, setLimit] = useState(30)
   const [editingStudent, setEditingStudent] = useState<Student | null>(null)
   const [showEditModal, setShowEditModal] = useState(false)
+  const [showBulkModal, setShowBulkModal] = useState(false)
 
   const fetchStudents = async () => {
     try {
@@ -139,10 +141,20 @@ export default function StudentList({ onCreateStudent }: StudentListProps) {
               총 {totalCount}명 / 최대 {limit}명
             </CardDescription>
           </div>
-          <Button onClick={onCreateStudent} className="flex items-center space-x-2">
-            <Plus className="w-4 h-4" />
-            <span>학생 추가</span>
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowBulkModal(true)}
+              className="flex items-center space-x-2"
+            >
+              <UserPlus className="w-4 h-4" />
+              <span>일괄 등록</span>
+            </Button>
+            <Button onClick={onCreateStudent} className="flex items-center space-x-2">
+              <Plus className="w-4 h-4" />
+              <span>학생 추가</span>
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -237,6 +249,13 @@ export default function StudentList({ onCreateStudent }: StudentListProps) {
         onClose={() => setShowEditModal(false)}
         student={editingStudent}
         onSuccess={handleEditSuccess}
+      />
+
+      {/* Bulk Student Registration Modal */}
+      <BulkStudentModal
+        isOpen={showBulkModal}
+        onClose={() => setShowBulkModal(false)}
+        onSuccess={fetchStudents}
       />
     </Card>
   )
