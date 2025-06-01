@@ -444,6 +444,21 @@ export default function LoanManager() {
                             <DollarSign className="w-4 h-4 mr-1" />
                             상환하기
                           </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setSelectedLoan(loan)
+                              setRepayForm({
+                                loan_id: loan.id,
+                                payment_amount: loan.remaining_balance.toString()
+                              })
+                              setShowRepayModal(true)
+                            }}
+                          >
+                            <DollarSign className="w-4 h-4 mr-1" />
+                            전액상환
+                          </Button>
                         </div>
                       )}
                     </div>
@@ -603,9 +618,15 @@ export default function LoanManager() {
                 })}
               />
               {selectedLoan && (
-                <p className="text-sm text-gray-600 mt-1">
-                  정기 상환금: {formatCurrency(selectedLoan.weekly_payment)}
-                </p>
+                <div className="text-sm text-gray-600 mt-1">
+                  <p>정기 상환금: {formatCurrency(selectedLoan.weekly_payment)}</p>
+                  <p>남은 잔액: {formatCurrency(selectedLoan.remaining_balance)}</p>
+                  {Number(repayForm.payment_amount) === selectedLoan.remaining_balance && (
+                    <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-green-700">
+                      💰 전액상환: 대출이 완전히 상환됩니다!
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
@@ -629,10 +650,16 @@ export default function LoanManager() {
               </Button>
               <Button
                 type="submit"
-                className="flex-1"
+                className={`flex-1 ${
+                  selectedLoan && Number(repayForm.payment_amount) === selectedLoan.remaining_balance
+                    ? 'bg-green-600 hover:bg-green-700'
+                    : ''
+                }`}
                 disabled={repaying || !repayForm.payment_amount}
               >
-                {repaying ? '상환 중...' : '상환하기'}
+                {repaying ? '상환 중...' : 
+                 selectedLoan && Number(repayForm.payment_amount) === selectedLoan.remaining_balance 
+                   ? '전액상환하기' : '상환하기'}
               </Button>
             </div>
           </form>
