@@ -125,24 +125,32 @@ export default function CreditScoreManager({ student, onScoreUpdate }: CreditSco
     }, 600)
   }
 
-  // 실패 애니메이션 (감점) - 더 강력하게!
+  // 감점 애니메이션 - 아쉬운 효과만
   const triggerWarningAnimation = () => {
-    // 화면 흔들기 효과
+    // 화면 흔들기 효과 (더 강하게)
     const element = document.body
     element.style.animation = 'shake 0.8s ease-in-out'
     
-    // 빨간 파티클 효과 (실망 표현)
-    confetti({
-      particleCount: 80,
-      spread: 100,
-      origin: { y: 0.6 },
-      colors: ['#DC2626', '#EF4444', '#F87171', '#374151'],
-      gravity: 1.5,
-      scalar: 0.8
-    })
+    // 추가 시각적 효과 - 붉은 테두리 깜빡임
+    const flashEffect = document.createElement('div')
+    flashEffect.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 8px solid rgba(239, 68, 68, 0.6);
+      pointer-events: none;
+      z-index: 9999;
+      animation: flashRed 0.5s ease-in-out;
+    `
+    document.body.appendChild(flashEffect)
     
     setTimeout(() => {
       element.style.animation = ''
+      if (flashEffect.parentNode) {
+        flashEffect.parentNode.removeChild(flashEffect)
+      }
     }, 800)
   }
 
@@ -211,12 +219,17 @@ export default function CreditScoreManager({ student, onScoreUpdate }: CreditSco
 
   return (
     <>
-      {/* 흔들기 애니메이션 CSS */}
+      {/* 애니메이션 CSS */}
       <style jsx>{`
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
-          10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-          20%, 40%, 60%, 80% { transform: translateX(5px); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+          20%, 40%, 60%, 80% { transform: translateX(8px); }
+        }
+        @keyframes flashRed {
+          0% { opacity: 0; }
+          50% { opacity: 1; }
+          100% { opacity: 0; }
         }
       `}</style>
 
