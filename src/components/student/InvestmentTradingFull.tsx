@@ -245,13 +245,6 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
     return { total, brokerageFee, taxFee, totalFee, netAmount: total - totalFee }
   }
 
-  const getSelectedAsset = (assetId: string) => {
-    return assets.find(asset => asset.id === assetId)
-  }
-
-  const getHolding = (assetId: string) => {
-    return portfolio.find(holding => holding.market_assets.id === assetId)
-  }
 
   const handleAssetSelect = (asset: Asset) => {
     setSelectedAsset(asset)
