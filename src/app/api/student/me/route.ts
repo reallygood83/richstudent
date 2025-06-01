@@ -13,29 +13,50 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // 실제 구현에서는 세션 토큰을 DB나 Redis에서 검증
-    // 여기서는 간단한 구현을 위해 토큰 존재만 확인
-    
-    // 세션 토큰으로부터 학생 정보를 추출하는 로직이 필요
-    // 실제로는 세션 데이터를 별도 저장소에서 조회해야 함
-    
-    // 임시로 모든 학생 중에서 첫 번째 학생 정보를 반환
-    // 실제 구현에서는 세션에서 학생 ID를 추출해야 함
-    
-    // 학생 기본 정보 조회
-    const { data: students, error: studentError } = await supabase
-      .from('students')
-      .select('*')
-      .limit(1)
+    // 세션 토큰으로 실제 학생 정보 조회
+    const { data: sessionData, error: sessionError } = await supabase
+      .from('student_sessions')
+      .select(`
+        student_id,
+        expires_at,
+        students (
+          id,
+          teacher_id,
+          student_code,
+          name,
+          password,
+          credit_score,
+          weekly_allowance,
+          last_allowance_date
+        )
+      `)
+      .eq('session_token', sessionToken)
+      .single()
 
-    if (studentError || !students || students.length === 0) {
+    if (sessionError || !sessionData) {
       return NextResponse.json(
-        { success: false, error: '학생 정보를 찾을 수 없습니다.' },
-        { status: 400 }
+        { success: false, error: '유효하지 않은 세션입니다.' },
+        { status: 401 }
       )
     }
 
-    const student = students[0]
+    // 세션 만료 확인
+    const now = new Date()
+    const expiresAt = new Date(sessionData.expires_at)
+    if (now > expiresAt) {
+      // 만료된 세션 삭제
+      await supabase
+        .from('student_sessions')
+        .delete()
+        .eq('session_token', sessionToken)
+      
+      return NextResponse.json(
+        { success: false, error: '세션이 만료되었습니다. 다시 로그인해주세요.' },
+        { status: 401 }
+      )
+    }
+
+    const student = sessionData.students
 
     // 학생 계좌 정보 조회
     const { data: accounts, error: accountError } = await supabase

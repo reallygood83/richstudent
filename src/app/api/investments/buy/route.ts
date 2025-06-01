@@ -14,20 +14,47 @@ export async function POST(request: NextRequest) {
       }, { status: 401 })
     }
 
-    // 임시로 첫 번째 학생의 데이터를 가져옴
-    const { data: students } = await supabase
-      .from('students')
-      .select('id, teacher_id')
-      .limit(1)
+    // 세션 토큰으로 실제 학생 정보 조회
+    const { data: sessionData, error: sessionError } = await supabase
+      .from('student_sessions')
+      .select(`
+        student_id,
+        expires_at,
+        students (
+          id,
+          teacher_id
+        )
+      `)
+      .eq('session_token', sessionToken)
+      .single()
 
-    if (!students || students.length === 0) {
+    if (sessionError || !sessionData) {
       return NextResponse.json({
         success: false,
-        error: '학생 정보를 찾을 수 없습니다.'
-      }, { status: 404 })
+        error: '유효하지 않은 세션입니다.'
+      }, { status: 401 })
     }
 
-    const sessionData = { student_id: students[0].id, teacher_id: students[0].teacher_id }
+    // 세션 만료 확인
+    const now = new Date()
+    const expiresAt = new Date(sessionData.expires_at)
+    if (now > expiresAt) {
+      // 만료된 세션 삭제
+      await supabase
+        .from('student_sessions')
+        .delete()
+        .eq('session_token', sessionToken)
+      
+      return NextResponse.json({
+        success: false,
+        error: '세션이 만료되었습니다. 다시 로그인해주세요.'
+      }, { status: 401 })
+    }
+
+    const studentData = { 
+      student_id: sessionData.students.id, 
+      teacher_id: sessionData.students.teacher_id 
+    }
 
     const body = await request.json()
     const { asset_id, quantity, price, account_type = 'investment' } = body
@@ -80,7 +107,7 @@ export async function POST(request: NextRequest) {
     const { data: account } = await supabase
       .from('accounts')
       .select('balance')
-      .eq('student_id', sessionData.student_id)
+      .eq('student_id', studentData.student_id)
       .eq('account_type', account_type)
       .single()
 
@@ -109,7 +136,7 @@ export async function POST(request: NextRequest) {
         balance: account.balance - totalAmount - fee,
         updated_at: new Date().toISOString()
       })
-      .eq('student_id', sessionData.student_id)
+      .eq('student_id', studentData.student_id)
       .eq('account_type', account_type)
 
     if (deductError) {
@@ -124,7 +151,7 @@ export async function POST(request: NextRequest) {
     const { data: transaction, error: transactionError } = await supabase
       .from('asset_transactions')
       .insert({
-        student_id: sessionData.student_id,
+        student_id: studentData.student_id,
         asset_id: asset_id,
         transaction_type: 'buy',
         quantity: Number(quantity),
@@ -146,7 +173,7 @@ export async function POST(request: NextRequest) {
           balance: account.balance,
           updated_at: new Date().toISOString()
         })
-        .eq('student_id', sessionData.student_id)
+        .eq('student_id', studentData.student_id)
         .eq('account_type', account_type)
 
       return NextResponse.json({
@@ -161,7 +188,7 @@ export async function POST(request: NextRequest) {
       const { data: securities } = await supabase
         .from('economic_entities')
         .select('id, balance')
-        .eq('teacher_id', sessionData.teacher_id)
+        .eq('teacher_id', studentData.teacher_id)
         .eq('entity_type', 'securities')
         .single()
 
@@ -180,7 +207,7 @@ export async function POST(request: NextRequest) {
       await supabase
         .from('transactions')
         .insert({
-          from_student_id: sessionData.student_id,
+          from_student_id: studentData.student_id,
           to_student_id: null, // 증권회사로
           amount: fee,
           transaction_type: 'investment_fee',
@@ -193,7 +220,7 @@ export async function POST(request: NextRequest) {
     const { data: existingPortfolio } = await supabase
       .from('portfolio')
       .select('id, quantity, average_price, total_invested')
-      .eq('student_id', sessionData.student_id)
+      .eq('student_id', studentData.student_id)
       .eq('asset_id', asset_id)
       .single()
 
@@ -220,7 +247,7 @@ export async function POST(request: NextRequest) {
       await supabase
         .from('portfolio')
         .insert({
-          student_id: sessionData.student_id,
+          student_id: studentData.student_id,
           asset_id: asset_id,
           quantity: Number(quantity),
           average_price: Number(price),

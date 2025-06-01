@@ -80,19 +80,30 @@ export async function POST(request: NextRequest) {
     // 학생 세션 토큰 생성
     const crypto = await import('crypto')
     const sessionToken = crypto.randomUUID()
-    // const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000) // 8시간
+    const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000) // 8시간
 
-    // 세션 정보 저장 (간단한 구현을 위해 메모리나 DB에 저장)
-    // 실제로는 Redis 등 사용 권장
-    // const sessionData = {
-    //   studentId: student.id,
-    //   studentName: student.name,
-    //   studentCode: student.student_code,
-    //   teacherId: teacher.id,
-    //   teacherName: teacher.name,
-    //   sessionCode: session_code.toUpperCase(),
-    //   expiresAt: expiresAt.toISOString()
-    // }
+    // 기존 세션 삭제 (동일 학생의 기존 세션)
+    await supabase
+      .from('student_sessions')
+      .delete()
+      .eq('student_id', student.id)
+
+    // 새 세션 저장
+    const { error: sessionError } = await supabase
+      .from('student_sessions')
+      .insert({
+        student_id: student.id,
+        session_token: sessionToken,
+        expires_at: expiresAt.toISOString()
+      })
+
+    if (sessionError) {
+      console.error('Session creation error:', sessionError)
+      return NextResponse.json(
+        { success: false, error: '세션 생성에 실패했습니다.' },
+        { status: 500 }
+      )
+    }
 
     // 세션 토큰을 쿠키에 저장
     const cookieStore = await cookies()
@@ -104,8 +115,7 @@ export async function POST(request: NextRequest) {
       path: '/'
     })
 
-    // 실제 구현에서는 세션 데이터를 DB나 Redis에 저장
-    // 여기서는 간단히 응답에 포함
+    // 세션 데이터가 DB에 저장되었습니다
     return NextResponse.json({
       success: true,
       student: {

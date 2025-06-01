@@ -106,7 +106,10 @@ export default function StudentInvestments() {
     }).format(amount)
   }
 
-  const formatPercent = (percent: number) => {
+  const formatPercent = (percent: number | null | undefined) => {
+    if (percent === null || percent === undefined || isNaN(percent)) {
+      return '0.00%'
+    }
     return `${percent >= 0 ? '+' : ''}${percent.toFixed(2)}%`
   }
 

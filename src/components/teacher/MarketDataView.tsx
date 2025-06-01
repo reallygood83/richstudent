@@ -23,9 +23,9 @@ interface MarketAsset {
   asset_type: string
   category: string
   current_price: number
-  previous_price: number
-  price_change: number
-  price_change_percent: number
+  previous_price: number | null
+  price_change: number | null
+  price_change_percent: number | null
   currency: string
   last_updated: string
   is_active: boolean
@@ -106,18 +106,23 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
     }).format(roundedPrice)
   }
 
-  const formatChangePercent = (change: number) => {
+  const formatChangePercent = (change: number | null | undefined) => {
+    if (change === null || change === undefined || isNaN(change)) {
+      return '0.00%'
+    }
     const sign = change > 0 ? '+' : ''
     return `${sign}${change.toFixed(2)}%`
   }
 
-  const getPriceChangeColor = (change: number) => {
+  const getPriceChangeColor = (change: number | null | undefined) => {
+    if (!change || isNaN(change)) return 'text-gray-600'
     if (change > 0) return 'text-red-600'
     if (change < 0) return 'text-blue-600'
     return 'text-gray-600'
   }
 
-  const getChangeIcon = (change: number) => {
+  const getChangeIcon = (change: number | null | undefined) => {
+    if (!change || isNaN(change)) return <Activity className="w-4 h-4" />
     if (change > 0) return <TrendingUp className="w-4 h-4" />
     if (change < 0) return <TrendingDown className="w-4 h-4" />
     return <Activity className="w-4 h-4" />

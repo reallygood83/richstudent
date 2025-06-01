@@ -155,13 +155,17 @@ export function formatPrice(price: number, currency: string = 'KRW'): string {
 }
 
 // 변화율 포맷팅
-export function formatChangePercent(changePercent: number): string {
+export function formatChangePercent(changePercent: number | null | undefined): string {
+  if (changePercent === null || changePercent === undefined || isNaN(changePercent)) {
+    return '0.00%'
+  }
   const sign = changePercent > 0 ? '+' : ''
   return `${sign}${changePercent.toFixed(2)}%`
 }
 
 // 가격 변화 색상 결정
-export function getPriceChangeColor(change: number): string {
+export function getPriceChangeColor(change: number | null | undefined): string {
+  if (!change || isNaN(change)) return 'text-gray-600' // 데이터 없음
   if (change > 0) return 'text-red-600' // 상승 (빨간색)
   if (change < 0) return 'text-blue-600' // 하락 (파란색)
   return 'text-gray-600' // 보합

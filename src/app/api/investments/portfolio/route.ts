@@ -14,20 +14,47 @@ export async function GET() {
       }, { status: 401 })
     }
 
-    // 임시로 첫 번째 학생의 데이터를 가져옴 (실제로는 세션에서 학생 ID 추출)
-    const { data: students } = await supabase
-      .from('students')
-      .select('id, teacher_id')
-      .limit(1)
+    // 세션 토큰으로 실제 학생 정보 조회
+    const { data: sessionData, error: sessionError } = await supabase
+      .from('student_sessions')
+      .select(`
+        student_id,
+        expires_at,
+        students (
+          id,
+          teacher_id
+        )
+      `)
+      .eq('session_token', sessionToken)
+      .single()
 
-    if (!students || students.length === 0) {
+    if (sessionError || !sessionData) {
       return NextResponse.json({
         success: false,
-        error: '학생 정보를 찾을 수 없습니다.'
-      }, { status: 404 })
+        error: '유효하지 않은 세션입니다.'
+      }, { status: 401 })
     }
 
-    const sessionData = { student_id: students[0].id, teacher_id: students[0].teacher_id }
+    // 세션 만료 확인
+    const now = new Date()
+    const expiresAt = new Date(sessionData.expires_at)
+    if (now > expiresAt) {
+      // 만료된 세션 삭제
+      await supabase
+        .from('student_sessions')
+        .delete()
+        .eq('session_token', sessionToken)
+      
+      return NextResponse.json({
+        success: false,
+        error: '세션이 만료되었습니다. 다시 로그인해주세요.'
+      }, { status: 401 })
+    }
+
+    const studentData = { 
+      student_id: sessionData.students.id, 
+      teacher_id: sessionData.students.teacher_id 
+    }
 
     // 포트폴리오 조회 (자산 정보 포함)
     const { data: portfolio, error: portfolioError } = await supabase
@@ -52,7 +79,7 @@ export async function GET() {
           category
         )
       `)
-      .eq('student_id', sessionData.student_id)
+      .eq('student_id', studentData.student_id)
       .order('current_value', { ascending: false })
 
     if (portfolioError) {
@@ -67,7 +94,7 @@ export async function GET() {
     const { data: investmentAccount } = await supabase
       .from('accounts')
       .select('balance')
-      .eq('student_id', sessionData.student_id)
+      .eq('student_id', studentData.student_id)
       .eq('account_type', 'investment')
       .single()
 
@@ -88,7 +115,7 @@ export async function GET() {
           name
         )
       `)
-      .eq('student_id', sessionData.student_id)
+      .eq('student_id', studentData.student_id)
       .order('created_at', { ascending: false })
       .limit(20)
 
@@ -150,6 +177,43 @@ export async function PUT() {
       return NextResponse.json({
         success: false,
         error: '인증이 필요합니다.'
+      }, { status: 401 })
+    }
+
+    // 세션 토큰으로 실제 학생 정보 조회
+    const { data: sessionData, error: sessionError } = await supabase
+      .from('student_sessions')
+      .select(`
+        student_id,
+        expires_at,
+        students (
+          id,
+          teacher_id
+        )
+      `)
+      .eq('session_token', sessionToken)
+      .single()
+
+    if (sessionError || !sessionData) {
+      return NextResponse.json({
+        success: false,
+        error: '유효하지 않은 세션입니다.'
+      }, { status: 401 })
+    }
+
+    // 세션 만료 확인
+    const now = new Date()
+    const expiresAt = new Date(sessionData.expires_at)
+    if (now > expiresAt) {
+      // 만료된 세션 삭제
+      await supabase
+        .from('student_sessions')
+        .delete()
+        .eq('session_token', sessionToken)
+      
+      return NextResponse.json({
+        success: false,
+        error: '세션이 만료되었습니다. 다시 로그인해주세요.'
       }, { status: 401 })
     }
 

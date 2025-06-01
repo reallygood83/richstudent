@@ -29,8 +29,8 @@ interface PortfolioHolding {
   total_invested: number
   current_value: number
   profit_loss: number
-  profit_loss_percent: number
-  weight: number
+  profit_loss_percent: number | null
+  weight: number | null
   created_at: string
   updated_at: string
   market_assets: Asset
@@ -40,7 +40,7 @@ interface CategoryDistribution {
   category: string
   value: number
   count: number
-  weight: number
+  weight: number | null
 }
 
 interface PortfolioData {
@@ -90,7 +90,10 @@ export default function InvestmentPortfolio({ onDataChange }: InvestmentPortfoli
     }).format(amount)
   }
 
-  const formatPercent = (percent: number) => {
+  const formatPercent = (percent: number | null | undefined) => {
+    if (percent === null || percent === undefined || isNaN(percent)) {
+      return '0.00%'
+    }
     return `${percent >= 0 ? '+' : ''}${percent.toFixed(2)}%`
   }
 
@@ -179,7 +182,7 @@ export default function InvestmentPortfolio({ onDataChange }: InvestmentPortfoli
                   <Badge className={getCategoryColor(item.category)} variant="secondary">
                     {item.category}
                   </Badge>
-                  <p className="font-bold text-lg mt-2">{item.weight.toFixed(1)}%</p>
+                  <p className="font-bold text-lg mt-2">{(item.weight ?? 0).toFixed(1)}%</p>
                   <p className="text-sm text-gray-600">{formatCurrency(item.value)}</p>
                   <p className="text-xs text-gray-500">{item.count}개 종목</p>
                 </div>
@@ -244,7 +247,7 @@ export default function InvestmentPortfolio({ onDataChange }: InvestmentPortfoli
                       </div>
                       <div>
                         <span className="text-gray-500">비중: </span>
-                        <span className="font-medium">{holding.weight.toFixed(1)}%</span>
+                        <span className="font-medium">{(holding.weight ?? 0).toFixed(1)}%</span>
                       </div>
                     </div>
                   </div>
