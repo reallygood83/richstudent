@@ -5,23 +5,26 @@ import { cookies } from 'next/headers'
 export async function PUT(request: NextRequest) {
   try {
     const cookieStore = await cookies()
-    const sessionToken = cookieStore.get('teacher_session')?.value
+    const sessionToken = cookieStore.get('session_token')?.value
+
+    console.log('Update API - Session token:', sessionToken ? 'exists' : 'missing')
 
     if (!sessionToken) {
+      console.log('Update API - No session token found')
       return NextResponse.json({
         success: false,
         error: '인증이 필요합니다.'
       }, { status: 401 })
     }
 
-    // 교사 세션 확인
-    const { data: teacher } = await supabase
-      .from('teachers')
-      .select('id')
-      .eq('session_token', sessionToken)
-      .single()
+    // 교사 세션 확인 (기존 auth 시스템과 동일하게)
+    const { validateSession } = await import('@/lib/auth')
+    const teacher = await validateSession(sessionToken)
+
+    console.log('Update API - Teacher validation:', teacher ? 'success' : 'failed')
 
     if (!teacher) {
+      console.log('Update API - Invalid session')
       return NextResponse.json({
         success: false,
         error: '유효하지 않은 세션입니다.'
