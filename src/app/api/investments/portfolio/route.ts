@@ -190,14 +190,7 @@ export async function PUT() {
     // 세션 토큰으로 실제 학생 정보 조회
     const { data: sessionData, error: sessionError } = await supabase
       .from('student_sessions')
-      .select(`
-        student_id,
-        expires_at,
-        students (
-          id,
-          teacher_id
-        )
-      `)
+      .select('student_id, expires_at')
       .eq('session_token', sessionToken)
       .single()
 

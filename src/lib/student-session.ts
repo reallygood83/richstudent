@@ -29,14 +29,7 @@ export async function validateStudentSession(sessionToken: string): Promise<Vali
     // 세션 토큰으로 실제 학생 정보 조회
     const { data: sessionData, error: sessionError } = await supabase
       .from('student_sessions')
-      .select(`
-        student_id,
-        expires_at,
-        students (
-          id,
-          teacher_id
-        )
-      `)
+      .select('student_id, expires_at')
       .eq('session_token', sessionToken)
       .single()
 
@@ -63,11 +56,25 @@ export async function validateStudentSession(sessionToken: string): Promise<Vali
       }
     }
 
+    // 학생 정보 조회
+    const { data: student, error: studentError } = await supabase
+      .from('students')
+      .select('id, teacher_id')
+      .eq('id', sessionData.student_id)
+      .single()
+
+    if (studentError || !student) {
+      return {
+        success: false,
+        error: '학생 정보를 찾을 수 없습니다.'
+      }
+    }
+
     return {
       success: true,
       data: {
-        student_id: sessionData.students.id,
-        teacher_id: sessionData.students.teacher_id,
+        student_id: student.id,
+        teacher_id: student.teacher_id,
         session_token: sessionToken,
         expires_at: sessionData.expires_at
       }
