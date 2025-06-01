@@ -67,6 +67,11 @@ export default function EconomicEntitiesManager({ onDataChange }: EconomicEntiti
         setEntities(data.entities)
       } else {
         setError(data.error)
+        
+        // 테이블이 존재하지 않는 경우 특별 처리
+        if (data.tableExists === false) {
+          setError('데이터베이스에 경제 주체 테이블이 없습니다. 먼저 데이터베이스 스키마를 업데이트해주세요.')
+        }
       }
     } catch (err) {
       console.error('Entities fetch error:', err)

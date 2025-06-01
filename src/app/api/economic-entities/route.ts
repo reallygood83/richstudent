@@ -28,7 +28,21 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       console.error('Economic entities fetch error:', error)
-      return NextResponse.json({ success: false, error: '경제 주체 조회에 실패했습니다.' }, { status: 500 })
+      
+      // 테이블이 존재하지 않는 경우
+      if (error.code === '42P01' || error.message.includes('does not exist')) {
+        return NextResponse.json({ 
+          success: false, 
+          error: 'economic_entities 테이블이 존재하지 않습니다. 데이터베이스 스키마를 업데이트해주세요.',
+          tableExists: false
+        }, { status: 503 })
+      }
+      
+      return NextResponse.json({ 
+        success: false, 
+        error: '경제 주체 조회에 실패했습니다.',
+        details: error.message 
+      }, { status: 500 })
     }
 
     return NextResponse.json({ 
