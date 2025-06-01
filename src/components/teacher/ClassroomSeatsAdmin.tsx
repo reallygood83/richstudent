@@ -53,6 +53,15 @@ export default function ClassroomSeatsAdmin() {
       if (data.seats) {
         setSeats(data.seats);
         calculateStats(data.seats);
+        
+        // 좌석 가격이 0이면 자동으로 가격 업데이트 시도
+        const hasZeroPrice = data.seats.some((seat: Seat) => seat.current_price === 0);
+        if (hasZeroPrice) {
+          console.log('Found zero price seats, auto-updating prices...');
+          setTimeout(() => {
+            updateSeatPrices();
+          }, 1000);
+        }
       }
     } catch (error) {
       console.error('Error fetching seats:', error);
