@@ -89,18 +89,25 @@ export default function StudentInvestmentMonitor() {
       setLoading(true)
       setError('')
 
+      console.log('Fetching investment data...')
       const response = await fetch('/api/teacher/students/investments')
+      console.log('Response status:', response.status)
+      
       const data = await response.json()
+      console.log('Response data:', data)
 
       if (data.success) {
+        console.log('Students data:', data.data.students)
+        console.log('Class stats:', data.data.class_stats)
         setStudents(data.data.students)
         setClassStats(data.data.class_stats)
       } else {
+        console.error('API error:', data.error)
         setError(data.error || '투자 현황을 불러올 수 없습니다.')
       }
     } catch (err) {
-      setError('서버 연결 실패')
       console.error('Investment data fetch error:', err)
+      setError('서버 연결 실패: ' + (err as Error).message)
     } finally {
       setLoading(false)
     }

@@ -5,10 +5,14 @@ import { cookies } from 'next/headers'
 // 교사용 학생 투자 현황 조회 API
 export async function GET(request: NextRequest) {
   try {
+    console.log('Investment monitoring API called')
+    
     const cookieStore = await cookies()
     const sessionToken = cookieStore.get('session_token')?.value
+    console.log('Session token:', sessionToken ? 'Present' : 'Missing')
 
     if (!sessionToken) {
+      console.log('No session token found')
       return NextResponse.json({
         success: false,
         error: '인증이 필요합니다.'
@@ -16,13 +20,17 @@ export async function GET(request: NextRequest) {
     }
 
     // 교사 세션 검증
+    console.log('Validating teacher session...')
     const { data: teacher, error: sessionError } = await supabase
       .from('teacher_sessions')
       .select('teacher_id')
       .eq('session_token', sessionToken)
       .single()
 
+    console.log('Session validation result:', { teacher, sessionError })
+
     if (sessionError || !teacher) {
+      console.log('Session validation failed:', sessionError)
       return NextResponse.json({
         success: false,
         error: '유효하지 않은 세션입니다.'
@@ -30,6 +38,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 해당 교사의 모든 학생 조회
+    console.log('Fetching students for teacher:', teacher.teacher_id)
     const { data: students, error: studentsError } = await supabase
       .from('students')
       .select(`
@@ -42,6 +51,8 @@ export async function GET(request: NextRequest) {
       .eq('teacher_id', teacher.teacher_id)
       .order('name')
 
+    console.log('Students query result:', { students, studentsError })
+
     if (studentsError) {
       console.error('Students fetch error:', studentsError)
       return NextResponse.json({
@@ -49,6 +60,8 @@ export async function GET(request: NextRequest) {
         error: '학생 정보를 불러올 수 없습니다.'
       }, { status: 500 })
     }
+
+    console.log(`Found ${students?.length || 0} students`)
 
     // 각 학생의 포트폴리오 및 거래 내역 조회
     const studentsWithInvestments = await Promise.all(
