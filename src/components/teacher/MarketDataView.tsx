@@ -54,7 +54,8 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
       setLoading(true)
       setError('')
       
-      const response = await fetch('/api/market/update-prices')
+      // 시장 자산 데이터 조회 
+      const response = await fetch('/api/market-data')
       const data = await response.json()
 
       if (data.success) {
@@ -76,7 +77,8 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
       setUpdating(true)
       setError('')
 
-      const response = await fetch('/api/market/update-prices', {
+      // Yahoo Finance API로 실시간 가격 업데이트
+      const response = await fetch('/api/market-data/update', {
         method: 'POST'
       })
       const data = await response.json()
