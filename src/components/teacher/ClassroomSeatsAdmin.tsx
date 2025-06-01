@@ -45,7 +45,7 @@ export default function ClassroomSeatsAdmin() {
     current_price: 0
   });
 
-  const fetchSeats = useCallback(async () => {
+  const fetchSeats = useCallback(async (): Promise<void> => {
     try {
       const response = await fetch('/api/real-estate/seats');
       const data = await response.json();
@@ -58,8 +58,21 @@ export default function ClassroomSeatsAdmin() {
         const hasZeroPrice = data.seats.some((seat: Seat) => seat.current_price === 0);
         if (hasZeroPrice) {
           console.log('Found zero price seats, auto-updating prices...');
-          setTimeout(() => {
-            updateSeatPrices();
+          // updateSeatPrices 대신 직접 API 호출로 순환 참조 방지
+          setTimeout(async () => {
+            try {
+              const updateResponse = await fetch('/api/real-estate/price-update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+              });
+              if (updateResponse.ok) {
+                // 가격 업데이트 후 좌석 정보 다시 가져오기
+                window.location.reload();
+              }
+            } catch (error) {
+              console.error('Auto update failed:', error);
+            }
           }, 1000);
         }
       }
@@ -68,7 +81,7 @@ export default function ClassroomSeatsAdmin() {
     } finally {
       setLoading(false);
     }
-  }, [updateSeatPrices]);
+  }, []);
 
   const calculateStats = (seatData: Seat[]) => {
     const owned = seatData.filter(seat => seat.owner_id).length;
@@ -120,7 +133,7 @@ export default function ClassroomSeatsAdmin() {
     } finally {
       setUpdating(false);
     }
-  }, [manualStudentCount, fetchSeats]);
+  }, [manualStudentCount]);
 
   const getSeatColor = (seat: Seat) => {
     if (seat.owner_id) {
