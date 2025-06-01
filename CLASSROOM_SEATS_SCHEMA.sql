@@ -81,8 +81,8 @@ ALTER TABLE seat_transactions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow all access to classroom_seats" ON classroom_seats FOR ALL USING (true);
 CREATE POLICY "Allow all access to seat_transactions" ON seat_transactions FOR ALL USING (true);
 
--- 7. 좌석 가격 계산 함수
-CREATE OR REPLACE FUNCTION calculate_seat_price()
+-- 7. 좌석 가격 계산 함수 (개선된 버전)
+CREATE OR REPLACE FUNCTION calculate_seat_price(manual_student_count INTEGER DEFAULT NULL)
 RETURNS INTEGER AS $$
 DECLARE
   total_student_assets BIGINT;
@@ -91,9 +91,8 @@ DECLARE
 BEGIN
   -- 전체 학생 자산 계산 (경제 주체 제외)
   SELECT 
-    COALESCE(SUM(a.balance), 0),
-    COUNT(DISTINCT s.id)
-  INTO total_student_assets, student_count
+    COALESCE(SUM(a.balance), 0)
+  INTO total_student_assets
   FROM students s
   LEFT JOIN accounts a ON s.id = a.student_id
   WHERE s.id NOT IN (
@@ -102,9 +101,22 @@ BEGIN
   )
   AND a.account_type IN ('checking', 'savings', 'investment');
   
-  -- 가격 계산: 총 학생 자산 / (학생 수 * 10)
+  -- 학생 수 결정 (수동 입력값 우선, 없으면 실제 학생 수)
+  IF manual_student_count IS NOT NULL AND manual_student_count > 0 THEN
+    student_count := manual_student_count;
+  ELSE
+    SELECT COUNT(DISTINCT s.id)
+    INTO student_count
+    FROM students s
+    WHERE s.id NOT IN (
+      SELECT id FROM economic_entities 
+      WHERE entity_type IN ('government', 'bank', 'securities')
+    );
+  END IF;
+  
+  -- 새로운 가격 계산: (총 학생 자산 * 0.6) / 학생 수
   IF student_count > 0 AND total_student_assets > 0 THEN
-    calculated_price := (total_student_assets / (student_count * 10))::INTEGER;
+    calculated_price := ((total_student_assets * 0.6) / student_count)::INTEGER;
   ELSE
     calculated_price := 100000; -- 기본 가격 10만원
   END IF;
@@ -118,14 +130,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 8. 좌석 가격 업데이트 함수
-CREATE OR REPLACE FUNCTION update_all_seat_prices()
+-- 8. 좌석 가격 업데이트 함수 (수동 학생 수 지원)
+CREATE OR REPLACE FUNCTION update_all_seat_prices(manual_student_count INTEGER DEFAULT NULL)
 RETURNS VOID AS $$
 DECLARE
   new_price INTEGER;
 BEGIN
-  -- 새로운 가격 계산
-  new_price := calculate_seat_price();
+  -- 새로운 가격 계산 (수동 학생 수 전달)
+  new_price := calculate_seat_price(manual_student_count);
   
   -- 소유되지 않은 좌석들의 가격 업데이트
   UPDATE classroom_seats 

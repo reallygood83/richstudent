@@ -199,7 +199,8 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
               현재 좌석 가격: ₩{currentPrice.toLocaleString()}
             </div>
             <div className="text-sm text-gray-600">
-              가격은 학생들의 총 자산에 따라 실시간으로 변동됩니다
+              새로운 가격 공식: <strong>(총 학생 자산 × 60%) ÷ 학생 수</strong><br/>
+              화폐량이 증가할수록 좌석 가격이 상승합니다
             </div>
           </div>
         </CardContent>
@@ -311,7 +312,8 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
           {/* 좌석 정보 */}
           <div className="mt-6 text-center text-sm text-gray-600">
             <div>좌석을 클릭하여 구매하거나 판매할 수 있습니다</div>
-            <div>가격은 학급 전체 자산에 따라 실시간으로 변동됩니다</div>
+            <div>가격은 학급 총 자산의 60%를 학생 수로 나누어 계산됩니다</div>
+            <div>화폐량이 증가할수록 부동산(좌석) 가격도 상승합니다</div>
           </div>
         </CardContent>
       </Card>

@@ -4,6 +4,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface Seat {
   id: string;
@@ -33,6 +35,7 @@ export default function ClassroomSeatsAdmin() {
   const [seats, setSeats] = useState<Seat[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [manualStudentCount, setManualStudentCount] = useState('');
   const [stats, setStats] = useState<SeatStats>({
     total_seats: 30,
     owned_seats: 0,
@@ -77,14 +80,26 @@ export default function ClassroomSeatsAdmin() {
   const updateSeatPrices = async () => {
     setUpdating(true);
     try {
+      const requestBody: { manual_student_count?: number } = {};
+      
+      // 수동 학생 수가 입력된 경우 포함
+      if (manualStudentCount && parseInt(manualStudentCount) > 0) {
+        requestBody.manual_student_count = parseInt(manualStudentCount);
+      }
+
       const response = await fetch('/api/real-estate/price-update', {
-        method: 'POST'
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
       });
 
       const result = await response.json();
       
       if (result.message) {
-        alert('좌석 가격이 업데이트되었습니다!');
+        const message = result.manual_student_count 
+          ? `좌석 가격이 업데이트되었습니다! (학생 수: ${result.manual_student_count}명 기준)`
+          : '좌석 가격이 업데이트되었습니다!';
+        alert(message);
         await fetchSeats(); // 좌석 정보 새로고침
       } else {
         alert('가격 업데이트에 실패했습니다.');
@@ -167,21 +182,42 @@ export default function ClassroomSeatsAdmin() {
           <CardTitle className="text-center">📍 좌석 거래 관리</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center space-y-4">
-            <div className="text-2xl font-bold text-blue-600">
-              현재 좌석 가격: ₩{stats.current_price.toLocaleString()}
+          <div className="space-y-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">
+                현재 좌석 가격: ₩{stats.current_price.toLocaleString()}
+              </div>
+              <div className="text-sm text-gray-600 mt-2">
+                새로운 가격 계산 공식: <strong>(총 학생 자산 × 60%) ÷ 학생 수</strong><br/>
+                화폐량이 증가할수록 좌석 가격이 상승합니다
+              </div>
             </div>
-            <div className="text-sm text-gray-600">
-              가격은 학생들의 총 자산에 따라 자동으로 계산됩니다<br/>
-              (총 학생 자산 ÷ 학생 수 ÷ 10)
+
+            <div className="max-w-md mx-auto space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="student-count">학생 수 (수동 설정)</Label>
+                <Input
+                  id="student-count"
+                  type="number"
+                  min="1"
+                  placeholder="실제 학생 수로 자동 계산"
+                  value={manualStudentCount}
+                  onChange={(e) => setManualStudentCount(e.target.value)}
+                  className="text-center"
+                />
+                <div className="text-xs text-gray-500">
+                  비워두면 실제 등록된 학생 수({stats.owned_seats + stats.available_seats}명)로 계산됩니다
+                </div>
+              </div>
+              
+              <Button 
+                onClick={updateSeatPrices}
+                disabled={updating}
+                className="w-full bg-blue-500 hover:bg-blue-600"
+              >
+                {updating ? '가격 업데이트 중...' : '가격 업데이트'}
+              </Button>
             </div>
-            <Button 
-              onClick={updateSeatPrices}
-              disabled={updating}
-              className="bg-blue-500 hover:bg-blue-600"
-            >
-              {updating ? '가격 업데이트 중...' : '가격 수동 업데이트'}
-            </Button>
           </div>
         </CardContent>
       </Card>
