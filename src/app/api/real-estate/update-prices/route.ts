@@ -35,6 +35,8 @@ export async function POST() {
       }, { status: 500 });
     }
 
+    console.log('Update function result:', updateResult);
+
     // 3. 업데이트된 좌석들 확인
     const { data: updatedSeats, error: fetchError } = await supabase
       .from('classroom_seats')
@@ -44,6 +46,7 @@ export async function POST() {
 
     if (fetchError) {
       console.error('Error fetching updated seats:', fetchError);
+      // 좌석 조회 실패해도 계속 진행
     }
 
     // 4. 통계 계산

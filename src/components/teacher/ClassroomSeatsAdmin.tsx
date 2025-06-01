@@ -68,7 +68,7 @@ export default function ClassroomSeatsAdmin() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [updateSeatPrices]);
 
   const calculateStats = (seatData: Seat[]) => {
     const owned = seatData.filter(seat => seat.owner_id).length;

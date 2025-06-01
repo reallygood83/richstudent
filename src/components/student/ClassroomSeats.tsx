@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 interface Seat {
@@ -57,7 +57,7 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
     }
   };
 
-  const fetchSeats = async () => {
+  const fetchSeats = useCallback(async () => {
     try {
       const response = await fetch('/api/real-estate/seats');
       console.log('Seats API response status:', response.status);
@@ -91,7 +91,7 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const createLocalSeats = () => {
     const localSeats: Seat[] = [];
@@ -263,7 +263,7 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
 
   useEffect(() => {
     fetchSeats();
-  }, []);
+  }, [fetchSeats]);
 
   if (loading) {
     return (

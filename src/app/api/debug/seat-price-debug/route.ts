@@ -225,6 +225,10 @@ export async function POST() {
       .select('seat_number, current_price')
       .limit(5);
 
+    if (seatsError) {
+      console.error('Error fetching updated seats:', seatsError);
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Test data created successfully',
