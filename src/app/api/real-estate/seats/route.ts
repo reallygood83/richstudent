@@ -31,7 +31,7 @@ export async function GET() {
       .filter(seat => seat.owner_id)
       .map(seat => seat.owner_id);
 
-    let owners: any[] = [];
+    let owners: Array<{ id: string; name: string }> = [];
     if (ownerIds.length > 0) {
       const { data: ownersData, error: ownersError } = await supabase
         .from('students')

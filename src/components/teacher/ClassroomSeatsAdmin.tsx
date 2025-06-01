@@ -133,7 +133,7 @@ export default function ClassroomSeatsAdmin() {
     } finally {
       setUpdating(false);
     }
-  }, [manualStudentCount]);
+  }, [manualStudentCount, fetchSeats]);
 
   const getSeatColor = (seat: Seat) => {
     if (seat.owner_id) {
