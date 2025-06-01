@@ -1,9 +1,10 @@
 -- ====================================================
--- 교실 좌석 거래 시스템 데이터베이스 스키마
+-- 교실 좌석 거래 시스템 데이터베이스 스키마 (수정된 버전)
 -- 6x5 = 30개 좌석 시스템
+-- 함수 중복 오류 해결
 -- ====================================================
 
--- 1. 기존 테이블과 함수 삭제 (있는 경우)
+-- 1. 기존 테이블과 함수 완전 삭제
 DROP TABLE IF EXISTS seat_transactions CASCADE;
 DROP TABLE IF EXISTS classroom_seats CASCADE;
 
@@ -89,7 +90,7 @@ ALTER TABLE seat_transactions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow all access to classroom_seats" ON classroom_seats FOR ALL USING (true);
 CREATE POLICY "Allow all access to seat_transactions" ON seat_transactions FOR ALL USING (true);
 
--- 7. 좌석 가격 계산 함수 (개선된 버전)
+-- 7. 좌석 가격 계산 함수 (수동 학생 수 지원)
 CREATE OR REPLACE FUNCTION calculate_seat_price(manual_student_count INTEGER DEFAULT NULL)
 RETURNS INTEGER AS $$
 DECLARE
@@ -210,7 +211,7 @@ BEGIN
   INSERT INTO seat_transactions (seat_id, seat_number, buyer_id, transaction_price, transaction_type)
   VALUES (v_seat_id, p_seat_number, p_student_id, v_current_price, 'buy');
   
-  -- 모든 좌석 가격 업데이트
+  -- 모든 좌석 가격 업데이트 (명시적 NULL 전달)
   PERFORM update_all_seat_prices(NULL);
   
   RETURN QUERY SELECT true, '좌석을 성공적으로 구매했습니다.', v_seat_id, v_current_price;
@@ -241,7 +242,7 @@ BEGIN
     RETURN;
   END IF;
   
-  -- 현재 시장 가격으로 판매
+  -- 현재 시장 가격으로 판매 (명시적 NULL 전달)
   v_current_price := calculate_seat_price(NULL);
   
   -- 좌석 판매 처리
@@ -263,14 +264,14 @@ BEGIN
   INSERT INTO seat_transactions (seat_id, seat_number, seller_id, transaction_price, transaction_type)
   VALUES (v_seat_id, p_seat_number, p_student_id, v_current_price, 'sell');
   
-  -- 모든 좌석 가격 업데이트
+  -- 모든 좌석 가격 업데이트 (명시적 NULL 전달)
   PERFORM update_all_seat_prices(NULL);
   
   RETURN QUERY SELECT true, '좌석을 성공적으로 판매했습니다.', v_current_price;
 END;
 $$ LANGUAGE plpgsql;
 
--- 11. 초기 좌석 가격 업데이트 (명시적 파라미터 전달)
+-- 11. 초기 좌석 가격 업데이트 (명시적 NULL 전달)
 SELECT update_all_seat_prices(NULL);
 
 -- 12. 테스트 쿼리
