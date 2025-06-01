@@ -190,7 +190,11 @@ export async function POST() {
     }
 
     // 3. 각 학생에게 계좌 생성 및 초기 잔액 설정
-    const accountsToCreate = [];
+    const accountsToCreate: Array<{
+      student_id: string;
+      account_type: string;
+      balance: number;
+    }> = [];
     const initialBalances = [500000, 300000, 700000]; // 각각 50만원, 30만원, 70만원
 
     createdStudents?.forEach((student, index) => {
