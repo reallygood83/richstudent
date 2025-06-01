@@ -235,7 +235,32 @@ export async function POST(request: NextRequest) {
     const profit = totalAmount - averageCost
     const profitPercent = averageCost > 0 ? (profit / averageCost) * 100 : 0
 
-    // 포트폴리오는 트리거로 자동 업데이트됨
+    // 5. 포트폴리오 업데이트
+    const newQuantity = portfolio.quantity - Number(quantity)
+    const newTotalInvested = portfolio.total_invested - (portfolio.average_price * Number(quantity))
+
+    if (newQuantity <= 0) {
+      // 전량 매도 시 포트폴리오에서 삭제
+      await supabase
+        .from('portfolio')
+        .delete()
+        .eq('student_id', sessionData.student_id)
+        .eq('asset_id', asset_id)
+    } else {
+      // 부분 매도 시 포트폴리오 업데이트
+      await supabase
+        .from('portfolio')
+        .update({
+          quantity: newQuantity,
+          total_invested: newTotalInvested,
+          current_value: newQuantity * Number(price),
+          profit_loss: (newQuantity * Number(price)) - newTotalInvested,
+          profit_loss_percent: newTotalInvested > 0 ? (((newQuantity * Number(price)) - newTotalInvested) / newTotalInvested * 100) : 0,
+          updated_at: new Date().toISOString()
+        })
+        .eq('student_id', sessionData.student_id)
+        .eq('asset_id', asset_id)
+    }
 
     return NextResponse.json({
       success: true,

@@ -189,7 +189,47 @@ export async function POST(request: NextRequest) {
         })
     }
 
-    // 4. 포트폴리오는 트리거로 자동 업데이트됨
+    // 4. 포트폴리오 업데이트 또는 생성
+    const { data: existingPortfolio } = await supabase
+      .from('portfolio')
+      .select('id, quantity, average_price, total_invested')
+      .eq('student_id', sessionData.student_id)
+      .eq('asset_id', asset_id)
+      .single()
+
+    if (existingPortfolio) {
+      // 기존 포트폴리오 업데이트 (평균 단가 계산)
+      const newQuantity = existingPortfolio.quantity + Number(quantity)
+      const newTotalInvested = existingPortfolio.total_invested + totalAmount
+      const newAveragePrice = newTotalInvested / newQuantity
+
+      await supabase
+        .from('portfolio')
+        .update({
+          quantity: newQuantity,
+          average_price: newAveragePrice,
+          total_invested: newTotalInvested,
+          current_value: newQuantity * Number(price),
+          profit_loss: (newQuantity * Number(price)) - newTotalInvested,
+          profit_loss_percent: newTotalInvested > 0 ? (((newQuantity * Number(price)) - newTotalInvested) / newTotalInvested * 100) : 0,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', existingPortfolio.id)
+    } else {
+      // 새 포트폴리오 생성
+      await supabase
+        .from('portfolio')
+        .insert({
+          student_id: sessionData.student_id,
+          asset_id: asset_id,
+          quantity: Number(quantity),
+          average_price: Number(price),
+          total_invested: totalAmount,
+          current_value: Number(quantity) * Number(price),
+          profit_loss: 0,
+          profit_loss_percent: 0
+        })
+    }
 
     return NextResponse.json({
       success: true,
