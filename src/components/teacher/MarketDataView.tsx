@@ -58,7 +58,7 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
       clearInterval(autoUpdateInterval)
       clearInterval(refreshInterval)
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchMarketData = async () => {
     try {
