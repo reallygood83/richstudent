@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 // 서버사이드 Supabase 클라이언트 (RLS 우회)
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
 // 시장 자산 데이터 강제 추가 API

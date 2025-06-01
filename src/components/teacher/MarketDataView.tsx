@@ -95,7 +95,7 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
     }
   }
 
-  const formatPrice = (price: number, currency: string = 'KRW') => {
+  const formatPrice = (price: number) => {
     // 모든 가격을 한국 원화로 표시 (일의 자리까지 반올림)
     const roundedPrice = Math.round(price)
     return new Intl.NumberFormat('ko-KR', {
@@ -223,7 +223,7 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold">
-                        {formatPrice(asset.current_price, 'KRW')}
+                        {formatPrice(asset.current_price)}
                       </span>
                       <div className={`flex items-center space-x-1 ${getPriceChangeColor(asset.price_change)}`}>
                         {getChangeIcon(asset.price_change)}
@@ -257,7 +257,7 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold">
-                        {formatPrice(asset.current_price, 'KRW')}
+                        {formatPrice(asset.current_price)}
                       </span>
                       <div className={`flex items-center space-x-1 ${getPriceChangeColor(asset.price_change)}`}>
                         {getChangeIcon(asset.price_change)}
@@ -291,7 +291,7 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold">
-                        {formatPrice(asset.current_price, 'KRW')}
+                        {formatPrice(asset.current_price)}
                       </span>
                       <div className={`flex items-center space-x-1 ${getPriceChangeColor(asset.price_change)}`}>
                         {getChangeIcon(asset.price_change)}
@@ -325,7 +325,7 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold">
-                        {formatPrice(asset.current_price, 'KRW')}
+                        {formatPrice(asset.current_price)}
                       </span>
                       <div className={`flex items-center space-x-1 ${getPriceChangeColor(asset.price_change)}`}>
                         {getChangeIcon(asset.price_change)}
