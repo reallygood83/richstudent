@@ -36,15 +36,57 @@ export default function CreditScoreManager({ student, onScoreUpdate }: CreditSco
   const [loading, setLoading] = useState(false)
   const [animating, setAnimating] = useState(false)
 
-  // 신용점수 등급 계산
+  // 신용점수 등급 계산 - 조화로운 파스텔 팔레트
   const getCreditGrade = (score: number) => {
-    if (score >= 800) return { grade: 'A+', color: 'bg-green-500', text: '최우수' }
-    if (score >= 750) return { grade: 'A', color: 'bg-green-400', text: '우수' }
-    if (score >= 700) return { grade: 'B+', color: 'bg-blue-500', text: '양호' }
-    if (score >= 650) return { grade: 'B', color: 'bg-blue-400', text: '보통' }
-    if (score >= 600) return { grade: 'C+', color: 'bg-yellow-500', text: '주의' }
-    if (score >= 550) return { grade: 'C', color: 'bg-yellow-400', text: '개선필요' }
-    return { grade: 'D', color: 'bg-red-500', text: '불량' }
+    if (score >= 800) return { 
+      grade: 'A+', 
+      bgColor: 'bg-emerald-400', 
+      borderColor: 'border-emerald-500',
+      textColor: 'text-emerald-700',
+      text: '최우수' 
+    }
+    if (score >= 750) return { 
+      grade: 'A', 
+      bgColor: 'bg-green-400', 
+      borderColor: 'border-green-500',
+      textColor: 'text-green-700',
+      text: '우수' 
+    }
+    if (score >= 700) return { 
+      grade: 'B+', 
+      bgColor: 'bg-amber-300', 
+      borderColor: 'border-amber-400',
+      textColor: 'text-amber-700',
+      text: '양호' 
+    }
+    if (score >= 650) return { 
+      grade: 'B', 
+      bgColor: 'bg-yellow-300', 
+      borderColor: 'border-yellow-400',
+      textColor: 'text-yellow-700',
+      text: '보통' 
+    }
+    if (score >= 600) return { 
+      grade: 'C+', 
+      bgColor: 'bg-orange-300', 
+      borderColor: 'border-orange-400',
+      textColor: 'text-orange-700',
+      text: '주의' 
+    }
+    if (score >= 550) return { 
+      grade: 'C', 
+      bgColor: 'bg-red-300', 
+      borderColor: 'border-red-400',
+      textColor: 'text-red-700',
+      text: '개선필요' 
+    }
+    return { 
+      grade: 'D', 
+      bgColor: 'bg-gray-400', 
+      borderColor: 'border-gray-500',
+      textColor: 'text-gray-700',
+      text: '불량' 
+    }
   }
 
   // 조정 버튼 색상
@@ -184,19 +226,18 @@ export default function CreditScoreManager({ student, onScoreUpdate }: CreditSco
             variant="outline"
             size="sm"
             className={`
-              flex items-center gap-2 hover:scale-105 transition-all duration-200
-              ${currentGrade.color} border-2 font-semibold text-white
-              hover:shadow-lg hover:brightness-110
+              flex items-center gap-1.5 px-3 py-1.5 h-auto
+              ${currentGrade.bgColor} ${currentGrade.borderColor} 
+              ${currentGrade.textColor} font-medium
+              hover:scale-105 hover:shadow-md transition-all duration-200
+              border-2 rounded-lg
             `}
           >
-            <Star className="w-4 h-4" />
-            <div className="flex flex-col items-start">
-              <span className="text-xs opacity-90">신용점수</span>
-              <span className="font-bold text-sm">{student.credit_score}</span>
-            </div>
-            <Badge variant="secondary" className="bg-white/20 text-white text-xs">
+            <Star className="w-3.5 h-3.5" />
+            <span className="font-semibold">{student.credit_score}</span>
+            <span className="text-xs font-medium px-1.5 py-0.5 bg-white/40 rounded">
               {currentGrade.grade}
-            </Badge>
+            </span>
           </Button>
         </DialogTrigger>
         
@@ -213,15 +254,15 @@ export default function CreditScoreManager({ student, onScoreUpdate }: CreditSco
 
           <div className="space-y-4">
             {/* 현재 신용점수 */}
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <div className="text-xs text-gray-500 mb-1">현재 신용점수</div>
+            <div className={`text-center p-3 ${currentGrade.bgColor}/20 border ${currentGrade.borderColor} rounded-lg`}>
+              <div className="text-xs text-gray-600 mb-1">현재 신용점수</div>
               <div className="flex items-center justify-center gap-2">
-                <span className="text-2xl font-bold">{student.credit_score}</span>
-                <Badge className={`${currentGrade.color} text-white text-xs`}>
+                <span className={`text-2xl font-bold ${currentGrade.textColor}`}>{student.credit_score}</span>
+                <Badge className={`${currentGrade.bgColor} ${currentGrade.textColor} text-xs border-0`}>
                   {currentGrade.grade}
                 </Badge>
               </div>
-              <div className="text-xs text-gray-400 mt-1">{currentGrade.text}</div>
+              <div className={`text-xs ${currentGrade.textColor} mt-1`}>{currentGrade.text}</div>
             </div>
 
             {/* 조정값 선택 */}
