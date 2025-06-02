@@ -116,12 +116,19 @@ export async function GET() {
         // 거래 내역에 시장 자산 정보 추가 (portfolio에서 가져온 정보 활용)
         const transactionsWithAssets = transactions?.map(tx => {
           // 포트폴리오에서 해당 asset_symbol을 가진 market_assets 정보 찾기
-          const portfolioAsset = portfolio?.find(p => p.market_assets?.symbol === tx.asset_symbol)
+          const portfolioAsset = portfolio?.find(p => {
+            const marketAsset = Array.isArray(p.market_assets) ? p.market_assets[0] : p.market_assets
+            return marketAsset?.symbol === tx.asset_symbol
+          })
+          const marketAsset = Array.isArray(portfolioAsset?.market_assets) 
+            ? portfolioAsset.market_assets[0] 
+            : portfolioAsset?.market_assets
+          
           return {
             ...tx,
             market_assets: {
               symbol: tx.asset_symbol,
-              name: portfolioAsset?.market_assets?.name || tx.asset_symbol
+              name: marketAsset?.name || tx.asset_symbol
             }
           }
         }) || []
