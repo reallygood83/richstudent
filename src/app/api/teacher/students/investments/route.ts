@@ -66,16 +66,17 @@ export async function GET() {
     // 각 학생의 포트폴리오 및 거래 내역 조회
     const studentsWithInvestments = await Promise.all(
       students.map(async (student) => {
-        // 포트폴리오 조회 (별도로 시장 자산 정보를 가져와서 조인)
-        const { data: portfolio } = await supabase
+        // 포트폴리오 조회 (모든 컬럼을 조회해서 스키마 확인)
+        const { data: portfolio, error: portfolioError } = await supabase
           .from('portfolio')
-          .select(`
-            quantity,
-            avg_price,
-            total_invested,
-            asset_symbol
-          `)
+          .select('*')
           .eq('student_id', student.id)
+
+        if (portfolioError) {
+          console.error(`Portfolio fetch error for student ${student.id}:`, portfolioError)
+        }
+        
+        console.log(`Student ${student.name} portfolio:`, portfolio)
 
         // 시장 자산 정보 조회 (포트폴리오에 있는 심볼들)
         const assetSymbols = portfolio?.map(p => p.asset_symbol) || []
@@ -130,7 +131,8 @@ export async function GET() {
         // 포트폴리오에 실시간 수익률 계산 추가
         const portfolioWithCalculations = portfolio?.map(holding => {
           const quantity = Number(holding.quantity)
-          const averagePrice = Number(holding.avg_price)
+          // 다양한 컬럼명 지원 (avg_price 또는 average_price)
+          const averagePrice = Number(holding.avg_price || holding.average_price || 0)
           
           // 해당 심볼의 시장 자산 정보 찾기
           const marketAsset = marketAssets?.find(asset => asset.symbol === holding.asset_symbol)
@@ -139,8 +141,8 @@ export async function GET() {
           // 실시간 현재 가치 계산 (수량 × 현재가)
           const currentValue = quantity * currentPrice
           
-          // 투자 원금 (수량 × 평균 매수가)
-          const totalInvested = quantity * averagePrice
+          // 투자 원금 계산 - total_invested가 있으면 사용, 없으면 계산
+          const totalInvested = Number(holding.total_invested) || (quantity * averagePrice)
           
           // 손익 계산
           const profitLoss = currentValue - totalInvested
@@ -150,7 +152,7 @@ export async function GET() {
 
           return {
             ...holding,
-            average_price: averagePrice, // avg_price를 average_price로 변환
+            average_price: averagePrice,
             current_value: currentValue,
             profit_loss: profitLoss,
             profit_loss_percent: profitLossPercent,
