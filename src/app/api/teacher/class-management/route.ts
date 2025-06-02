@@ -192,22 +192,27 @@ export async function DELETE(request: NextRequest) {
     // 학급 데이터 삭제 시작
     // CASCADE 설정으로 인해 students 삭제 시 관련 데이터가 자동 삭제됨
     
-    // 1. 경제 주체 계좌 삭제
-    const { error: entityAccountsError } = await supabase
-      .from('economic_entity_accounts')
-      .delete()
-      .in('entity_id', 
-        supabase
-          .from('economic_entities')
-          .select('id')
-          .eq('teacher_id', teacher.id)
-      )
+    // 1. 경제 주체 ID 조회
+    const { data: economicEntities } = await supabase
+      .from('economic_entities')
+      .select('id')
+      .eq('teacher_id', teacher.id)
 
-    if (entityAccountsError) {
-      console.error('Economic entity accounts deletion error:', entityAccountsError)
+    const entityIds = economicEntities?.map(entity => entity.id) || []
+
+    // 2. 경제 주체 계좌 삭제
+    if (entityIds.length > 0) {
+      const { error: entityAccountsError } = await supabase
+        .from('economic_entity_accounts')
+        .delete()
+        .in('entity_id', entityIds)
+
+      if (entityAccountsError) {
+        console.error('Economic entity accounts deletion error:', entityAccountsError)
+      }
     }
 
-    // 2. 경제 주체 삭제
+    // 3. 경제 주체 삭제
     const { error: entitiesError } = await supabase
       .from('economic_entities')
       .delete()
@@ -217,7 +222,7 @@ export async function DELETE(request: NextRequest) {
       console.error('Economic entities deletion error:', entitiesError)
     }
 
-    // 3. 시장 자산 삭제
+    // 4. 시장 자산 삭제
     const { error: marketAssetsError } = await supabase
       .from('market_assets')
       .delete()
@@ -227,22 +232,27 @@ export async function DELETE(request: NextRequest) {
       console.error('Market assets deletion error:', marketAssetsError)
     }
 
-    // 4. 교실 좌석 삭제 (만약 있다면)
-    const { error: seatsError } = await supabase
-      .from('classroom_seats')
-      .delete()
-      .in('owner_id', 
-        supabase
-          .from('students')
-          .select('id')
-          .eq('teacher_id', teacher.id)
-      )
+    // 5. 학생 ID 조회 (교실 좌석 삭제를 위해)
+    const { data: students } = await supabase
+      .from('students')
+      .select('id')
+      .eq('teacher_id', teacher.id)
 
-    if (seatsError) {
-      console.error('Classroom seats deletion error:', seatsError)
+    const studentIds = students?.map(student => student.id) || []
+
+    // 6. 교실 좌석 삭제 (만약 있다면)
+    if (studentIds.length > 0) {
+      const { error: seatsError } = await supabase
+        .from('classroom_seats')
+        .delete()
+        .in('owner_id', studentIds)
+
+      if (seatsError) {
+        console.error('Classroom seats deletion error:', seatsError)
+      }
     }
 
-    // 5. 학생 삭제 (CASCADE로 accounts, transactions, portfolio, asset_transactions 자동 삭제)
+    // 7. 학생 삭제 (CASCADE로 accounts, transactions, portfolio, asset_transactions 자동 삭제)
     const { error: studentsError, count: deletedStudentsCount } = await supabase
       .from('students')
       .delete({ count: 'exact' })
@@ -256,7 +266,7 @@ export async function DELETE(request: NextRequest) {
       }, { status: 500 })
     }
 
-    // 6. 교사 세션 정리
+    // 8. 교사 세션 정리
     const { error: sessionsError } = await supabase
       .from('teacher_sessions')
       .delete()
