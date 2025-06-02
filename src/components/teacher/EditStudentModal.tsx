@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -69,13 +69,41 @@ export default function EditStudentModal({
 }: EditStudentModalProps) {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
-    name: student?.name || '',
-    weekly_allowance: student?.weekly_allowance || 0,
-    credit_score: student?.credit_score || 700,
-    checking: student?.accounts.checking || 0,
-    savings: student?.accounts.savings || 0,
-    investment: student?.accounts.investment || 0
+    name: '',
+    weekly_allowance: 0,
+    credit_score: 700,
+    checking: 0,
+    savings: 0,
+    investment: 0
   })
+
+  // student prop이 변경될 때마다 폼 데이터 업데이트
+  useEffect(() => {
+    if (student && isOpen) {
+      setFormData({
+        name: student.name || '',
+        weekly_allowance: student.weekly_allowance || 0,
+        credit_score: student.credit_score || 700,
+        checking: student.accounts?.checking || 0,
+        savings: student.accounts?.savings || 0,
+        investment: student.accounts?.investment || 0
+      })
+    }
+  }, [student, isOpen])
+
+  // 모달이 닫힐 때 폼 리셋
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData({
+        name: '',
+        weekly_allowance: 0,
+        credit_score: 700,
+        checking: 0,
+        savings: 0,
+        investment: 0
+      })
+    }
+  }, [isOpen])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -106,15 +134,6 @@ export default function EditStudentModal({
       if (data.success) {
         onSuccess()
         onClose()
-        // Reset form
-        setFormData({
-          name: '',
-          weekly_allowance: 0,
-          credit_score: 700,
-          checking: 0,
-          savings: 0,
-          investment: 0
-        })
       } else {
         alert(data.error || '학생 정보 수정에 실패했습니다.')
       }

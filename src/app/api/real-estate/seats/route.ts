@@ -32,12 +32,46 @@ export async function GET() {
 
     console.log('Teacher ID:', teacher.teacher_id);
     
-    // 해당 교사의 좌석 데이터만 가져오기
+    // 해당 교사의 좌석 데이터 가져오기 (teacher_id 컬럼 누락 대응)
     const { data: seats, error: seatsError } = await supabase
       .from('classroom_seats')
       .select('*')
       .eq('teacher_id', teacher.teacher_id)
       .order('seat_number');
+
+    // teacher_id 컬럼이 없는 경우의 에러 처리
+    if (seatsError && seatsError.message?.includes('teacher_id does not exist')) {
+      console.warn('classroom_seats 테이블에 teacher_id 컬럼이 없습니다.');
+      console.log('임시로 모든 좌석을 조회합니다. FIX_CLASSROOM_SEATS_TEACHER_ID.sql을 실행하세요.');
+      
+      // 모든 좌석 가져오기 (임시)
+      const { data: allSeats, error: allSeatsError } = await supabase
+        .from('classroom_seats')
+        .select('*')
+        .order('seat_number');
+        
+      if (allSeatsError) {
+        console.error('Error fetching all seats:', allSeatsError);
+        return NextResponse.json({ 
+          error: 'Failed to fetch seats', 
+          details: allSeatsError.message 
+        }, { status: 500 });
+      }
+      
+      // 좌석이 없으면 빈 배열 반환
+      if (!allSeats || allSeats.length === 0) {
+        return NextResponse.json({ 
+          seats: [],
+          message: '좌석이 없습니다. 좌석을 먼저 생성해주세요.',
+          warning: 'teacher_id 컬럼이 없어 데이터 격리가 되지 않습니다.'
+        });
+      }
+      
+      return NextResponse.json({ 
+        seats: allSeats,
+        warning: 'teacher_id 컬럼이 없어 모든 교사의 좌석이 표시됩니다. FIX_CLASSROOM_SEATS_TEACHER_ID.sql을 실행하세요.'
+      });
+    }
 
     if (seatsError) {
       console.error('Error fetching seats:', seatsError);
