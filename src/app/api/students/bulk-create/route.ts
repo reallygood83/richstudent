@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { NextRequest, NextResponse } from 'next/server'
+import { validateSession } from '@/lib/auth'
+import { supabase } from '@/lib/supabase/client'
 
 interface StudentInput {
   name: string;
@@ -9,6 +10,24 @@ interface StudentInput {
 
 export async function POST(request: NextRequest) {
   try {
+    const sessionToken = request.cookies.get('session_token')?.value
+
+    if (!sessionToken) {
+      return NextResponse.json({
+        success: false,
+        error: '인증이 필요합니다.'
+      }, { status: 401 })
+    }
+
+    // 세션 검증
+    const teacher = await validateSession(sessionToken)
+    if (!teacher) {
+      return NextResponse.json({
+        success: false,
+        error: '유효하지 않은 세션입니다.'
+      }, { status: 401 })
+    }
+
     const { students }: { students: StudentInput[] } = await request.json();
 
     if (!students || !Array.isArray(students) || students.length === 0) {
@@ -25,38 +44,12 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    const supabase = createClient();
-    
-    // 1. 세션 유효성 검사 및 교사 정보 가져오기
-    const sessionResponse = await fetch(new URL('/api/auth/me', request.url).toString(), {
-      headers: {
-        cookie: request.headers.get('cookie') || '',
-      },
-    });
-
-    if (!sessionResponse.ok) {
-      return NextResponse.json({
-        success: false,
-        error: '인증이 필요합니다.'
-      }, { status: 401 });
-    }
-
-    const sessionData = await sessionResponse.json();
-    if (!sessionData.success || !sessionData.user?.teacherId) {
-      return NextResponse.json({
-        success: false,
-        error: '교사 정보를 찾을 수 없습니다.'
-      }, { status: 401 });
-    }
-
-    const teacherId = sessionData.user.teacherId;
-
-    // 2. 기존 학번 중복 체크
+    // 기존 학번 중복 체크
     const existingCodes = students.map(s => s.student_code);
     const { data: existingStudents, error: checkError } = await supabase
       .from('students')
       .select('student_code')
-      .eq('teacher_id', teacherId)
+      .eq('teacher_id', teacher.id)
       .in('student_code', existingCodes);
 
     if (checkError) {
@@ -75,17 +68,17 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // 3. 학생 데이터 준비
+    // 학생 데이터 준비
     const studentsToCreate = students.map(student => ({
       name: student.name.trim(),
       student_code: student.student_code.trim(),
-      teacher_id: teacherId,
+      teacher_id: teacher.id,
       weekly_allowance: student.weekly_allowance || 50000,
       credit_score: 700, // 기본 신용점수
-      password_hash: null, // 비밀번호는 나중에 설정
+      password: null, // 비밀번호는 나중에 설정
     }));
 
-    // 4. 학생 일괄 생성
+    // 학생 일괄 생성
     const { data: createdStudents, error: createError } = await supabase
       .from('students')
       .insert(studentsToCreate)
@@ -106,7 +99,7 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
 
-    // 5. 각 학생에 대해 계좌 생성
+    // 각 학생에 대해 계좌 생성
     const accountsToCreate = [];
     for (const student of createdStudents) {
       // 당좌, 저축, 투자 계좌 생성
@@ -114,17 +107,20 @@ export async function POST(request: NextRequest) {
         {
           student_id: student.id,
           account_type: 'checking',
-          balance: 0
+          balance: 0,
+          interest_rate: 0
         },
         {
           student_id: student.id,
           account_type: 'savings', 
-          balance: 0
+          balance: 0,
+          interest_rate: 0.02 // 2% 기본 이자율
         },
         {
           student_id: student.id,
           account_type: 'investment',
-          balance: 0
+          balance: 0,
+          interest_rate: 0
         }
       );
     }
