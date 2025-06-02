@@ -53,7 +53,14 @@ export default function ClassDeletionModal({ classInfo, onClose, onSuccess }: Cl
   const [backupRequested, setBackupRequested] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [deletionResult, setDeletionResult] = useState<any>(null)
+  const [deletionResult, setDeletionResult] = useState<{
+    deletion_summary: {
+      deleted_students: number
+      backup_created: boolean
+      deletion_date: string
+    }
+    backup_data?: unknown
+  } | null>(null)
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('ko-KR', {
@@ -266,7 +273,7 @@ export default function ClassDeletionModal({ classInfo, onClose, onSuccess }: Cl
               {/* 확인 텍스트 입력 */}
               <div className="space-y-2">
                 <Label htmlFor="confirm-text">
-                  삭제를 확인하려면 <span className="font-semibold text-red-600">"학급삭제"</span>를 정확히 입력하세요
+                  삭제를 확인하려면 <span className="font-semibold text-red-600">&quot;학급삭제&quot;</span>를 정확히 입력하세요
                 </Label>
                 <Input
                   id="confirm-text"
