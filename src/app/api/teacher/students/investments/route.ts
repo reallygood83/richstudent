@@ -66,10 +66,29 @@ export async function GET() {
     // 각 학생의 포트폴리오 및 거래 내역 조회
     const studentsWithInvestments = await Promise.all(
       students.map(async (student) => {
-        // 포트폴리오 조회 (모든 컬럼을 조회해서 스키마 확인)
+        // 포트폴리오 조회 (market_assets와 JOIN으로 실시간 가격 정보 포함) - 학생용 API와 동일한 방식
         const { data: portfolio, error: portfolioError } = await supabase
           .from('portfolio')
-          .select('*')
+          .select(`
+            id,
+            quantity,
+            average_price,
+            total_invested,
+            current_value,
+            profit_loss,
+            profit_loss_percent,
+            created_at,
+            updated_at,
+            market_assets (
+              id,
+              symbol,
+              name,
+              current_price,
+              currency,
+              asset_type,
+              category
+            )
+          `)
           .eq('student_id', student.id)
 
         if (portfolioError) {
@@ -77,20 +96,6 @@ export async function GET() {
         }
         
         console.log(`Student ${student.name} portfolio:`, portfolio)
-
-        // 시장 자산 정보 조회 (포트폴리오에 있는 심볼들)
-        const assetSymbols = portfolio?.map(p => p.asset_symbol) || []
-        const { data: marketAssets } = assetSymbols.length > 0 ? await supabase
-          .from('market_assets')
-          .select(`
-            symbol,
-            name,
-            current_price,
-            asset_type,
-            category
-          `)
-          .eq('teacher_id', teacher.teacher_id)
-          .in('symbol', assetSymbols) : { data: [] }
 
         // 최근 거래 내역 조회 (최근 10개)
         const { data: transactions } = await supabase
@@ -108,14 +113,15 @@ export async function GET() {
           .order('created_at', { ascending: false })
           .limit(10)
 
-        // 거래 내역에 시장 자산 정보 추가
+        // 거래 내역에 시장 자산 정보 추가 (portfolio에서 가져온 정보 활용)
         const transactionsWithAssets = transactions?.map(tx => {
-          const marketAsset = marketAssets?.find(asset => asset.symbol === tx.asset_symbol)
+          // 포트폴리오에서 해당 asset_symbol을 가진 market_assets 정보 찾기
+          const portfolioAsset = portfolio?.find(p => p.market_assets?.symbol === tx.asset_symbol)
           return {
             ...tx,
             market_assets: {
               symbol: tx.asset_symbol,
-              name: marketAsset?.name || tx.asset_symbol
+              name: portfolioAsset?.market_assets?.name || tx.asset_symbol
             }
           }
         }) || []
@@ -128,42 +134,32 @@ export async function GET() {
           return acc
         }, {})
 
-        // 포트폴리오에 실시간 수익률 계산 추가
-        const portfolioWithCalculations = portfolio?.map(holding => {
-          const quantity = Number(holding.quantity)
-          // 다양한 컬럼명 지원 (avg_price 또는 average_price)
-          const averagePrice = Number(holding.avg_price || holding.average_price || 0)
-          
-          // 해당 심볼의 시장 자산 정보 찾기
-          const marketAsset = marketAssets?.find(asset => asset.symbol === holding.asset_symbol)
+        // 포트폴리오에 실시간 수익률 계산 추가 (학생용 API와 동일한 로직)
+        const portfolioWithCalculations = portfolio?.map(item => {
+          const quantity = Number(item.quantity)
+          const averagePrice = Number(item.average_price)
+          const marketAsset = Array.isArray(item.market_assets) ? item.market_assets[0] : item.market_assets
           const currentPrice = Number(marketAsset?.current_price || 0)
           
-          // 실시간 현재 가치 계산 (수량 × 현재가)
-          const currentValue = quantity * currentPrice
+          // 실제 현재 가치 계산 (수량 × 현재가)
+          const realCurrentValue = quantity * currentPrice
           
-          // 투자 원금 계산 - total_invested가 있으면 사용, 없으면 계산
-          const totalInvested = Number(holding.total_invested) || (quantity * averagePrice)
+          // 투자 원금 (수량 × 평균 매수가)
+          const totalInvested = quantity * averagePrice
           
           // 손익 계산
-          const profitLoss = currentValue - totalInvested
+          const profitLoss = realCurrentValue - totalInvested
           
           // 수익률 계산
           const profitLossPercent = totalInvested > 0 ? (profitLoss / totalInvested) * 100 : 0
 
           return {
-            ...holding,
-            average_price: averagePrice,
-            current_value: currentValue,
+            ...item,
+            current_value: realCurrentValue,
             profit_loss: profitLoss,
             profit_loss_percent: profitLossPercent,
             total_invested: totalInvested,
-            market_assets: marketAsset || {
-              symbol: holding.asset_symbol,
-              name: holding.asset_symbol,
-              current_price: 0,
-              asset_type: 'unknown',
-              category: 'unknown'
-            }
+            market_assets: marketAsset
           }
         }) || []
 
