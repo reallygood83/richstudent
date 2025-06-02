@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 
 // 대출 상환 API
 export async function POST(request: NextRequest) {
   try {
+    const supabase = createClient()
     const cookieStore = await cookies()
     const sessionToken = cookieStore.get('student_session_token')?.value
 
@@ -184,7 +185,6 @@ export async function POST(request: NextRequest) {
         payment_amount: actualPayment,
         interest_amount: interestAmount,
         principal_amount: principalAmount,
-        early_repayment_fee: earlyRepaymentFee, // 중도상환 수수료 추가
         payment_week: paymentWeek,
         remaining_balance: Math.max(0, newRemainingBalance),
         payment_type: isFullRepayment ? 'full_repayment' : (payment_amount === loan.weekly_payment ? 'scheduled' : 'early')
@@ -270,7 +270,7 @@ export async function POST(request: NextRequest) {
         payment_amount: actualPayment,
         interest_amount: interestAmount,
         principal_amount: principalAmount,
-        early_repayment_fee: earlyRepaymentFee, // 중도상환 수수료 추가
+        early_repayment_fee: earlyRepaymentFee,
         remaining_balance: Math.max(0, newRemainingBalance),
         remaining_weeks: isLoanCompleted ? 0 : loan.remaining_weeks - 1,
         is_completed: isLoanCompleted,
