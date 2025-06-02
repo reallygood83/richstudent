@@ -66,26 +66,30 @@ export async function GET() {
     // 각 학생의 포트폴리오 및 거래 내역 조회
     const studentsWithInvestments = await Promise.all(
       students.map(async (student) => {
-        // 포트폴리오 조회
+        // 포트폴리오 조회 (별도로 시장 자산 정보를 가져와서 조인)
         const { data: portfolio } = await supabase
           .from('portfolio')
           .select(`
             quantity,
-            average_price,
+            avg_price,
             total_invested,
-            current_value,
-            profit_loss,
-            profit_loss_percent,
-            market_assets (
-              id,
-              symbol,
-              name,
-              current_price,
-              asset_type,
-              category
-            )
+            asset_symbol
           `)
           .eq('student_id', student.id)
+
+        // 시장 자산 정보 조회 (포트폴리오에 있는 심볼들)
+        const assetSymbols = portfolio?.map(p => p.asset_symbol) || []
+        const { data: marketAssets } = assetSymbols.length > 0 ? await supabase
+          .from('market_assets')
+          .select(`
+            symbol,
+            name,
+            current_price,
+            asset_type,
+            category
+          `)
+          .eq('teacher_id', teacher.teacher_id)
+          .in('symbol', assetSymbols) : { data: [] }
 
         // 최근 거래 내역 조회 (최근 10개)
         const { data: transactions } = await supabase
@@ -97,14 +101,23 @@ export async function GET() {
             total_amount,
             fee,
             created_at,
-            market_assets (
-              symbol,
-              name
-            )
+            asset_symbol
           `)
           .eq('student_id', student.id)
           .order('created_at', { ascending: false })
           .limit(10)
+
+        // 거래 내역에 시장 자산 정보 추가
+        const transactionsWithAssets = transactions?.map(tx => {
+          const marketAsset = marketAssets?.find(asset => asset.symbol === tx.asset_symbol)
+          return {
+            ...tx,
+            market_assets: {
+              symbol: tx.asset_symbol,
+              name: marketAsset?.name || tx.asset_symbol
+            }
+          }
+        }) || []
 
         // 계좌별 잔액 정리
         const accounts = student.accounts.reduce((acc: Record<string, number>, account: Record<string, unknown>) => {
@@ -114,14 +127,52 @@ export async function GET() {
           return acc
         }, {})
 
-        // 포트폴리오 총 가치 계산
-        const totalPortfolioValue = portfolio?.reduce((sum, holding) => {
-          return sum + (holding.current_value || 0)
-        }, 0) || 0
+        // 포트폴리오에 실시간 수익률 계산 추가
+        const portfolioWithCalculations = portfolio?.map(holding => {
+          const quantity = Number(holding.quantity)
+          const averagePrice = Number(holding.avg_price)
+          
+          // 해당 심볼의 시장 자산 정보 찾기
+          const marketAsset = marketAssets?.find(asset => asset.symbol === holding.asset_symbol)
+          const currentPrice = Number(marketAsset?.current_price || 0)
+          
+          // 실시간 현재 가치 계산 (수량 × 현재가)
+          const currentValue = quantity * currentPrice
+          
+          // 투자 원금 (수량 × 평균 매수가)
+          const totalInvested = quantity * averagePrice
+          
+          // 손익 계산
+          const profitLoss = currentValue - totalInvested
+          
+          // 수익률 계산
+          const profitLossPercent = totalInvested > 0 ? (profitLoss / totalInvested) * 100 : 0
 
-        const totalInvested = portfolio?.reduce((sum, holding) => {
-          return sum + (holding.total_invested || 0)
-        }, 0) || 0
+          return {
+            ...holding,
+            average_price: averagePrice, // avg_price를 average_price로 변환
+            current_value: currentValue,
+            profit_loss: profitLoss,
+            profit_loss_percent: profitLossPercent,
+            total_invested: totalInvested,
+            market_assets: marketAsset || {
+              symbol: holding.asset_symbol,
+              name: holding.asset_symbol,
+              current_price: 0,
+              asset_type: 'unknown',
+              category: 'unknown'
+            }
+          }
+        }) || []
+
+        // 포트폴리오 총 가치 계산 (실시간 계산된 값으로)
+        const totalPortfolioValue = portfolioWithCalculations.reduce((sum, holding) => {
+          return sum + Number(holding.current_value)
+        }, 0)
+
+        const totalInvested = portfolioWithCalculations.reduce((sum, holding) => {
+          return sum + Number(holding.total_invested)
+        }, 0)
 
         const totalProfitLoss = totalPortfolioValue - totalInvested
         const totalProfitLossPercent = totalInvested > 0 ? (totalProfitLoss / totalInvested) * 100 : 0
@@ -130,14 +181,14 @@ export async function GET() {
           ...student,
           accounts,
           portfolio: {
-            holdings: portfolio || [],
+            holdings: portfolioWithCalculations,
             total_value: totalPortfolioValue,
             total_invested: totalInvested,
             total_profit_loss: totalProfitLoss,
             total_profit_loss_percent: totalProfitLossPercent,
-            holdings_count: portfolio?.length || 0
+            holdings_count: portfolioWithCalculations.length
           },
-          recent_transactions: transactions || [],
+          recent_transactions: transactionsWithAssets,
           total_assets: (accounts.checking || 0) + (accounts.savings || 0) + (accounts.investment || 0) + totalPortfolioValue
         }
       })
