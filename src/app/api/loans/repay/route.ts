@@ -109,20 +109,46 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // 상환 금액이 남은 잔액보다 큰 경우 조정
-    const actualPayment = Math.min(payment_amount, loan.remaining_balance)
+    // 전액 상환 여부 확인
+    const isFullRepayment = payment_amount >= loan.remaining_balance
+    
+    let actualPayment, interestAmount, principalAmount, earlyRepaymentFee = 0
+    
+    if (isFullRepayment) {
+      // 전액 상환의 경우: 원금 + 중도상환 수수료
+      principalAmount = loan.remaining_balance
+      
+      // 중도상환 수수료 = 남은 기간의 이자 50%
+      const weeklyInterestRate = loan.interest_rate / 100 / 52 // 연이율 → 주간이율 (정확한 계산)
+      const remainingInterest = loan.remaining_balance * weeklyInterestRate * loan.remaining_weeks
+      earlyRepaymentFee = Math.round(remainingInterest * 0.5)
+      
+      interestAmount = 0 // 전액상환시 정기 이자는 없음
+      actualPayment = principalAmount + earlyRepaymentFee
+      
+      // 계좌 잔액 재확인 (수수료 포함)
+      if (account.balance < actualPayment) {
+        return NextResponse.json({
+          success: false,
+          error: `전액 상환에 필요한 금액이 부족합니다. 필요 금액: ${actualPayment.toLocaleString()}원 (원금: ${principalAmount.toLocaleString()}원 + 중도상환수수료: ${earlyRepaymentFee.toLocaleString()}원)`
+        }, { status: 400 })
+      }
+    } else {
+      // 일반 상환의 경우 (기존 로직)
+      actualPayment = Math.min(payment_amount, loan.remaining_balance)
+      
+      // 주간 이자 계산
+      const weeklyInterestRate = loan.interest_rate / 100 / 52 // 정확한 주간이율
+      interestAmount = Math.round(loan.remaining_balance * weeklyInterestRate)
+      principalAmount = actualPayment - interestAmount
 
-    // 이자와 원금 계산
-    const weeklyInterestRate = loan.interest_rate / 100 / 12 // 주간 이자율
-    const interestAmount = Math.round(loan.remaining_balance * weeklyInterestRate)
-    const principalAmount = actualPayment - interestAmount
-
-    // 원금이 음수가 되는 경우 (이자만으로 상환 금액 초과)
-    if (principalAmount < 0) {
-      return NextResponse.json({
-        success: false,
-        error: `최소 상환 금액은 ${interestAmount.toLocaleString()}원(이자)입니다.`
-      }, { status: 400 })
+      // 원금이 음수가 되는 경우
+      if (principalAmount < 0) {
+        return NextResponse.json({
+          success: false,
+          error: `최소 상환 금액은 ${interestAmount.toLocaleString()}원(이자)입니다.`
+        }, { status: 400 })
+      }
     }
 
     // 남은 잔액 계산
@@ -158,9 +184,10 @@ export async function POST(request: NextRequest) {
         payment_amount: actualPayment,
         interest_amount: interestAmount,
         principal_amount: principalAmount,
+        early_repayment_fee: earlyRepaymentFee, // 중도상환 수수료 추가
         payment_week: paymentWeek,
         remaining_balance: Math.max(0, newRemainingBalance),
-        payment_type: payment_amount === loan.weekly_payment ? 'scheduled' : 'early'
+        payment_type: isFullRepayment ? 'full_repayment' : (payment_amount === loan.weekly_payment ? 'scheduled' : 'early')
       })
 
     if (paymentRecordError) {
@@ -201,6 +228,10 @@ export async function POST(request: NextRequest) {
     }
 
     // 거래 내역 기록
+    const transactionDescription = isFullRepayment 
+      ? `대출 전액상환 - 원금: ${principalAmount.toLocaleString()}원, 중도상환수수료: ${earlyRepaymentFee.toLocaleString()}원`
+      : `대출 상환 - ${paymentWeek}차 (이자: ${interestAmount.toLocaleString()}원, 원금: ${principalAmount.toLocaleString()}원)`
+    
     await supabase
       .from('transactions')
       .insert({
@@ -208,7 +239,7 @@ export async function POST(request: NextRequest) {
         to_student_id: null, // 은행으로
         amount: actualPayment,
         transaction_type: 'loan_repayment',
-        description: `대출 상환 - ${paymentWeek}차 (이자: ${interestAmount.toLocaleString()}원, 원금: ${principalAmount.toLocaleString()}원)`,
+        description: transactionDescription,
         status: 'completed'
       })
 
@@ -233,15 +264,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: isLoanCompleted 
-        ? '축하합니다! 대출이 완전히 상환되었습니다.'
+        ? `축하합니다! 대출이 완전히 상환되었습니다. ${isFullRepayment ? `(중도상환수수료: ${earlyRepaymentFee.toLocaleString()}원 포함)` : ''}`
         : `${actualPayment.toLocaleString()}원이 성공적으로 상환되었습니다.`,
       payment: {
         payment_amount: actualPayment,
         interest_amount: interestAmount,
         principal_amount: principalAmount,
+        early_repayment_fee: earlyRepaymentFee, // 중도상환 수수료 추가
         remaining_balance: Math.max(0, newRemainingBalance),
         remaining_weeks: isLoanCompleted ? 0 : loan.remaining_weeks - 1,
-        is_completed: isLoanCompleted
+        is_completed: isLoanCompleted,
+        is_full_repayment: isFullRepayment
       }
     })
 
