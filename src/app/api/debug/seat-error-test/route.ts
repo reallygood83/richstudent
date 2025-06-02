@@ -85,6 +85,10 @@ export async function GET() {
       .select('id, teacher_id', { count: 'exact' })
       .limit(0);
 
+    if (allSeatsError) {
+      console.warn('All seats query error:', allSeatsError.message);
+    }
+
     return NextResponse.json({
       success: true,
       debug: {
@@ -92,6 +96,7 @@ export async function GET() {
         teacher_seats_count: seats?.length || 0,
         teacher_seats: seats || [],
         total_seats_count: allSeats?.length || 0,
+        total_seats_error: allSeatsError?.message || null,
         table_accessible: !tableError,
         step: 'complete'
       }
