@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ArrowRightLeft, DollarSign, Users, PlusCircle } from 'lucide-react'
 import TransferModal from './TransferModal'
+import MultiTransferModal from './MultiTransferModal'
 import AllowanceModal from './AllowanceModal'
+import TaxCollectionModal from './TaxCollectionModal'
 import TransactionHistory from './TransactionHistory'
 import { Student } from '@/types'
 
@@ -17,7 +19,9 @@ interface TransactionManagerProps {
 
 export default function TransactionManager({ students, onRefreshStudents }: TransactionManagerProps) {
   const [showTransferModal, setShowTransferModal] = useState(false)
+  const [showMultiTransferModal, setShowMultiTransferModal] = useState(false)
   const [showAllowanceModal, setShowAllowanceModal] = useState(false)
+  const [showTaxCollectionModal, setShowTaxCollectionModal] = useState(false)
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(false)
 
@@ -59,8 +63,20 @@ export default function TransactionManager({ students, onRefreshStudents }: Tran
     fetchTransactions()
   }
 
+  const handleMultiTransferSuccess = () => {
+    setShowMultiTransferModal(false)
+    onRefreshStudents()
+    fetchTransactions()
+  }
+
   const handleAllowanceSuccess = () => {
     setShowAllowanceModal(false)
+    onRefreshStudents()
+    fetchTransactions()
+  }
+
+  const handleTaxCollectionSuccess = () => {
+    setShowTaxCollectionModal(false)
     onRefreshStudents()
     fetchTransactions()
   }
@@ -125,7 +141,7 @@ export default function TransactionManager({ students, onRefreshStudents }: Tran
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <Button
                   onClick={() => setShowTransferModal(true)}
                   className="h-20 flex flex-col items-center justify-center space-y-2"
@@ -133,6 +149,16 @@ export default function TransactionManager({ students, onRefreshStudents }: Tran
                 >
                   <ArrowRightLeft className="h-6 w-6" />
                   <span>학생 간 송금</span>
+                </Button>
+
+                <Button
+                  onClick={() => setShowMultiTransferModal(true)}
+                  variant="outline"
+                  className="h-20 flex flex-col items-center justify-center space-y-2"
+                  disabled={students.length < 3}
+                >
+                  <Users className="h-6 w-6" />
+                  <span>다중 송금</span>
                 </Button>
 
                 <Button
@@ -146,6 +172,7 @@ export default function TransactionManager({ students, onRefreshStudents }: Tran
                 </Button>
 
                 <Button
+                  onClick={() => setShowTaxCollectionModal(true)}
                   variant="outline"
                   className="h-20 flex flex-col items-center justify-center space-y-2"
                   disabled={students.length === 0}
@@ -179,6 +206,14 @@ export default function TransactionManager({ students, onRefreshStudents }: Tran
                   </p>
                 </div>
               )}
+
+              {students.length === 2 && (
+                <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    다중 송금을 하려면 최소 3명의 학생이 필요합니다 (송금자 1명 + 수신자 2명 이상).
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -197,11 +232,27 @@ export default function TransactionManager({ students, onRefreshStudents }: Tran
         />
       )}
 
+      {showMultiTransferModal && (
+        <MultiTransferModal
+          students={students}
+          onClose={() => setShowMultiTransferModal(false)}
+          onSuccess={handleMultiTransferSuccess}
+        />
+      )}
+
       {showAllowanceModal && (
         <AllowanceModal
           students={students}
           onClose={() => setShowAllowanceModal(false)}
           onSuccess={handleAllowanceSuccess}
+        />
+      )}
+
+      {showTaxCollectionModal && (
+        <TaxCollectionModal
+          students={students}
+          onClose={() => setShowTaxCollectionModal(false)}
+          onSuccess={handleTaxCollectionSuccess}
         />
       )}
     </div>

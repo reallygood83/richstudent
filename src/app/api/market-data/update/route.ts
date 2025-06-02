@@ -22,9 +22,33 @@ interface YahooFinanceResponse {
   }
 }
 
+// 대체 환율 API에서 JPY/KRW 환율 조회
+async function fetchJPYKRWRate(): Promise<number> {
+  try {
+    // ExchangeRate-API에서 JPY 기준 환율 조회
+    const response = await fetch('https://api.exchangerate-api.com/v4/latest/JPY')
+    
+    if (!response.ok) {
+      return 960 // 기본값: 100엔 = 960원
+    }
+    
+    const data = await response.json()
+    const jpyToKrw = data.rates?.KRW || 0.0096 // 1 JPY = 0.0096 KRW
+    return Math.round(jpyToKrw * 100 * 100) / 100 // 100 JPY = X KRW로 변환
+  } catch (error) {
+    console.error('JPY/KRW exchange rate fetch error:', error)
+    return 960 // 기본값: 100엔 = 960원
+  }
+}
+
 // Yahoo Finance에서 실시간 가격 조회
 async function fetchRealTimePrice(symbol: string): Promise<number | null> {
   try {
+    // 일본 엔화는 대체 API 사용
+    if (symbol === 'JPYKRW=X') {
+      return await fetchJPYKRWRate()
+    }
+
     const response = await fetch(
       `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=2d`,
       {

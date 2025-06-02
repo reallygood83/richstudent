@@ -130,21 +130,72 @@ export async function GET() {
       console.error('Transactions fetch error:', transactionsError)
     }
 
-    // 포트폴리오 요약 계산
-    const totalInvested = portfolio?.reduce((sum, item) => sum + Number(item.total_invested), 0) || 0
-    const totalCurrentValue = portfolio?.reduce((sum, item) => sum + Number(item.current_value), 0) || 0
+    // 먼저 실시간 계산을 위한 데이터 처리
+    const portfolioWithCalculations = portfolio?.map(item => {
+      const quantity = Number(item.quantity)
+      const averagePrice = Number(item.average_price)
+      const marketAsset = Array.isArray(item.market_assets) ? item.market_assets[0] : item.market_assets
+      const currentPrice = Number(marketAsset?.current_price || 0)
+      
+      // 실제 현재 가치 계산 (수량 × 현재가)
+      const realCurrentValue = quantity * currentPrice
+      
+      // 투자 원금 (수량 × 평균 매수가)
+      const totalInvested = quantity * averagePrice
+      
+      // 손익 계산
+      const profitLoss = realCurrentValue - totalInvested
+      
+      // 수익률 계산
+      const profitLossPercent = totalInvested > 0 ? (profitLoss / totalInvested) * 100 : 0
+
+      return {
+        ...item,
+        current_value: realCurrentValue,
+        profit_loss: profitLoss,
+        profit_loss_percent: profitLossPercent,
+        total_invested: totalInvested,
+        market_assets: marketAsset
+      }
+    }) || []
+
+    // 포트폴리오 요약 계산 (실시간 계산된 값으로)
+    const totalInvested = portfolioWithCalculations.reduce((sum, item) => sum + Number(item.total_invested), 0)
+    const totalCurrentValue = portfolioWithCalculations.reduce((sum, item) => sum + Number(item.current_value), 0)
     const totalProfitLoss = totalCurrentValue - totalInvested
     const totalProfitLossPercent = totalInvested > 0 ? (totalProfitLoss / totalInvested) * 100 : 0
     const cashBalance = investmentAccount?.balance || 0
     const totalAssets = totalCurrentValue + cashBalance
 
-    // 자산별 비중 계산
-    const portfolioWithWeight = portfolio?.map(item => ({
+    // 비중 계산 (전체 포트폴리오 대비)
+    const portfolioWithWeight = portfolioWithCalculations.map(item => ({
       ...item,
       weight: totalCurrentValue > 0 ? (Number(item.current_value) / totalCurrentValue) * 100 : 0
-    })) || []
+    }))
 
-    // 자산 카테고리별 분포는 나중에 구현
+    // 자산 카테고리별 분포 계산
+    const categoryDistribution = portfolioWithWeight.reduce((acc, item) => {
+      const marketAsset = Array.isArray(item.market_assets) ? item.market_assets[0] : item.market_assets
+      const category = marketAsset?.category || '기타'
+      const value = Number(item.current_value)
+      
+      if (!acc[category]) {
+        acc[category] = {
+          category: category,
+          value: 0,
+          count: 0,
+          weight: 0
+        }
+      }
+      
+      acc[category].value += value
+      acc[category].count += 1
+      acc[category].weight = totalCurrentValue > 0 ? (acc[category].value / totalCurrentValue) * 100 : 0
+      
+      return acc
+    }, {} as Record<string, {category: string; value: number; count: number; weight: number}>)
+
+    const categoryArray = Object.values(categoryDistribution)
 
     return NextResponse.json({
       success: true,
@@ -160,7 +211,7 @@ export async function GET() {
         holdings: portfolioWithWeight,
         transactions: transactions || [],
         distribution: {
-          by_category: []
+          by_category: categoryArray
         }
       }
     })
