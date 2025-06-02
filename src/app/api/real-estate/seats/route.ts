@@ -48,8 +48,12 @@ export async function GET() {
     }
 
     if (!seats || seats.length === 0) {
-      console.log('No seats found, returning empty array');
-      return NextResponse.json({ seats: [] });
+      console.log('No seats found for teacher:', teacher.teacher_id);
+      return NextResponse.json({ 
+        seats: [],
+        message: '좌석이 없습니다. 좌석을 먼저 생성해주세요.',
+        teacher_id: teacher.teacher_id
+      });
     }
 
     // 소유자 정보 별도로 가져오기 (해당 교사의 학생들만)
