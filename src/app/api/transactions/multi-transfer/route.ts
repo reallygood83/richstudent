@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { validateSession } from '@/lib/auth'
 import { supabase } from '@/lib/supabase/client'
 
 interface TransferRecipient {
@@ -17,6 +18,24 @@ interface MultiTransferRequest {
 
 export async function POST(request: NextRequest) {
   try {
+    const sessionToken = request.cookies.get('session_token')?.value
+
+    if (!sessionToken) {
+      return NextResponse.json({
+        success: false,
+        error: '인증이 필요합니다.'
+      }, { status: 401 })
+    }
+
+    // 세션 검증
+    const teacher = await validateSession(sessionToken)
+    if (!teacher) {
+      return NextResponse.json({
+        success: false,
+        error: '유효하지 않은 세션입니다.'
+      }, { status: 401 })
+    }
+
     const body: MultiTransferRequest = await request.json()
     const { 
       from_student_id, 
@@ -34,17 +53,33 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // 송금자 정보 조회
+    // 송금자 정보 및 계좌 조회
     const { data: fromStudent, error: fromError } = await supabase
       .from('students')
-      .select('id, name, accounts')
+      .select('id, name, student_code')
       .eq('id', from_student_id)
+      .eq('teacher_id', teacher.id)
       .single()
 
     if (fromError || !fromStudent) {
       return NextResponse.json({
         success: false,
         error: '송금자를 찾을 수 없습니다.'
+      }, { status: 404 })
+    }
+
+    // 송금자 계좌 잔액 조회
+    const { data: fromAccount, error: fromAccountError } = await supabase
+      .from('accounts')
+      .select('balance')
+      .eq('student_id', from_student_id)
+      .eq('account_type', from_account_type)
+      .single()
+
+    if (fromAccountError || !fromAccount) {
+      return NextResponse.json({
+        success: false,
+        error: '송금자 계좌를 찾을 수 없습니다.'
       }, { status: 404 })
     }
 
@@ -59,11 +94,10 @@ export async function POST(request: NextRequest) {
     }
 
     // 잔액 확인
-    const availableBalance = fromStudent.accounts[from_account_type] || 0
-    if (totalAmount > availableBalance) {
+    if (totalAmount > fromAccount.balance) {
       return NextResponse.json({
         success: false,
-        error: '잔액이 부족합니다.'
+        error: `잔액이 부족합니다. (필요: ₩${totalAmount.toLocaleString()}, 보유: ₩${fromAccount.balance.toLocaleString()})`
       }, { status: 400 })
     }
 
@@ -71,7 +105,8 @@ export async function POST(request: NextRequest) {
     const recipientIds = recipients.map(r => r.student_id)
     const { data: validRecipients, error: recipientsError } = await supabase
       .from('students')
-      .select('id, name, accounts')
+      .select('id, name, student_code')
+      .eq('teacher_id', teacher.id)
       .in('id', recipientIds)
 
     if (recipientsError || !validRecipients || validRecipients.length !== recipientIds.length) {
@@ -98,13 +133,30 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // 트랜잭션 시작
+    // 각 수신자 계좌 존재 확인
+    for (const recipient of recipients) {
+      const { data: recipientAccount, error: accountError } = await supabase
+        .from('accounts')
+        .select('id')
+        .eq('student_id', recipient.student_id)
+        .eq('account_type', recipient.account_type)
+        .single()
+
+      if (accountError || !recipientAccount) {
+        const recipientInfo = validRecipients.find(r => r.id === recipient.student_id)
+        return NextResponse.json({
+          success: false,
+          error: `${recipientInfo?.name}의 ${recipient.account_type} 계좌를 찾을 수 없습니다.`
+        }, { status: 404 })
+      }
+    }
+
+    // 송금자 계좌 차감
     const { error: senderError } = await supabase
-      .from('students')
-      .update({
-        [`accounts.${from_account_type}`]: availableBalance - totalAmount
-      })
-      .eq('id', from_student_id)
+      .from('accounts')
+      .update({ balance: fromAccount.balance - totalAmount })
+      .eq('student_id', from_student_id)
+      .eq('account_type', from_account_type)
 
     if (senderError) {
       return NextResponse.json({
@@ -118,70 +170,79 @@ export async function POST(request: NextRequest) {
     const errors = []
 
     for (const recipient of recipients) {
-      const recipientData = validRecipients.find(r => r.id === recipient.student_id)
-      if (!recipientData) {
-        errors.push(`수신자 ${recipient.student_id}를 찾을 수 없습니다.`)
-        continue
-      }
+      try {
+        const recipientData = validRecipients.find(r => r.id === recipient.student_id)
+        if (!recipientData) {
+          errors.push(`수신자 ${recipient.student_id}를 찾을 수 없습니다.`)
+          continue
+        }
 
-      const currentBalance = recipientData.accounts[recipient.account_type] || 0
-      
-      // 수신자 계좌 업데이트
-      const { error: recipientError } = await supabase
-        .from('students')
-        .update({
-          [`accounts.${recipient.account_type}`]: currentBalance + recipient.amount
-        })
-        .eq('id', recipient.student_id)
+        // 수신자 계좌 잔액 조회
+        const { data: recipientAccount, error: accountError } = await supabase
+          .from('accounts')
+          .select('balance')
+          .eq('student_id', recipient.student_id)
+          .eq('account_type', recipient.account_type)
+          .single()
 
-      if (recipientError) {
-        errors.push(`${recipientData.name}의 계좌 업데이트에 실패했습니다.`)
-        continue
-      }
+        if (accountError || !recipientAccount) {
+          errors.push(`${recipientData.name}의 계좌를 찾을 수 없습니다.`)
+          continue
+        }
 
-      // 거래 기록 생성
-      const transactionDescription = description 
-        ? `${description} (${transfer_type === 'equal' ? '동일금액' : '개별금액'} 다중송금)`
-        : `${transfer_type === 'equal' ? '동일금액' : '개별금액'} 다중송금`
+        // 수신자 계좌 잔액 증가
+        const { error: recipientError } = await supabase
+          .from('accounts')
+          .update({ balance: recipientAccount.balance + recipient.amount })
+          .eq('student_id', recipient.student_id)
+          .eq('account_type', recipient.account_type)
 
-      // 송금자 거래 기록
-      const { data: senderTransaction, error: senderTxError } = await supabase
-        .from('transactions')
-        .insert({
-          student_id: from_student_id,
-          transaction_type: 'transfer_out',
-          amount: -recipient.amount,
-          account_type: from_account_type,
-          description: `${recipientData.name}에게 ${transactionDescription}`,
-          related_student_id: recipient.student_id
-        })
-        .select()
+        if (recipientError) {
+          errors.push(`${recipientData.name}의 계좌 업데이트에 실패했습니다.`)
+          continue
+        }
 
-      // 수신자 거래 기록
-      const { data: recipientTransaction, error: recipientTxError } = await supabase
-        .from('transactions')
-        .insert({
-          student_id: recipient.student_id,
-          transaction_type: 'transfer_in',
-          amount: recipient.amount,
-          account_type: recipient.account_type,
-          description: `${fromStudent.name}으로부터 ${transactionDescription}`,
-          related_student_id: from_student_id
-        })
-        .select()
+        // 거래 기록 생성
+        const transactionDescription = description 
+          ? `${description} (${transfer_type === 'equal' ? '동일금액' : '개별금액'} 다중송금)`
+          : `${transfer_type === 'equal' ? '동일금액' : '개별금액'} 다중송금`
 
-      if (senderTxError || recipientTxError) {
-        errors.push(`${recipientData.name}의 거래 기록 생성에 실패했습니다.`)
-      } else {
-        transactionRecords.push({
-          sender: senderTransaction?.[0],
-          recipient: recipientTransaction?.[0]
-        })
+        // 송금자 거래 기록
+        const { data: senderTransaction, error: senderTxError } = await supabase
+          .from('transactions')
+          .insert({
+            from_student_id: from_student_id,
+            to_student_id: recipient.student_id,
+            from_account_type: from_account_type,
+            to_account_type: recipient.account_type,
+            amount: recipient.amount,
+            transaction_type: 'multi_transfer',
+            status: 'completed',
+            memo: `${recipientData.name}에게 ${transactionDescription}`
+          })
+          .select()
+          .single()
+
+        if (senderTxError) {
+          errors.push(`${recipientData.name}의 거래 기록 생성에 실패했습니다.`)
+        } else {
+          transactionRecords.push({
+            transaction_id: senderTransaction.id,
+            recipient_name: recipientData.name,
+            recipient_code: recipientData.student_code,
+            amount: recipient.amount,
+            account_type: recipient.account_type
+          })
+        }
+
+      } catch (error) {
+        console.error(`Transfer error for ${recipient.student_id}:`, error)
+        errors.push(`송금 처리 중 오류가 발생했습니다.`)
       }
     }
 
     // 결과 반환
-    const successCount = recipients.length - errors.length
+    const successCount = transactionRecords.length
     
     if (errors.length > 0) {
       return NextResponse.json({
@@ -207,17 +268,9 @@ export async function POST(request: NextRequest) {
         from_student: {
           id: fromStudent.id,
           name: fromStudent.name,
+          student_code: fromStudent.student_code,
           account_type: from_account_type
-        },
-        recipients: recipients.map(r => {
-          const recipientData = validRecipients.find(rd => rd.id === r.student_id)
-          return {
-            id: r.student_id,
-            name: recipientData?.name,
-            amount: r.amount,
-            account_type: r.account_type
-          }
-        })
+        }
       }
     })
 
