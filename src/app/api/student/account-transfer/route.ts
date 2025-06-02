@@ -13,20 +13,37 @@ export async function POST(request: NextRequest) {
       }, { status: 401 })
     }
 
-    // 임시로 첫 번째 학생 데이터 사용 (실제로는 세션에서 학생 ID 추출)
-    const { data: students } = await supabase
-      .from('students')
-      .select('id, teacher_id')
-      .limit(1)
+    // 세션 토큰으로 실제 학생 정보 조회
+    const { data: sessionData, error: sessionError } = await supabase
+      .from('student_sessions')
+      .select('student_id, expires_at')
+      .eq('session_token', sessionToken)
+      .single()
 
-    if (!students || students.length === 0) {
+    if (sessionError || !sessionData) {
       return NextResponse.json({
         success: false,
-        error: '학생 정보를 찾을 수 없습니다.'
-      }, { status: 404 })
+        error: '유효하지 않은 세션입니다.'
+      }, { status: 401 })
     }
 
-    const studentId = students[0].id
+    // 세션 만료 확인
+    const now = new Date()
+    const expiresAt = new Date(sessionData.expires_at)
+    if (now > expiresAt) {
+      // 만료된 세션 삭제
+      await supabase
+        .from('student_sessions')
+        .delete()
+        .eq('session_token', sessionToken)
+      
+      return NextResponse.json({
+        success: false,
+        error: '세션이 만료되었습니다. 다시 로그인해주세요.'
+      }, { status: 401 })
+    }
+
+    const studentId = sessionData.student_id
 
     const body = await request.json()
     const { from_account, to_account, amount } = body
@@ -36,6 +53,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: false,
         error: '출금 계좌, 입금 계좌, 금액은 필수입니다.'
+      }, { status: 400 })
+    }
+
+    // 금액을 숫자로 변환
+    const transferAmount = Number(amount)
+    if (isNaN(transferAmount)) {
+      return NextResponse.json({
+        success: false,
+        error: '유효하지 않은 금액입니다.'
       }, { status: 400 })
     }
 
@@ -54,7 +80,7 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    if (amount <= 0) {
+    if (transferAmount <= 0) {
       return NextResponse.json({
         success: false,
         error: '이체 금액은 0보다 커야 합니다.'
@@ -76,7 +102,7 @@ export async function POST(request: NextRequest) {
       }, { status: 404 })
     }
 
-    if (fromAccount.balance < amount) {
+    if (fromAccount.balance < transferAmount) {
       return NextResponse.json({
         success: false,
         error: '출금 계좌의 잔액이 부족합니다.'
@@ -102,7 +128,7 @@ export async function POST(request: NextRequest) {
     const { error: debitError } = await supabase
       .from('accounts')
       .update({ 
-        balance: fromAccount.balance - amount,
+        balance: fromAccount.balance - transferAmount,
         updated_at: new Date().toISOString()
       })
       .eq('student_id', studentId)
@@ -120,7 +146,7 @@ export async function POST(request: NextRequest) {
     const { error: creditError } = await supabase
       .from('accounts')
       .update({ 
-        balance: toAccount.balance + amount,
+        balance: toAccount.balance + transferAmount,
         updated_at: new Date().toISOString()
       })
       .eq('student_id', studentId)
@@ -151,7 +177,7 @@ export async function POST(request: NextRequest) {
       .insert({
         from_student_id: studentId,
         to_student_id: studentId,
-        amount: amount,
+        amount: transferAmount,
         transaction_type: 'account_transfer',
         description: `${from_account} → ${to_account} 계좌 이체`,
         status: 'completed'
@@ -170,13 +196,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `${accountNames[from_account as keyof typeof accountNames]}에서 ${accountNames[to_account as keyof typeof accountNames]}로 ${amount.toLocaleString()}원이 이체되었습니다.`,
+      message: `${accountNames[from_account as keyof typeof accountNames]}에서 ${accountNames[to_account as keyof typeof accountNames]}로 ${transferAmount.toLocaleString()}원이 이체되었습니다.`,
       transfer: {
         from_account,
         to_account,
-        amount,
-        from_balance: fromAccount.balance - amount,
-        to_balance: toAccount.balance + amount
+        amount: transferAmount,
+        from_balance: fromAccount.balance - transferAmount,
+        to_balance: toAccount.balance + transferAmount
       }
     })
 
