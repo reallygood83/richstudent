@@ -14,6 +14,7 @@ import MarketDataView from '@/components/teacher/MarketDataView'
 import EconomicEntitiesManager from '@/components/teacher/EconomicEntitiesManager'
 import StudentInvestmentMonitor from '@/components/teacher/StudentInvestmentMonitor'
 import ClassroomSeatsAdmin from '@/components/teacher/ClassroomSeatsAdmin'
+import ClassManagement from '@/components/teacher/ClassManagement'
 import { Student } from '@/types'
 
 export default function TeacherDashboard() {
@@ -198,7 +199,7 @@ export default function TeacherDashboard() {
 
         {/* Main Tabs */}
         <Tabs defaultValue="students" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="students" className="flex items-center space-x-2">
               <Users className="w-4 h-4" />
               <span>학생 관리</span>
@@ -222,6 +223,10 @@ export default function TeacherDashboard() {
             <TabsTrigger value="market" className="flex items-center space-x-2">
               <DollarSign className="w-4 h-4" />
               <span>시장 데이터</span>
+            </TabsTrigger>
+            <TabsTrigger value="class-management" className="flex items-center space-x-2">
+              <Settings className="w-4 h-4" />
+              <span>학급 관리</span>
             </TabsTrigger>
           </TabsList>
 
@@ -249,6 +254,10 @@ export default function TeacherDashboard() {
 
           <TabsContent value="market" className="mt-6">
             <MarketDataView />
+          </TabsContent>
+
+          <TabsContent value="class-management" className="mt-6">
+            <ClassManagement />
           </TabsContent>
         </Tabs>
 
