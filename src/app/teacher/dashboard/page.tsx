@@ -261,25 +261,26 @@ export default function TeacherDashboard() {
           </TabsContent>
         </Tabs>
 
-        {/* Development Notice */}
-        <div className="mt-8">
-          <Card className="bg-yellow-50 border-yellow-200">
-            <CardHeader>
-              <CardTitle className="text-yellow-800">🚧 개발 진행 상황</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-yellow-700 space-y-2">
-                <p><strong>✅ 완료:</strong> 교사/학생 인증, 학생 관리, 거래 시스템, 투자 시스템, 대출 시스템, 교실 좌석 거래</p>
-                <p><strong>🔄 진행 중:</strong> 그룹 거래, 고급 분석 도구</p>
-                <p><strong>📋 예정:</strong> 실시간 업데이트, 모바일 최적화</p>
-                <p className="mt-4 text-sm">
-                  🎉 Phase 6 완료! 이제 교실 좌석을 부동산처럼 거래할 수 있는 완전한 경제 시뮬레이션이 가능합니다.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="text-center text-sm text-gray-600">
+            <p>
+              © 2025 Moon-Jung Kim | 
+              <a 
+                href="https://www.youtube.com/@%EB%B0%B0%EC%9B%80%EC%9D%98%EB%8B%AC%EC%9D%B8-p5v" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="ml-1 text-blue-600 hover:text-blue-800 underline"
+              >
+                유튜브 배움의 달인
+              </a>
+            </p>
+          </div>
+        </div>
+      </footer>
 
       {/* Create Student Modal */}
       {showCreateModal && (

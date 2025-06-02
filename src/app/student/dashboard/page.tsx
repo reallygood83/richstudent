@@ -428,6 +428,25 @@ export default function StudentDashboard() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t mt-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="text-center text-sm text-gray-600">
+            <p>
+              © 2025 Moon-Jung Kim | 
+              <a 
+                href="https://www.youtube.com/@%EB%B0%B0%EC%9B%80%EC%9D%98%EB%8B%AC%EC%9D%B8-p5v" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="ml-1 text-blue-600 hover:text-blue-800 underline"
+              >
+                유튜브 배움의 달인
+              </a>
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
