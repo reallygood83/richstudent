@@ -1,16 +1,42 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
 
 export async function GET() {
   try {
     const supabase = createClient();
-    
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get('session_token')?.value;
+
     console.log('Fetching classroom seats...');
+
+    // 세션 토큰 확인
+    if (!sessionToken) {
+      return NextResponse.json({
+        error: '인증이 필요합니다.'
+      }, { status: 401 });
+    }
+
+    // 교사 세션 검증
+    const { data: teacher, error: sessionError } = await supabase
+      .from('teacher_sessions')
+      .select('teacher_id')
+      .eq('session_token', sessionToken)
+      .single();
+
+    if (sessionError || !teacher) {
+      return NextResponse.json({
+        error: '유효하지 않은 세션입니다.'
+      }, { status: 401 });
+    }
+
+    console.log('Teacher ID:', teacher.teacher_id);
     
-    // 먼저 좌석 데이터만 가져오기
+    // 해당 교사의 좌석 데이터만 가져오기
     const { data: seats, error: seatsError } = await supabase
       .from('classroom_seats')
       .select('*')
+      .eq('teacher_id', teacher.teacher_id)
       .order('seat_number');
 
     if (seatsError) {
@@ -26,7 +52,7 @@ export async function GET() {
       return NextResponse.json({ seats: [] });
     }
 
-    // 소유자 정보 별도로 가져오기
+    // 소유자 정보 별도로 가져오기 (해당 교사의 학생들만)
     const ownerIds = seats
       .filter(seat => seat.owner_id)
       .map(seat => seat.owner_id);
@@ -36,6 +62,7 @@ export async function GET() {
       const { data: ownersData, error: ownersError } = await supabase
         .from('students')
         .select('id, name')
+        .eq('teacher_id', teacher.teacher_id)
         .in('id', ownerIds);
 
       if (ownersError) {

@@ -1,9 +1,32 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
 
 export async function POST() {
   try {
     const supabase = createClient();
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get('session_token')?.value;
+
+    // 세션 토큰 확인
+    if (!sessionToken) {
+      return NextResponse.json({
+        error: '인증이 필요합니다.'
+      }, { status: 401 });
+    }
+
+    // 교사 세션 검증
+    const { data: teacher, error: sessionError } = await supabase
+      .from('teacher_sessions')
+      .select('teacher_id')
+      .eq('session_token', sessionToken)
+      .single();
+
+    if (sessionError || !teacher) {
+      return NextResponse.json({
+        error: '유효하지 않은 세션입니다.'
+      }, { status: 401 });
+    }
     
     console.log('Updating all seat prices...');
     
@@ -37,10 +60,11 @@ export async function POST() {
 
     console.log('Update function result:', updateResult);
 
-    // 3. 업데이트된 좌석들 확인
+    // 3. 업데이트된 좌석들 확인 (해당 교사의 좌석만)
     const { data: updatedSeats, error: fetchError } = await supabase
       .from('classroom_seats')
       .select('seat_number, current_price, owner_id')
+      .eq('teacher_id', teacher.teacher_id)
       .order('seat_number')
       .limit(5);
 
@@ -49,14 +73,16 @@ export async function POST() {
       // 좌석 조회 실패해도 계속 진행
     }
 
-    // 4. 통계 계산
+    // 4. 통계 계산 (해당 교사의 좌석만)
     const { data: totalSeats } = await supabase
       .from('classroom_seats')
-      .select('id', { count: 'exact' });
+      .select('id', { count: 'exact' })
+      .eq('teacher_id', teacher.teacher_id);
 
     const { data: ownedSeats } = await supabase
       .from('classroom_seats')
       .select('id', { count: 'exact' })
+      .eq('teacher_id', teacher.teacher_id)
       .not('owner_id', 'is', null);
 
     return NextResponse.json({
@@ -84,6 +110,28 @@ export async function POST() {
 export async function GET() {
   try {
     const supabase = createClient();
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get('session_token')?.value;
+
+    // 세션 토큰 확인
+    if (!sessionToken) {
+      return NextResponse.json({
+        error: '인증이 필요합니다.'
+      }, { status: 401 });
+    }
+
+    // 교사 세션 검증
+    const { data: teacher, error: sessionError } = await supabase
+      .from('teacher_sessions')
+      .select('teacher_id')
+      .eq('session_token', sessionToken)
+      .single();
+
+    if (sessionError || !teacher) {
+      return NextResponse.json({
+        error: '유효하지 않은 세션입니다.'
+      }, { status: 401 });
+    }
     
     // 현재 가격만 계산해서 반환 (업데이트는 하지 않음)
     const { data: calculatedPrice, error: priceError } = await supabase
@@ -98,10 +146,11 @@ export async function GET() {
       }, { status: 500 });
     }
 
-    // 현재 데이터베이스의 좌석 가격들 확인
+    // 현재 데이터베이스의 좌석 가격들 확인 (해당 교사의 좌석만)
     const { data: currentSeats, error: fetchError } = await supabase
       .from('classroom_seats')
       .select('current_price')
+      .eq('teacher_id', teacher.teacher_id)
       .limit(1);
 
     if (fetchError) {
