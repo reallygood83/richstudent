@@ -7,36 +7,82 @@ export async function GET() {
     const supabase = createClient();
     const cookieStore = await cookies();
     const sessionToken = cookieStore.get('session_token')?.value;
+    const studentToken = cookieStore.get('student_session_token')?.value;
 
     console.log('Fetching classroom seats...');
 
-    // 세션 토큰 확인
-    if (!sessionToken) {
+    let teacherId: string | null = null;
+
+    if (sessionToken) {
+      // 교사 세션 검증
+      const { data: teacher, error: sessionError } = await supabase
+        .from('teacher_sessions')
+        .select('teacher_id')
+        .eq('session_token', sessionToken)
+        .single();
+
+      if (sessionError || !teacher) {
+        return NextResponse.json({
+          error: '유효하지 않은 세션입니다.'
+        }, { status: 401 });
+      }
+
+      teacherId = teacher.teacher_id;
+      console.log('Teacher ID (teacher session):', teacherId);
+    } else if (studentToken) {
+      // 학생 세션 검증
+      const { data: sessionData, error: sessionError } = await supabase
+        .from('student_sessions')
+        .select('student_id, expires_at')
+        .eq('session_token', studentToken)
+        .single();
+
+      if (sessionError || !sessionData) {
+        return NextResponse.json({
+          error: '유효하지 않은 세션입니다.'
+        }, { status: 401 });
+      }
+
+      const now = new Date();
+      const expiresAt = new Date(sessionData.expires_at);
+      if (now > expiresAt) {
+        // 만료된 세션 삭제
+        await supabase
+          .from('student_sessions')
+          .delete()
+          .eq('session_token', studentToken);
+
+        return NextResponse.json({
+          error: '세션이 만료되었습니다. 다시 로그인해주세요.'
+        }, { status: 401 });
+      }
+
+      // 학생의 teacher_id 조회
+      const { data: student, error: studentError } = await supabase
+        .from('students')
+        .select('teacher_id')
+        .eq('id', sessionData.student_id)
+        .single();
+
+      if (studentError || !student) {
+        return NextResponse.json({
+          error: '학생 정보를 찾을 수 없습니다.'
+        }, { status: 401 });
+      }
+
+      teacherId = student.teacher_id;
+      console.log('Teacher ID (student session):', teacherId);
+    } else {
       return NextResponse.json({
         error: '인증이 필요합니다.'
       }, { status: 401 });
     }
-
-    // 교사 세션 검증
-    const { data: teacher, error: sessionError } = await supabase
-      .from('teacher_sessions')
-      .select('teacher_id')
-      .eq('session_token', sessionToken)
-      .single();
-
-    if (sessionError || !teacher) {
-      return NextResponse.json({
-        error: '유효하지 않은 세션입니다.'
-      }, { status: 401 });
-    }
-
-    console.log('Teacher ID:', teacher.teacher_id);
     
     // 해당 교사의 좌석 데이터 가져오기 (teacher_id 컬럼 누락 대응)
     const { data: seats, error: seatsError } = await supabase
       .from('classroom_seats')
       .select('*')
-      .eq('teacher_id', teacher.teacher_id)
+      .eq('teacher_id', teacherId)
       .order('seat_number');
 
     // teacher_id 컬럼이 없는 경우의 에러 처리
@@ -82,11 +128,11 @@ export async function GET() {
     }
 
     if (!seats || seats.length === 0) {
-      console.log('No seats found for teacher:', teacher.teacher_id);
-      return NextResponse.json({ 
+      console.log('No seats found for teacher:', teacherId);
+      return NextResponse.json({
         seats: [],
         message: '좌석이 없습니다. 좌석을 먼저 생성해주세요.',
-        teacher_id: teacher.teacher_id
+        teacher_id: teacherId
       });
     }
 
@@ -100,7 +146,7 @@ export async function GET() {
       const { data: ownersData, error: ownersError } = await supabase
         .from('students')
         .select('id, name')
-        .eq('teacher_id', teacher.teacher_id)
+        .eq('teacher_id', teacherId)
         .in('id', ownerIds);
 
       if (ownersError) {
