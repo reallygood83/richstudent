@@ -328,12 +328,19 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
     );
   }
 
-  // 좌석을 열별로 동적 그리드 배열 (칠판 기준: row_position=열, column_position=행)
+  // 좌석을 가로 행으로 재구성 (칠판 기준: 열은 좌우, 행은 앞뒤)
   const maxColumn = seats.length > 0 ? Math.max(...seats.map(s => s.row_position)) : 0;
-  const seatGrid = Array.from({ length: maxColumn }, (_, colIndex) =>
-    seats.filter(seat => seat.row_position === colIndex + 1)
-      .sort((a, b) => a.column_position - b.column_position)
-  ).filter(col => col.length > 0); // 빈 열 제거
+  const maxRow = seats.length > 0 ? Math.max(...seats.map(s => s.column_position)) : 0;
+
+  // 행별로 그리드 구성 (각 행은 모든 열의 좌석을 포함)
+  const seatGrid = Array.from({ length: maxRow }, (_, rowIndex) => {
+    const rowSeats = [];
+    for (let colIndex = 1; colIndex <= maxColumn; colIndex++) {
+      const seat = seats.find(s => s.row_position === colIndex && s.column_position === rowIndex + 1);
+      if (seat) rowSeats.push(seat);
+    }
+    return rowSeats;
+  }).filter(row => row.length > 0);
 
   const mySeats = seats.filter(seat => seat.owner_id === currentStudentId);
 
