@@ -1,16 +1,23 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import SeatLayoutConfig from '@/components/teacher/SeatLayoutConfig';
+import { useEffect } from 'react';
 
 export default function SeatLayoutPage() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { teacher, isLoading } = useAuth();
 
-  if (loading) {
+  useEffect(() => {
+    if (!isLoading && !teacher) {
+      router.push('/auth/login');
+    }
+  }, [teacher, isLoading, router]);
+
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -21,8 +28,7 @@ export default function SeatLayoutPage() {
     );
   }
 
-  if (!user) {
-    router.push('/auth/login');
+  if (!teacher) {
     return null;
   }
 

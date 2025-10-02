@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Settings } from 'lucide-react';
 
 interface Seat {
   id: string;
@@ -32,6 +34,7 @@ interface SeatStats {
 }
 
 export default function ClassroomSeatsAdmin() {
+  const router = useRouter();
   const [seats, setSeats] = useState<Seat[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
@@ -277,12 +280,22 @@ export default function ClassroomSeatsAdmin() {
                 </div>
               </div>
               
-              <Button 
+              <Button
                 onClick={updateSeatPrices}
                 disabled={updating}
                 className="w-full bg-blue-500 hover:bg-blue-600"
               >
                 {updating ? '가격 업데이트 중...' : '가격 업데이트'}
+              </Button>
+
+              {/* 좌석 배치 설정 버튼 */}
+              <Button
+                onClick={() => router.push('/teacher/seats/layout')}
+                variant="outline"
+                className="w-full border-purple-300 text-purple-700 hover:bg-purple-50"
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                좌석 배치 설정
               </Button>
 
               {/* 디버그 버튼들 */}
