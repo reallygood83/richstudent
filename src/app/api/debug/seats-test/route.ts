@@ -1,14 +1,31 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { cookies } from 'next/headers';
 
 export async function GET() {
   try {
     const supabase = createClient();
-    
-    // 먼저 기존 좌석 데이터 확인
+
+    // 세션에서 teacher_id 가져오기
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get('session');
+
+    if (!sessionCookie) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    const session = JSON.parse(sessionCookie.value);
+    const teacherId = session.teacherId;
+
+    if (!teacherId) {
+      return NextResponse.json({ error: 'Teacher ID not found in session' }, { status: 401 });
+    }
+
+    // 먼저 기존 좌석 데이터 확인 (해당 교사의 좌석만)
     const { data: existingSeats, error: fetchError } = await supabase
       .from('classroom_seats')
       .select('*')
+      .eq('teacher_id', teacherId)
       .order('seat_number');
 
     console.log('Existing seats:', existingSeats?.length || 0);
@@ -20,14 +37,15 @@ export async function GET() {
 
     // 좌석이 없으면 30개 생성
     if (!existingSeats || existingSeats.length === 0) {
-      console.log('No seats found, creating 30 seats...');
-      
+      console.log('No seats found, creating 30 seats for teacher:', teacherId);
+
       const seatsToInsert = [];
       for (let seatNum = 1; seatNum <= 30; seatNum++) {
         const rowNum = Math.floor((seatNum - 1) / 6) + 1;
         const colNum = ((seatNum - 1) % 6) + 1;
-        
+
         seatsToInsert.push({
+          teacher_id: teacherId,
           seat_number: seatNum,
           row_position: rowNum,
           column_position: colNum,
@@ -46,33 +64,50 @@ export async function GET() {
         return NextResponse.json({ error: 'Failed to insert seats', details: insertError }, { status: 500 });
       }
 
-      return NextResponse.json({ 
+      return NextResponse.json({
         message: 'Created 30 seats successfully',
-        seats: insertedSeats 
+        teacher_id: teacherId,
+        seats: insertedSeats
       });
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: 'Seats already exist',
+      teacher_id: teacherId,
       count: existingSeats.length,
-      seats: existingSeats 
+      seats: existingSeats
     });
 
   } catch (error) {
     console.error('Error in seats test:', error);
-    return NextResponse.json({ error: 'Internal server error', details: error }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error', details: String(error) }, { status: 500 });
   }
 }
 
 export async function POST() {
   try {
     const supabase = createClient();
-    
-    // 기존 좌석 모두 삭제
+
+    // 세션에서 teacher_id 가져오기
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get('session');
+
+    if (!sessionCookie) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    const session = JSON.parse(sessionCookie.value);
+    const teacherId = session.teacherId;
+
+    if (!teacherId) {
+      return NextResponse.json({ error: 'Teacher ID not found in session' }, { status: 401 });
+    }
+
+    // 기존 좌석 모두 삭제 (해당 교사의 좌석만)
     const { error: deleteError } = await supabase
       .from('classroom_seats')
       .delete()
-      .neq('id', '00000000-0000-0000-0000-000000000000'); // 모든 레코드 삭제
+      .eq('teacher_id', teacherId);
 
     if (deleteError) {
       console.error('Error deleting seats:', deleteError);
@@ -84,8 +119,9 @@ export async function POST() {
     for (let seatNum = 1; seatNum <= 30; seatNum++) {
       const rowNum = Math.floor((seatNum - 1) / 6) + 1;
       const colNum = ((seatNum - 1) % 6) + 1;
-      
+
       seatsToInsert.push({
+        teacher_id: teacherId,
         seat_number: seatNum,
         row_position: rowNum,
         column_position: colNum,
@@ -104,13 +140,14 @@ export async function POST() {
       return NextResponse.json({ error: 'Failed to insert seats', details: insertError }, { status: 500 });
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: 'Recreated 30 seats successfully',
-      seats: insertedSeats 
+      teacher_id: teacherId,
+      seats: insertedSeats
     });
 
   } catch (error) {
     console.error('Error recreating seats:', error);
-    return NextResponse.json({ error: 'Internal server error', details: error }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error', details: String(error) }, { status: 500 });
   }
 }
