@@ -101,14 +101,16 @@ export async function POST(request: NextRequest) {
     const { error: updateError } = await supabase
       .from('teachers')
       .update({
-        seat_layout_config: layoutConfig,
-        updated_at: new Date().toISOString()
+        seat_layout_config: layoutConfig
       })
       .eq('id', teacherId);
 
     if (updateError) {
       console.error('Error updating seat layout:', updateError);
-      return NextResponse.json({ error: 'Failed to update seat layout' }, { status: 500 });
+      return NextResponse.json({
+        error: 'Failed to update seat layout',
+        details: updateError.message
+      }, { status: 500 });
     }
 
     // 2. 기존 좌석 삭제 (소유자가 없는 좌석만)
@@ -149,7 +151,11 @@ export async function POST(request: NextRequest) {
 
     if (insertError) {
       console.error('Error creating new seats:', insertError);
-      return NextResponse.json({ error: 'Failed to create new seats' }, { status: 500 });
+      return NextResponse.json({
+        error: 'Failed to create new seats',
+        details: insertError.message,
+        hint: insertError.hint
+      }, { status: 500 });
     }
 
     return NextResponse.json({

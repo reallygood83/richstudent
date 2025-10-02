@@ -105,7 +105,11 @@ export default function SeatLayoutConfig() {
       if (result.success) {
         setMessage({ type: 'success', text: `좌석 배치가 성공적으로 업데이트되었습니다. (총 ${result.total_created}개 좌석 생성)` });
       } else {
-        setMessage({ type: 'error', text: result.error || '좌석 배치 업데이트에 실패했습니다.' });
+        const errorMsg = result.details
+          ? `${result.error}: ${result.details}`
+          : result.error || '좌석 배치 업데이트에 실패했습니다.';
+        setMessage({ type: 'error', text: errorMsg });
+        console.error('API Error:', result);
       }
     } catch (error) {
       console.error('Error saving seat layout:', error);
