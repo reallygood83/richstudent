@@ -212,15 +212,15 @@ export default function ClassroomSeatsAdmin() {
   const maxColumn = seats.length > 0 ? Math.max(...seats.map(s => s.row_position)) : 0;
   const maxRow = seats.length > 0 ? Math.max(...seats.map(s => s.column_position)) : 0;
 
-  // 행별로 그리드 구성 (각 행은 모든 열의 좌석을 포함)
+  // 행별로 그리드 구성 (각 행은 모든 열의 좌석을 포함, 빈 자리도 유지)
   const seatGrid = Array.from({ length: maxRow }, (_, rowIndex) => {
-    const rowSeats = [];
+    const rowSeats: (Seat | null)[] = [];
     for (let colIndex = 1; colIndex <= maxColumn; colIndex++) {
       const seat = seats.find(s => s.row_position === colIndex && s.column_position === rowIndex + 1);
-      if (seat) rowSeats.push(seat);
+      rowSeats.push(seat || null); // null로 빈 자리 유지
     }
     return rowSeats;
-  }).filter(row => row.length > 0);
+  }).filter(row => row.some(seat => seat !== null)); // 최소 1개 이상의 좌석이 있는 행만 유지
 
   return (
     <div className="space-y-6">
@@ -359,38 +359,44 @@ export default function ClassroomSeatsAdmin() {
           <div className="space-y-3">
             {seatGrid.map((row, rowIndex) => (
               <div key={rowIndex} className="flex justify-center gap-2">
-                {row.map(seat => (
-                  <div key={seat.id} className="relative group">
-                    <div
-                      className={`w-16 h-16 text-xs font-bold flex items-center justify-center rounded cursor-pointer transition-all ${getSeatColor(seat)}`}
-                    >
-                      {seat.seat_number}
-                    </div>
-                    
-                    {/* 좌석 정보 툴팁 */}
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                      <div className="bg-black text-white text-xs rounded px-3 py-2 whitespace-nowrap">
-                        <div className="font-bold">좌석 {seat.seat_number}번</div>
-                        {seat.owner_id ? (
-                          <>
-                            <div>소유자: {seat.owner?.name}</div>
-                            <div>구매가: ₩{seat.purchase_price.toLocaleString()}</div>
-                            <div>구매일: {seat.purchase_date ? new Date(seat.purchase_date).toLocaleDateString() : '-'}</div>
-                            <div className={`font-semibold ${
-                              stats.current_price > seat.purchase_price ? 'text-green-400' : 'text-red-400'
-                            }`}>
-                              평가손익: {stats.current_price > seat.purchase_price ? '+' : ''}
-                              ₩{(stats.current_price - seat.purchase_price).toLocaleString()}
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            <div>상태: 구매 가능</div>
-                            <div>가격: ₩{seat.current_price.toLocaleString()}</div>
-                          </>
-                        )}
-                      </div>
-                    </div>
+                {row.map((seat, colIndex) => (
+                  <div key={seat ? seat.id : `empty-${rowIndex}-${colIndex}`} className="relative group">
+                    {seat ? (
+                      <>
+                        <div
+                          className={`w-16 h-16 text-xs font-bold flex items-center justify-center rounded cursor-pointer transition-all ${getSeatColor(seat)}`}
+                        >
+                          {seat.seat_number}
+                        </div>
+
+                        {/* 좌석 정보 툴팁 */}
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                          <div className="bg-black text-white text-xs rounded px-3 py-2 whitespace-nowrap">
+                            <div className="font-bold">좌석 {seat.seat_number}번</div>
+                            {seat.owner_id ? (
+                              <>
+                                <div>소유자: {seat.owner?.name}</div>
+                                <div>구매가: ₩{seat.purchase_price.toLocaleString()}</div>
+                                <div>구매일: {seat.purchase_date ? new Date(seat.purchase_date).toLocaleDateString() : '-'}</div>
+                                <div className={`font-semibold ${
+                                  stats.current_price > seat.purchase_price ? 'text-green-400' : 'text-red-400'
+                                }`}>
+                                  평가손익: {stats.current_price > seat.purchase_price ? '+' : ''}
+                                  ₩{(stats.current_price - seat.purchase_price).toLocaleString()}
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div>상태: 구매 가능</div>
+                                <div>가격: ₩{seat.current_price.toLocaleString()}</div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="w-16 h-16 bg-transparent" />
+                    )}
                   </div>
                 ))}
               </div>

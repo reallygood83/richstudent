@@ -332,15 +332,15 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
   const maxColumn = seats.length > 0 ? Math.max(...seats.map(s => s.row_position)) : 0;
   const maxRow = seats.length > 0 ? Math.max(...seats.map(s => s.column_position)) : 0;
 
-  // 행별로 그리드 구성 (각 행은 모든 열의 좌석을 포함)
+  // 행별로 그리드 구성 (각 행은 모든 열의 좌석을 포함, 빈 자리도 유지)
   const seatGrid = Array.from({ length: maxRow }, (_, rowIndex) => {
-    const rowSeats = [];
+    const rowSeats: (Seat | null)[] = [];
     for (let colIndex = 1; colIndex <= maxColumn; colIndex++) {
       const seat = seats.find(s => s.row_position === colIndex && s.column_position === rowIndex + 1);
-      if (seat) rowSeats.push(seat);
+      rowSeats.push(seat || null); // null로 빈 자리 유지
     }
     return rowSeats;
-  }).filter(row => row.length > 0);
+  }).filter(row => row.some(seat => seat !== null)); // 최소 1개 이상의 좌석이 있는 행만 유지
 
   const mySeats = seats.filter(seat => seat.owner_id === currentStudentId);
 
@@ -443,33 +443,39 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
           <div className="space-y-3">
             {seatGrid.map((row, rowIndex) => (
               <div key={rowIndex} className="flex justify-center gap-2">
-                {row.map(seat => (
-                  <div key={seat.id} className="relative">
-                    <Button
-                      className={`w-16 h-16 text-xs font-bold transition-all ${getSeatColor(seat)}`}
-                      onClick={() => {
-                        if (canBuySeat(seat)) {
-                          handleBuySeat(seat.seat_number);
-                        } else if (canSellSeat(seat)) {
-                          handleSellSeat(seat.seat_number);
-                        }
-                      }}
-                      disabled={
-                        transactionLoading === seat.seat_number ||
-                        (!canBuySeat(seat) && !canSellSeat(seat))
-                      }
-                    >
-                      {transactionLoading === seat.seat_number ? '...' : seat.seat_number}
-                    </Button>
-                    
-                    {/* 좌석 정보 툴팁 */}
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block">
-                      <div className="bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap">
-                        <div>좌석 {seat.seat_number}번</div>
-                        <div>{getSeatStatus(seat)}</div>
-                        <div>₩{seat.current_price.toLocaleString()}</div>
-                      </div>
-                    </div>
+                {row.map((seat, colIndex) => (
+                  <div key={seat ? seat.id : `empty-${rowIndex}-${colIndex}`} className="relative">
+                    {seat ? (
+                      <>
+                        <Button
+                          className={`w-16 h-16 text-xs font-bold transition-all ${getSeatColor(seat)}`}
+                          onClick={() => {
+                            if (canBuySeat(seat)) {
+                              handleBuySeat(seat.seat_number);
+                            } else if (canSellSeat(seat)) {
+                              handleSellSeat(seat.seat_number);
+                            }
+                          }}
+                          disabled={
+                            transactionLoading === seat.seat_number ||
+                            (!canBuySeat(seat) && !canSellSeat(seat))
+                          }
+                        >
+                          {transactionLoading === seat.seat_number ? '...' : seat.seat_number}
+                        </Button>
+
+                        {/* 좌석 정보 툴팁 */}
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block">
+                          <div className="bg-black text-white text-xs rounded px-2 py-1 whitespace-nowrap">
+                            <div>좌석 {seat.seat_number}번</div>
+                            <div>{getSeatStatus(seat)}</div>
+                            <div>₩{seat.current_price.toLocaleString()}</div>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="w-16 h-16 bg-transparent" />
+                    )}
                   </div>
                 ))}
               </div>
