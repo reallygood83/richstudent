@@ -144,8 +144,8 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
   const groupedAssets = {
     stock: assets.filter(a => a.asset_type === 'stock'),
     crypto: assets.filter(a => a.asset_type === 'crypto'),
-    commodity: assets.filter(a => a.asset_type === 'commodity' && a.category !== '환율'),
-    currency: assets.filter(a => a.category === '환율')
+    commodity: assets.filter(a => a.asset_type === 'commodity' && a.category === 'etf'),
+    currency: assets.filter(a => a.category === 'exchange_rate')
   }
 
   if (loading && assets.length === 0) {
