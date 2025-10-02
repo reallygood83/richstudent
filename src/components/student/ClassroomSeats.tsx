@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { CelebrationModal } from './CelebrationModal';
 interface Seat {
   id: string;
   seat_number: number;
@@ -37,6 +38,10 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
   const [transactionLoading, setTransactionLoading] = useState<number | null>(null);
   const [currentPrice, setCurrentPrice] = useState(0);
   const [isLocalMode, setIsLocalMode] = useState(false);
+
+  // 🎉 축하 모달 상태
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebrationData, setCelebrationData] = useState({ seatNumber: '', price: 0 });
 
   // 학생 ID 가져오기 (prop이 없으면 세션에서)
   useEffect(() => {
@@ -158,9 +163,14 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
       });
 
       const result: SeatTransaction = await response.json();
-      
+
       if (result.success) {
-        alert(`좌석 ${seatNumber}번을 ₩${result.price?.toLocaleString()}에 구매했습니다!`);
+        // 🎉 축하 모달 표시
+        setCelebrationData({
+          seatNumber: `${seatNumber}`,
+          price: result.price || 0
+        });
+        setShowCelebration(true);
         await fetchSeats(); // 좌석 정보 새로고침
       } else {
         alert(result.message || '좌석 구매에 실패했습니다.');
@@ -188,7 +198,12 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
     });
     
     setSeats(updatedSeats);
-    alert(`좌석 ${seatNumber}번을 ₩${currentPrice.toLocaleString()}에 구매했습니다!`);
+    // 🎉 축하 모달 표시 (로컬 모드)
+    setCelebrationData({
+      seatNumber: `${seatNumber}`,
+      price: currentPrice
+    });
+    setShowCelebration(true);
     setTransactionLoading(null);
   };
 
@@ -461,6 +476,14 @@ export default function ClassroomSeats({ studentId }: ClassroomSeatsProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* 🎉 축하 모달 */}
+      <CelebrationModal
+        isOpen={showCelebration}
+        onClose={() => setShowCelebration(false)}
+        seatNumber={celebrationData.seatNumber}
+        price={celebrationData.price}
+      />
     </div>
   );
 }
