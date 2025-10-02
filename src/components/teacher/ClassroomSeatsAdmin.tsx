@@ -208,11 +208,12 @@ export default function ClassroomSeatsAdmin() {
     );
   }
 
-  // 좌석을 6x5 그리드로 배열
-  const seatGrid = Array.from({ length: 5 }, (_, rowIndex) =>
+  // 좌석을 행별로 동적 그리드 배열 (칠판 기준)
+  const maxRow = seats.length > 0 ? Math.max(...seats.map(s => s.row_position)) : 0;
+  const seatGrid = Array.from({ length: maxRow }, (_, rowIndex) =>
     seats.filter(seat => seat.row_position === rowIndex + 1)
       .sort((a, b) => a.column_position - b.column_position)
-  );
+  ).filter(row => row.length > 0); // 빈 행 제거
 
   return (
     <div className="space-y-6">
