@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { updateSeatPrices } from '@/lib/seat-pricing';
 
 export async function POST(request: NextRequest) {
   try {
@@ -129,15 +130,12 @@ export async function POST(request: NextRequest) {
       created_at: new Date().toISOString()
     });
 
-    // 7. 좌석 가격 자동 업데이트 (백그라운드로 호출)
+    // 7. 좌석 가격 자동 업데이트 (구매 후 즉시 반영)
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/real-estate/price-update`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
-      });
+      await updateSeatPrices(studentData.teacher_id);
+      console.log('✅ Seat prices auto-updated after purchase');
     } catch (priceUpdateError) {
-      console.error('Error updating prices in background:', priceUpdateError);
+      console.error('⚠️ Error auto-updating prices:', priceUpdateError);
       // 가격 업데이트 실패는 무시 (다음 업데이트 때 반영됨)
     }
 

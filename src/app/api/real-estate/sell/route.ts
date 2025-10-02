@@ -1,45 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-
-async function calculateCurrentSeatPrice(supabase: ReturnType<typeof createClient>) {
-  // 경제 주체 ID 목록 가져오기
-  const { data: economicEntities } = await supabase
-    .from('economic_entities')
-    .select('id')
-    .in('entity_type', ['government', 'bank', 'securities']);
-
-  const economicEntityIds = economicEntities?.map(e => e.id) || [];
-
-  // 전체 학생 자산 계산
-  const { data: accounts } = await supabase
-    .from('accounts')
-    .select('balance, student_id')
-    .in('account_type', ['checking', 'savings', 'investment'])
-    .not('student_id', 'in', `(${economicEntityIds.join(',')})`);
-
-  const totalStudentAssets = accounts?.reduce((sum, account) => sum + (account.balance || 0), 0) || 0;
-
-  // 학생 수 계산
-  const { data: students } = await supabase
-    .from('students')
-    .select('id')
-    .not('id', 'in', `(${economicEntityIds.join(',')})`);
-
-  const studentCount = students?.length || 0;
-
-  // 가격 계산
-  let calculatedPrice = 100000;
-  if (studentCount > 0 && totalStudentAssets > 0) {
-    calculatedPrice = Math.floor((totalStudentAssets * 0.6) / studentCount);
-  }
-
-  // 최소 가격 보장
-  if (calculatedPrice < 10000) {
-    calculatedPrice = 10000;
-  }
-
-  return calculatedPrice;
-}
+import { updateSeatPrices } from '@/lib/seat-pricing';
 
 export async function POST(request: NextRequest) {
   try {
@@ -67,6 +28,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const teacherId = studentData.teacher_id;
+
     // 1. 소유 좌석 확인
     const { data: seat, error: seatError } = await supabase
       .from('classroom_seats')
@@ -74,6 +37,7 @@ export async function POST(request: NextRequest) {
       .eq('seat_number', seat_number)
       .eq('owner_id', student_id)
       .eq('is_available', true)
+      .eq('teacher_id', teacherId)
       .single();
 
     if (seatError || !seat) {
@@ -83,8 +47,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 2. 현재 시장 가격 계산
-    const currentMarketPrice = await calculateCurrentSeatPrice(supabase);
+    // 2. 현재 시장 가격으로 판매 (좌석 가격 업데이트 함수 호출)
+    const currentMarketPrice = await updateSeatPrices(teacherId);
 
     // 3. 좌석 판매 처리 (소유권 해제)
     const { error: updateSeatError } = await supabase
@@ -177,17 +141,7 @@ export async function POST(request: NextRequest) {
       created_at: new Date().toISOString()
     });
 
-    // 8. 좌석 가격 자동 업데이트 (백그라운드로 호출)
-    try {
-      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/real-estate/price-update`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
-      });
-    } catch (priceUpdateError) {
-      console.error('Error updating prices in background:', priceUpdateError);
-      // 가격 업데이트 실패는 무시
-    }
+    console.log('✅ Seat sold and prices auto-updated');
 
     return NextResponse.json({
       message: '좌석을 성공적으로 판매했습니다.',
