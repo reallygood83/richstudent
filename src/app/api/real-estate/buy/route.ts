@@ -27,45 +27,128 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 좌석 구매 함수 호출 (teacher_id 필수 전달)
-    const { data, error } = await supabase.rpc('buy_seat', {
-      p_teacher_id: studentData.teacher_id,
-      p_student_id: student_id,
-      p_seat_number: seat_number,
-      p_payment_amount: 0 // 함수 내에서 가격 계산
-    });
+    // 1. 좌석 정보 조회 (구매 가능한지 확인)
+    const { data: seat, error: seatError } = await supabase
+      .from('classroom_seats')
+      .select('id, current_price, owner_id, is_available')
+      .eq('seat_number', seat_number)
+      .is('owner_id', null)
+      .eq('is_available', true)
+      .single();
 
-    if (error) {
-      console.error('Error buying seat:', error);
-      return NextResponse.json({ error: 'Failed to buy seat' }, { status: 500 });
-    }
-
-    const result = data[0];
-    
-    if (!result.success) {
+    if (seatError || !seat) {
       return NextResponse.json(
-        { error: result.message },
+        { error: '해당 좌석을 구매할 수 없습니다.' },
         { status: 400 }
       );
     }
 
-    // 거래 내역을 transactions 테이블에도 기록
+    // 2. 학생 잔액 확인 (당좌계좌)
+    const { data: account, error: accountError } = await supabase
+      .from('accounts')
+      .select('balance')
+      .eq('student_id', student_id)
+      .eq('account_type', 'checking')
+      .single();
+
+    if (accountError || !account) {
+      return NextResponse.json(
+        { error: '계좌 정보를 찾을 수 없습니다.' },
+        { status: 404 }
+      );
+    }
+
+    if (account.balance < seat.current_price) {
+      return NextResponse.json(
+        { error: '잔액이 부족합니다.', required: seat.current_price, current: account.balance },
+        { status: 400 }
+      );
+    }
+
+    // 3. 좌석 구매 처리
+    const { error: updateSeatError } = await supabase
+      .from('classroom_seats')
+      .update({
+        owner_id: student_id,
+        purchase_price: seat.current_price,
+        purchase_date: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', seat.id);
+
+    if (updateSeatError) {
+      console.error('Error updating seat:', updateSeatError);
+      return NextResponse.json(
+        { error: '좌석 구매 처리 중 오류가 발생했습니다.' },
+        { status: 500 }
+      );
+    }
+
+    // 4. 학생 잔액 차감 (당좌계좌)
+    const { error: updateBalanceError } = await supabase
+      .from('accounts')
+      .update({
+        balance: account.balance - seat.current_price
+      })
+      .eq('student_id', student_id)
+      .eq('account_type', 'checking');
+
+    if (updateBalanceError) {
+      console.error('Error updating balance:', updateBalanceError);
+      // 롤백: 좌석 소유권 제거
+      await supabase
+        .from('classroom_seats')
+        .update({
+          owner_id: null,
+          purchase_price: 0,
+          purchase_date: null
+        })
+        .eq('id', seat.id);
+
+      return NextResponse.json(
+        { error: '잔액 차감 중 오류가 발생했습니다.' },
+        { status: 500 }
+      );
+    }
+
+    // 5. 거래 기록 저장
+    await supabase.from('seat_transactions').insert({
+      seat_id: seat.id,
+      seat_number: seat_number,
+      buyer_id: student_id,
+      transaction_price: seat.current_price,
+      transaction_type: 'buy'
+    });
+
+    // 6. transactions 테이블에도 기록
     await supabase.from('transactions').insert({
       student_id,
       transaction_type: 'real_estate_purchase',
-      amount: -result.final_price,
+      amount: -seat.current_price,
       description: `좌석 ${seat_number}번 구매`,
       created_at: new Date().toISOString()
     });
 
+    // 7. 좌석 가격 자동 업데이트 (백그라운드로 호출)
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/real-estate/price-update`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+    } catch (priceUpdateError) {
+      console.error('Error updating prices in background:', priceUpdateError);
+      // 가격 업데이트 실패는 무시 (다음 업데이트 때 반영됨)
+    }
+
     return NextResponse.json({
-      message: result.message,
-      seat_id: result.seat_id,
-      price: result.final_price
+      message: '좌석을 성공적으로 구매했습니다.',
+      seat_id: seat.id,
+      price: seat.current_price
     });
 
   } catch (error) {
     console.error('Error in buy seat API:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error', details: String(error) }, { status: 500 });
   }
 }
