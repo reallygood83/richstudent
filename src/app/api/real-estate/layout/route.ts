@@ -3,10 +3,15 @@ import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
 import { validateSession } from '@/lib/auth';
 
+interface ColumnConfig {
+  column: number;
+  seats: number;
+}
+
 interface SeatLayoutConfig {
   total_seats: number;
   layout_type: 'auto' | 'manual';
-  rows: Array<{ row: number; seats: number }>;
+  columns: ColumnConfig[];
 }
 
 // GET: 현재 좌석 배치 설정 조회
@@ -47,12 +52,12 @@ export async function GET() {
       layout_config: data.seat_layout_config || {
         total_seats: 30,
         layout_type: 'auto',
-        rows: [
-          { row: 1, seats: 6 },
-          { row: 2, seats: 6 },
-          { row: 3, seats: 6 },
-          { row: 4, seats: 6 },
-          { row: 5, seats: 6 }
+        columns: [
+          { column: 1, seats: 6 },
+          { column: 2, seats: 6 },
+          { column: 3, seats: 6 },
+          { column: 4, seats: 6 },
+          { column: 5, seats: 6 }
         ]
       }
     });
@@ -88,11 +93,11 @@ export async function POST(request: NextRequest) {
     const layoutConfig: SeatLayoutConfig = await request.json();
 
     // 유효성 검증
-    if (!layoutConfig.rows || layoutConfig.rows.length === 0) {
+    if (!layoutConfig.columns || layoutConfig.columns.length === 0) {
       return NextResponse.json({ error: 'Invalid layout configuration' }, { status: 400 });
     }
 
-    const totalSeats = layoutConfig.rows.reduce((sum, row) => sum + row.seats, 0);
+    const totalSeats = layoutConfig.columns.reduce((sum, col) => sum + col.seats, 0);
     if (totalSeats !== layoutConfig.total_seats) {
       return NextResponse.json({ error: 'Total seats mismatch' }, { status: 400 });
     }
@@ -124,17 +129,17 @@ export async function POST(request: NextRequest) {
       console.error('Error deleting old seats:', deleteError);
     }
 
-    // 3. 새로운 좌석 생성 (칠판 기준: row=앞뒤, column=좌우)
+    // 3. 새로운 좌석 생성 (교실 기준: column=열(칠판에서 뒤로), row=행(좌우))
     let seatNumber = 1;
     const newSeats = [];
 
-    for (const rowConfig of layoutConfig.rows) {
-      for (let col = 1; col <= rowConfig.seats; col++) {
+    for (const columnConfig of layoutConfig.columns) {
+      for (let rowPos = 1; rowPos <= columnConfig.seats; rowPos++) {
         newSeats.push({
           teacher_id: teacherId,
           seat_number: seatNumber,
-          row_position: rowConfig.row,  // 칠판에서 뒤로 가는 행 (앞줄=1, 뒷줄=2,3,4...)
-          column_position: col,          // 칠판과 평행한 열 (왼쪽=1, 오른쪽=2,3,4...)
+          row_position: columnConfig.column,  // DB의 row = 교실의 열 (칠판에서 뒤로: 1열,2열,3열...)
+          column_position: rowPos,             // DB의 column = 교실의 행 (좌우: 왼쪽부터 1,2,3...)
           current_price: 100000, // 기본 가격 10만원
           owner_id: null,
           purchase_price: 0,
