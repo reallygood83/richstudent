@@ -134,39 +134,57 @@ export async function POST() {
 
     const updates: Array<{ id: string; new_price: number; source: string }> = []
     
-    // Yahoo Finance 심볼 매핑
+    // Yahoo Finance 심볼 매핑 (확장 버전 - 40개)
     const symbolMapping: Record<string, string> = {
-      // 한국 주식
-      '005930': '005930.KS',
-      '000660': '000660.KS', 
-      '035420': '035420.KS',
-      '051910': '051910.KS',
-      '006400': '006400.KS',
-      
-      // 미국 주식 (그대로 사용)
-      'AAPL': 'AAPL',
-      'MSFT': 'MSFT',
-      'GOOGL': 'GOOGL',
-      'TSLA': 'TSLA',
-      'NVDA': 'NVDA',
-      
-      // 암호화폐
-      'BTC-USD': 'BTC-USD',
-      'ETH-USD': 'ETH-USD',
-      'XRP-USD': 'XRP-USD',
-      
-      // 원자재/ETF
-      'GLD': 'GLD',
-      'SLV': 'SLV',
-      'SPY': 'SPY',
-      'QQQ': 'QQQ',
-      
-      // 환율 (Yahoo Finance 형식)
-      'USDKRW=X': 'USDKRW=X',
-      'EURUKR=X': 'EURKRW=X', 
-      'JPYKRW=X': 'JPYKRW=X',
-      'CNYUKR=X': 'CNYKRW=X',
-      'GBPKRW=X': 'GBPKRW=X'
+      // 한국 주식 (10개)
+      '005930': '005930.KS',  // 삼성전자
+      '000660': '000660.KS',  // SK하이닉스
+      '035420': '035420.KS',  // NAVER
+      '051910': '051910.KS',  // LG화학
+      '006400': '006400.KS',  // 삼성SDI
+      '005380': '005380.KS',  // 현대자동차
+      '035720': '035720.KS',  // 카카오
+      '000270': '000270.KS',  // 기아
+      '005490': '005490.KS',  // 포스코홀딩스
+      '068270': '068270.KS',  // 셀트리온
+
+      // 미국 주식 (10개)
+      'AAPL': 'AAPL',     // Apple
+      'GOOGL': 'GOOGL',   // Alphabet
+      'MSFT': 'MSFT',     // Microsoft
+      'TSLA': 'TSLA',     // Tesla
+      'NVDA': 'NVDA',     // NVIDIA
+      'AMZN': 'AMZN',     // Amazon
+      'META': 'META',     // Meta
+      'NFLX': 'NFLX',     // Netflix
+      'AMD': 'AMD',       // AMD
+      'KO': 'KO',         // Coca-Cola
+
+      // 암호화폐 (5개)
+      'BTC-USD': 'BTC-USD',  // 비트코인
+      'ETH-USD': 'ETH-USD',  // 이더리움
+      'BNB-USD': 'BNB-USD',  // 바이낸스코인
+      'XRP-USD': 'XRP-USD',  // 리플
+      'ADA-USD': 'ADA-USD',  // 카르다노
+
+      // 환율 (5개)
+      'USDKRW=X': 'USDKRW=X',  // 미국 달러
+      'EURKRW=X': 'EURKRW=X',  // 유로
+      'JPYKRW=X': 'JPYKRW=X',  // 일본 엔
+      'CNYKRW=X': 'CNYKRW=X',  // 중국 위안
+      'GBPKRW=X': 'GBPKRW=X',  // 영국 파운드
+
+      // 원자재/ETF (10개)
+      'GLD': 'GLD',    // 금 ETF
+      'SLV': 'SLV',    // 은 ETF
+      'USO': 'USO',    // 석유 ETF
+      'QQQ': 'QQQ',    // 나스닥100 ETF
+      'SPY': 'SPY',    // S&P500 ETF
+      'IWM': 'IWM',    // 러셀2000 ETF
+      'DIA': 'DIA',    // 다우존스 ETF
+      'VTI': 'VTI',    // 미국전체 ETF
+      'EEM': 'EEM',    // 신흥국 ETF
+      'ARKK': 'ARKK'   // ARK혁신 ETF
     }
 
     // 각 자산의 실시간 가격 업데이트
