@@ -1,25 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { cookies } from 'next/headers';
+import { validateSession } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
     const supabase = createClient();
 
-    // 세션에서 teacher_id 가져오기
+    // 세션 토큰으로 teacher 정보 가져오기
     const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get('session');
+    const sessionToken = cookieStore.get('session_token');
 
-    if (!sessionCookie) {
+    if (!sessionToken) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    const session = JSON.parse(sessionCookie.value);
-    const teacherId = session.teacherId;
+    const teacher = await validateSession(sessionToken.value);
 
-    if (!teacherId) {
-      return NextResponse.json({ error: 'Teacher ID not found in session' }, { status: 401 });
+    if (!teacher) {
+      return NextResponse.json({ error: 'Invalid session' }, { status: 401 });
     }
+
+    const teacherId = teacher.id;
 
     // 요청 본문에서 수동 학생 수 가져오기
     let manual_student_count = null;
