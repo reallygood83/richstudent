@@ -124,7 +124,7 @@ export async function POST(request: NextRequest) {
       console.error('Error deleting old seats:', deleteError);
     }
 
-    // 3. 새로운 좌석 생성
+    // 3. 새로운 좌석 생성 (칠판 기준: row=앞뒤, column=좌우)
     let seatNumber = 1;
     const newSeats = [];
 
@@ -133,8 +133,8 @@ export async function POST(request: NextRequest) {
         newSeats.push({
           teacher_id: teacherId,
           seat_number: seatNumber,
-          row_position: rowConfig.row,
-          column_position: col,
+          row_position: rowConfig.row,  // 칠판에서 뒤로 가는 행 (앞줄=1, 뒷줄=2,3,4...)
+          column_position: col,          // 칠판과 평행한 열 (왼쪽=1, 오른쪽=2,3,4...)
           current_price: 100000, // 기본 가격 10만원
           owner_id: null,
           purchase_price: 0,

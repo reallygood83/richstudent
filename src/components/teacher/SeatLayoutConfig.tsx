@@ -33,14 +33,20 @@ export default function SeatLayoutConfig() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // 자동 배치: 학생 수에 맞게 균등 분배
+  // 자동 배치: 학생 수에 맞게 균등 분배 (칠판 기준: 적은 행, 많은 열)
   const generateAutoLayout = (count: number) => {
-    const baseSeatsPerRow = Math.floor(count / 5);
-    const extraSeats = count % 5;
+    // 학생 수에 따라 적절한 행 수 결정 (칠판 앞뒤 방향)
+    let numRows = 3; // 기본 3행
+    if (count > 24) numRows = 4;  // 25명 이상: 4행
+    if (count > 32) numRows = 5;  // 33명 이상: 5행
+
+    const baseSeatsPerRow = Math.floor(count / numRows);
+    const extraSeats = count % numRows;
 
     const newRows: RowConfig[] = [];
-    for (let i = 1; i <= 5; i++) {
-      const seatsInRow = baseSeatsPerRow + (i > 5 - extraSeats ? 1 : 0);
+    for (let i = 1; i <= numRows; i++) {
+      // 앞줄부터 여분 좌석 배치
+      const seatsInRow = baseSeatsPerRow + (i <= extraSeats ? 1 : 0);
       newRows.push({ row: i, seats: seatsInRow });
     }
 
