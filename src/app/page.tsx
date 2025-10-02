@@ -1,71 +1,61 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { GraduationCap, Users, DollarSign, BookOpen } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { GraduationCap, Users, DollarSign, BookOpen } from 'lucide-react';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-financial relative overflow-hidden">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="relative z-10 glass-effect">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <div className="text-2xl">💰</div>
-              <h1 className="text-xl font-bold text-gray-900">RichStudent</h1>
+          <div className="flex justify-between items-center h-20">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-gold rounded-full flex items-center justify-center">
+                <DollarSign className="w-7 h-7 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-white">RichStudent</h1>
+                <p className="text-sm text-white/80">Financial Education Platform</p>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            💰 RichStudent
+      <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="text-center mb-20">
+          <h1 className="text-6xl md:text-7xl font-bold text-white mb-8 leading-tight">
+            미래의 <span className="text-financial-gold">금융 리더</span>를
+            <br />키우는 특별한 경험
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            실제 경제 활동을 통해 배우는 체험형 경제 교육 플랫폼
+          <p className="text-xl md:text-2xl text-white/90 mb-6 max-w-4xl mx-auto leading-relaxed">
+            실제 금융 시장과 똑같은 환경에서 투자, 거래, 대출을 체험하며
+            <br />경제 원리를 자연스럽게 학습하는 혁신적인 교육 플랫폼
           </p>
-          <p className="text-lg text-gray-500 mb-12">
-            학생들이 가상의 경제 환경에서 돈을 관리하고, 투자하며, 경제 원리를 자연스럽게 습득할 수 있습니다
+          <p className="text-lg text-white/70 mb-12 max-w-3xl mx-auto">
+            가상이지만 실전 같은 경험으로 학생들의 금융 이해력과 경제적 사고력을 키워주세요
           </p>
         </div>
 
         {/* Access Cards */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
+        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-20">
           {/* Teacher Card */}
-          <Card className="relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full transform translate-x-16 -translate-y-16"></div>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-3 text-2xl">
-                <Users className="w-8 h-8 text-blue-600" />
+          <Card className="financial-card bg-white/95 backdrop-blur-sm border-0 relative overflow-hidden group">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center space-x-4 text-3xl text-financial-navy">
+                <div className="p-3 bg-gradient-tech rounded-xl">
+                  <Users className="w-8 h-8 text-white" />
+                </div>
                 <span>선생님 접속</span>
               </CardTitle>
-              <CardDescription className="text-lg">
-                학급을 관리하고 경제 교육 시뮬레이션을 운영하세요
+              <CardDescription className="text-lg text-gray-600">
+                학급을 관리하고 차세대 금융 교육을 시작하세요
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <ul className="space-y-3 mb-6 text-gray-600">
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                  학생 계정 생성 및 관리
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                  가상 화폐 발행 및 거래 승인
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                  실시간 경제 활동 모니터링
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                  수업 계획 및 활동 설계
-                </li>
-              </ul>
+            <CardContent className="space-y-6">
               <div className="space-y-3">
-                <Button asChild className="w-full bg-blue-600 hover:bg-blue-700">
+                <Button asChild className="w-full bg-gradient-tech text-white hover:shadow-lg glow-effect">
                   <a href="/auth/login">선생님 로그인</a>
                 </Button>
                 <Button asChild variant="outline" className="w-full">
@@ -76,86 +66,105 @@ export default function HomePage() {
           </Card>
 
           {/* Student Card */}
-          <Card className="relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-green-100 rounded-full transform translate-x-16 -translate-y-16"></div>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-3 text-2xl">
-                <GraduationCap className="w-8 h-8 text-green-600" />
+          <Card className="financial-card bg-white/95 backdrop-blur-sm border-0 relative overflow-hidden group">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center space-x-4 text-3xl text-financial-navy">
+                <div className="p-3 bg-gradient-success rounded-xl">
+                  <GraduationCap className="w-8 h-8 text-white" />
+                </div>
                 <span>학생 접속</span>
               </CardTitle>
-              <CardDescription className="text-lg">
-                세션 코드로 접속하여 경제 활동에 참여하세요
+              <CardDescription className="text-lg text-gray-600">
+                세션 코드로 접속하여 금융의 세계를 탐험하세요
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <ul className="space-y-3 mb-6 text-gray-600">
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                  개인 계좌 및 자산 관리
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                  다른 학생들과 거래 활동
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                  투자 및 저축 체험
-                </li>
-                <li className="flex items-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                  실시간 거래 내역 확인
-                </li>
-              </ul>
+            <CardContent className="space-y-6">
               <div className="space-y-3">
-                <Button asChild className="w-full bg-green-600 hover:bg-green-700">
+                <Button asChild className="w-full bg-gradient-success text-white hover:shadow-lg glow-effect">
                   <a href="/student/login">학생 로그인</a>
                 </Button>
-                <p className="text-sm text-gray-500 text-center">
-                  선생님이 제공한 세션 코드가 필요합니다
-                </p>
+                <div className="text-center">
+                  <p className="text-sm text-gray-500">
+                    선생님이 제공한 세션 코드로 안전하게 접속
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
         </div>
+      </section>
 
-        {/* Features Section */}
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">
-            왜 RichStudent인가요?
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <DollarSign className="w-8 h-8 text-blue-600" />
+      {/* Features Section */}
+      <section className="relative z-10 bg-white/95 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-financial-navy mb-6">
+              왜 <span className="text-financial-gold">RichStudent</span>인가요?
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              실제 금융 시장의 복잡함을 교육에 맞게 단순화하여, 학생들이 쉽고 재미있게 경제를 배울 수 있습니다
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center group">
+              <div className="w-20 h-20 bg-gradient-gold rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <DollarSign className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">실전 경험</h3>
-              <p className="text-gray-600">
-                이론이 아닌 실제 거래를 통해 경제 원리를 체험하고 학습합니다
+              <h3 className="text-2xl font-bold text-financial-navy mb-4">실전 경험</h3>
+              <p className="text-gray-600 leading-relaxed">
+                실시간 시장 데이터로 진짜 투자 경험을 제공하며, 이론이 아닌 실전을 통해 경제 원리를 체험합니다
               </p>
             </div>
             
-            <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Users className="w-8 h-8 text-green-600" />
+            <div className="text-center group">
+              <div className="w-20 h-20 bg-gradient-success rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Users className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">협력 학습</h3>
-              <p className="text-gray-600">
-                학생들 간 상호작용을 통해 사회적 경제 활동을 이해합니다
+              <h3 className="text-2xl font-bold text-financial-navy mb-4">협력 학습</h3>
+              <p className="text-gray-600 leading-relaxed">
+                학생들 간의 자금 이체, 공동 투자, 경쟁적 거래를 통해 사회적 경제 활동과 협력의 중요성을 학습합니다
               </p>
             </div>
             
-            <div className="text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="w-8 h-8 text-purple-600" />
+            <div className="text-center group">
+              <div className="w-20 h-20 bg-gradient-tech rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                <BookOpen className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">체계적 교육</h3>
-              <p className="text-gray-600">
-                교육과정에 맞춘 단계별 학습으로 효과적인 경제 교육을 제공합니다
+              <h3 className="text-2xl font-bold text-financial-navy mb-4">혁신 기술</h3>
+              <p className="text-gray-600 leading-relaxed">
+                최신 웹 기술과 실시간 데이터 연동으로 끊김 없는 사용자 경험을 제공하며, 모든 기기에서 접속 가능합니다
               </p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="relative z-10 bg-financial-navy text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-4 mb-6">
+              <div className="w-12 h-12 bg-gradient-gold rounded-full flex items-center justify-center">
+                <DollarSign className="w-7 h-7 text-white" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold">RichStudent</h3>
+                <p className="text-white/70 text-sm">Financial Education Platform</p>
+              </div>
+            </div>
+            <p className="text-white/70 mb-6 max-w-2xl mx-auto">
+              미래의 금융 리더를 키우는 혁신적인 경제 교육 플랫폼으로, 
+              학생들이 실전 경험을 통해 경제 원리를 배울 수 있도록 돕습니다.
+            </p>
+            <div className="border-t border-white/20 pt-6">
+              <p className="text-white/50 text-sm">
+                © 2024 RichStudent. 모든 권리 보유. | 교육용 시뮬레이션 플랫폼
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
-  )
+  );
 }
