@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     description: "실제 금융 시장과 똑같은 환경에서 투자, 거래, 대출을 체험하며 경제 원리를 자연스럽게 학습하는 혁신적인 교육 플랫폼",
     images: [
       {
-        url: "/og-image-simple.svg",
+        url: "https://richstudent.vercel.app/og-image.png",
         width: 1200,
         height: 630,
         alt: "RichStudent - 금융 교육 플랫폼",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "RichStudent - 미래의 금융 리더를 키우는 특별한 경험",
     description: "실제 금융 시장과 똑같은 환경에서 투자, 거래, 대출을 체험하며 경제 원리를 자연스럽게 학습하는 혁신적인 교육 플랫폼",
-    images: ["/og-image-simple.svg"],
+    images: ["https://richstudent.vercel.app/og-image.png"],
   },
   icons: {
     icon: [
