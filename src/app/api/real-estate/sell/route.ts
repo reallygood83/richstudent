@@ -13,8 +13,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 좌석 판매 함수 호출
+    // 학생의 teacher_id 가져오기 (멀티테넌트 격리 필수!)
+    const { data: studentData, error: studentError } = await supabase
+      .from('students')
+      .select('teacher_id')
+      .eq('id', student_id)
+      .single();
+
+    if (studentError || !studentData) {
+      return NextResponse.json(
+        { error: '학생 정보를 찾을 수 없습니다.' },
+        { status: 404 }
+      );
+    }
+
+    // 좌석 판매 함수 호출 (teacher_id 필수 전달)
     const { data, error } = await supabase.rpc('sell_seat', {
+      p_teacher_id: studentData.teacher_id,
       p_student_id: student_id,
       p_seat_number: seat_number
     });
