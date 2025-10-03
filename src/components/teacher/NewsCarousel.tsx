@@ -71,6 +71,18 @@ export default function NewsCarousel() {
       if (data.success) {
         // 뉴스 목록 새로고침
         await fetchNews()
+
+        // 현재 선택된 뉴스의 설명도 업데이트
+        const res = await fetch('/api/news/list?limit=25')
+        const listData = await res.json()
+
+        if (listData.success) {
+          const updatedNews = listData.news.find((n: NewsWithExplanation) => n.id === selectedNews.id)
+          if (updatedNews) {
+            setSelectedNews(updatedNews)
+          }
+        }
+
         alert('AI 설명이 생성되었습니다!')
       } else {
         alert('AI 설명 생성 실패: ' + (data.error || '알 수 없는 오류'))
