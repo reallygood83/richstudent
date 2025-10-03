@@ -6,6 +6,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 RichStudent is an economic education simulation platform that allows students to experience virtual economic activities including investments, trading, and loans. This is a modern web application conversion from the original Google Apps Script-based system.
 
+**Live Deployment:**
+- Primary Domain: https://richstudent.dev
+- Alternate Domain: https://richstudent.vercel.app
+
+**Tech Stack:**
+- Next.js 15 with React 19 and Turbopack
+- TypeScript with strict mode
+- Supabase PostgreSQL database
+- Shadcn/ui component library with Tailwind CSS v4
+- Google OAuth 2.0 for teacher authentication
+- Gemini 2.0 Flash Experimental AI for educational content
+- RSS Parser for Korean economic news feeds
+- Yahoo Finance API for real-time market data
+
 ## Development Commands
 
 ### Core Commands
@@ -28,6 +42,8 @@ The project uses Supabase PostgreSQL with layered schema evolution:
 - `PHASE6_INVESTMENT_SCHEMA.sql` - Investment portfolio and market data tables
 - `LOAN_SYSTEM_SCHEMA_FIXED.sql` - Credit score based lending system
 - `CLASSROOM_SEATS_SCHEMA_FIXED.sql` - Real estate (seat) trading system
+- `ADD_AUTO_GENERATE_NEWS_OPTION.sql` - News settings auto-generation toggle
+- `FIX_NEWS_EXPLANATIONS_RLS.sql` - Disable RLS on news_explanations table
 
 **Debugging Tools:**
 - `CHECK_DATABASE_STRUCTURE.sql` - Verify table existence and relationships
@@ -46,6 +62,17 @@ curl http://localhost:3000/api/market-data                     # Check current m
 # Analytics testing
 curl http://localhost:3000/api/admin/analytics                  # Beta test metrics
 curl http://localhost:3000/api/admin/analytics/export          # Export analytics CSV
+
+# News system testing
+curl http://localhost:3000/api/news/list                        # Fetch news feed
+curl -X POST http://localhost:3000/api/news/fetch               # Refresh RSS feeds
+curl -X POST http://localhost:3000/api/news/generate-explanation \
+  -H "Content-Type: application/json" \
+  -d '{"newsId":"uuid"}'                                         # Generate AI explanation
+curl http://localhost:3000/api/news/settings                    # Get news settings
+curl -X PUT http://localhost:3000/api/news/settings \
+  -H "Content-Type: application/json" \
+  -d '{"gemini_api_key":"key","student_level":"elementary"}'   # Update settings
 ```
 
 ## Architecture
@@ -58,7 +85,9 @@ The application operates with strict teacher-student isolation:
 
 ### Authentication Flow
 **Teacher Authentication:**
-- Session-based auth with HTTP-only cookies
+- **Google OAuth 2.0:** Primary authentication method via `/auth/google/callback`
+- **Email/Password:** Alternative authentication with session-based auth
+- HTTP-only cookies for session management
 - Password hashing with email salt
 - Session validation on protected routes
 
@@ -70,11 +99,14 @@ The application operates with strict teacher-student isolation:
 ### Database Structure
 Key tables with relationships:
 ```
-teachers (id, session_code, email, password_hash)
+teachers (id, session_code, email, password_hash, google_id)
 ├── students (teacher_id, student_code, name)
 │   ├── accounts (student_id, account_type: checking/savings/investment)
 │   └── transactions (from_student_id, to_student_id, amount)
-└── economic_entities (teacher_id, entity_type: government/bank/securities)
+├── economic_entities (teacher_id, entity_type: government/bank/securities)
+└── news_settings (teacher_id, gemini_api_key, student_level, auto_generate_explanation)
+    ├── news_feed (title, description, link, source, pub_date)
+    └── news_explanations (news_id, student_level, explanation)
 ```
 
 ### Component Architecture
@@ -89,10 +121,11 @@ teachers (id, session_code, email, password_hash)
 
 ### API Design Patterns
 **Route Structure:**
-- `/api/auth/*` - Teacher authentication
-- `/api/student/*` - Student-specific operations  
+- `/api/auth/*` - Teacher authentication (login, register, Google OAuth callback)
+- `/api/student/*` - Student-specific operations
 - `/api/students/*` - Teacher management of students
 - `/api/transactions/*` - Financial operations
+- `/api/news/*` - News feed and AI explanation generation
 - `/api/debug/*` - Development and testing utilities
 
 **Error Handling:**
@@ -157,6 +190,18 @@ The platform provides a comprehensive economic environment with:
 - **Tax Collection:** Bulk tax processing with configurable rates
 - **Market Updates:** Batch price updates across all assets
 
+**News & AI System:**
+- **RSS Feed Aggregation:** Automatic parsing of Korean economic news from multiple sources
+  - Maeil Economic Daily (매일경제)
+  - Yonhap News (연합뉴스)
+  - Hankyung (한국경제)
+- **Auto-Refresh:** Configurable intervals (15-60 minutes) for automatic news updates
+- **Gemini AI Integration:** Educational content generation using Gemini 2.0 Flash Experimental
+- **Student-Level Adaptation:** AI explanations tailored to elementary, middle, or high school levels
+- **Teacher Controls:** Dedicated settings page for API key management and student level configuration
+- **Real-time Generation:** On-demand AI explanation generation with immediate modal updates
+- **Optimization:** Single-level generation based on teacher settings (66% API cost reduction)
+
 ### Development Phases
 **Phase 1-4: Completed**
 - Multi-tenant teacher authentication system
@@ -170,11 +215,26 @@ The platform provides a comprehensive economic environment with:
 - Comprehensive portfolio management and trading interface
 - Economic entities (Government, Bank, Securities) with full functionality
 
-**Phase 7: Analytics & Monitoring**
+**Phase 7: Analytics & Monitoring - Completed**
 - Beta testing analytics dashboard with real-time metrics
 - Supabase resource monitoring and usage optimization
 - User behavior tracking and engagement analysis
 - Export and reporting capabilities for performance evaluation
+
+**Phase 8: News & AI Features - Completed**
+- **RSS Feed Integration:** Korean economic news from Maeil, Yonhap, Hankyung sources
+- **News Dashboard:** Teacher and student news carousels with auto-refresh (30-minute intervals)
+- **Gemini AI Integration:** Gemini 2.0 Flash Experimental for educational content generation
+- **AI Explanations:** Student-level appropriate news explanations (elementary, middle, high)
+- **Auto-Generation:** Optional automatic AI explanation generation on news fetch
+- **News Settings:** Configurable Gemini API key, student level, and auto-generation toggles
+
+**Phase 9: Google OAuth - Completed**
+- **OAuth 2.0 Integration:** Google authentication for teacher accounts
+- **Dual Authentication:** Support both Google OAuth and email/password login
+- **Branded UI:** Google-styled login buttons with official colors and logo
+- **Session Management:** Seamless integration with existing session-based auth
+- **Domain Configuration:** Production deployment on richstudent.dev
 
 **Key Implementation Notes:**
 - Supabase RLS policies selectively disabled for development efficiency
@@ -229,6 +289,12 @@ curl -X POST http://localhost:3000/api/students/bulk-create \
 - Yahoo Finance rate limits resolved with 200ms delays between requests
 - Check API responses in browser network tab for debugging
 
+**News System Issues:**
+- **Missing Database Columns:** Execute emergency migration scripts (URGENT_FIX_NEWS_SETTINGS.sql)
+- **RLS Policy Violations:** news_explanations table has RLS disabled via FIX_NEWS_EXPLANATIONS_RLS.sql
+- **AI Generation Failures:** Verify Gemini API key in news settings, check teacher's configured student level
+- **Real-time Updates:** News modal updates immediately after AI generation via state management
+
 **Performance Issues:**
 - Monitor Supabase usage via `/admin/analytics`
 - Check API request limits and database storage
@@ -272,13 +338,31 @@ Use analytics export function for detailed reporting:
 
 **Required Environment Variables:**
 ```env
+# Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-NEXT_PUBLIC_APP_URL=https://your-app-domain.vercel.app
+
+# Application URLs
+NEXT_PUBLIC_APP_URL=https://richstudent.dev
+
+# Google OAuth (Supabase Dashboard Configuration)
+# Add these redirect URLs in Supabase Authentication > URL Configuration:
+# - https://richstudent.dev/auth/google/callback
+# - https://richstudent.vercel.app/auth/google/callback
 ```
 
-**Database Setup:**
-1. Run `supabase-complete-schema.sql` for full schema
-2. Execute `CREATE_ANALYTICS_TABLES.sql` for monitoring
-3. Use `INSERT_MARKET_DATA.sql` for initial market assets
-4. Configure RLS policies via `FIX_RLS_POLICY.sql` if needed
+**Supabase Configuration Steps:**
+1. **Google OAuth Setup:**
+   - Enable Google provider in Supabase Authentication settings
+   - Add authorized redirect URLs for both domains
+   - Configure Site URL to https://richstudent.dev
+
+2. **Database Migrations:**
+   - Run `supabase-complete-schema.sql` for full schema
+   - Execute `CREATE_ANALYTICS_TABLES.sql` for monitoring
+   - Apply `ADD_AUTO_GENERATE_NEWS_OPTION.sql` for news features
+   - Run `FIX_NEWS_EXPLANATIONS_RLS.sql` to disable RLS on news_explanations
+
+3. **Initial Data:**
+   - Use `INSERT_MARKET_DATA.sql` for market assets
+   - Configure RLS policies via `FIX_RLS_POLICY.sql` if needed
