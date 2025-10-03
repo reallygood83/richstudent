@@ -52,7 +52,8 @@ export async function GET() {
           gemini_api_key: null,
           student_level: 'elementary',
           auto_refresh_enabled: true,
-          refresh_interval_minutes: 30
+          refresh_interval_minutes: 30,
+          auto_generate_explanation: false
         }
       })
     }
@@ -104,7 +105,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { gemini_api_key, student_level, auto_refresh_enabled, refresh_interval_minutes } = body
+    const { gemini_api_key, student_level, auto_refresh_enabled, refresh_interval_minutes, auto_generate_explanation } = body
 
     // API 키 유효성 검증 (제공된 경우에만)
     if (gemini_api_key) {
@@ -133,6 +134,7 @@ export async function PUT(request: NextRequest) {
       student_level?: StudentLevel
       auto_refresh_enabled?: boolean
       refresh_interval_minutes?: number
+      auto_generate_explanation?: boolean
     } = {
       teacher_id: teacher.id
     }
@@ -141,6 +143,7 @@ export async function PUT(request: NextRequest) {
     if (student_level) updateData.student_level = student_level as StudentLevel
     if (auto_refresh_enabled !== undefined) updateData.auto_refresh_enabled = auto_refresh_enabled
     if (refresh_interval_minutes) updateData.refresh_interval_minutes = refresh_interval_minutes
+    if (auto_generate_explanation !== undefined) updateData.auto_generate_explanation = auto_generate_explanation
 
     const { data: settings, error } = await supabase
       .from('news_settings')

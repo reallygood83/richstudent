@@ -57,15 +57,15 @@ export async function POST() {
         const teacher = await validateSession(sessionToken)
 
         if (teacher) {
-          // 교사의 Gemini API 키 확인
+          // 교사의 Gemini API 키 및 자동 생성 설정 확인
           const { data: settings } = await supabase
             .from('news_settings')
-            .select('gemini_api_key, student_level')
+            .select('gemini_api_key, student_level, auto_generate_explanation')
             .eq('teacher_id', teacher.id)
             .single()
 
-          // API 키가 있고 새로운 뉴스가 있으면 AI 해설 생성
-          if (settings?.gemini_api_key && data && data.length > 0) {
+          // API 키가 있고, 자동 생성이 활성화되어 있으며, 새로운 뉴스가 있으면 AI 해설 생성
+          if (settings?.gemini_api_key && settings?.auto_generate_explanation && data && data.length > 0) {
             const gemini = new GeminiNewsService(settings.gemini_api_key)
             const levels: StudentLevel[] = ['elementary', 'middle', 'high']
 

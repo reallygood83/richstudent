@@ -10,6 +10,7 @@ export interface NewsSettings {
   student_level: StudentLevel
   auto_refresh_enabled: boolean
   refresh_interval_minutes: number
+  auto_generate_explanation: boolean  // 자동 AI 설명 생성 여부
   created_at: string
   updated_at: string
   has_api_key?: boolean  // API 응답에서만 사용

@@ -14,6 +14,7 @@ export default function NewsSettings() {
   const [settings, setSettings] = useState<NewsSettingsType | null>(null)
   const [apiKey, setApiKey] = useState('')
   const [studentLevel, setStudentLevel] = useState<StudentLevel>('elementary')
+  const [autoGenerate, setAutoGenerate] = useState(false)
   const [showApiKey, setShowApiKey] = useState(false)
   const [loading, setLoading] = useState(false)
   const [testing, setTesting] = useState(false)
@@ -31,6 +32,7 @@ export default function NewsSettings() {
       if (data.success && data.settings) {
         setSettings(data.settings)
         setStudentLevel(data.settings.student_level)
+        setAutoGenerate(data.settings.auto_generate_explanation || false)
         // API 키는 마스킹되어 있으므로 표시만 함
         if (data.settings.has_api_key) {
           setApiKey(data.settings.gemini_api_key || '')
@@ -51,7 +53,8 @@ export default function NewsSettings() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           gemini_api_key: apiKey.includes('...') ? undefined : apiKey, // 마스킹된 키는 보내지 않음
-          student_level: studentLevel
+          student_level: studentLevel,
+          auto_generate_explanation: autoGenerate
         })
       })
 
@@ -85,7 +88,8 @@ export default function NewsSettings() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           gemini_api_key: apiKey,
-          student_level: studentLevel
+          student_level: studentLevel,
+          auto_generate_explanation: autoGenerate
         })
       })
 
@@ -177,6 +181,35 @@ export default function NewsSettings() {
             <p className="text-sm text-muted-foreground">
               뉴스 설명의 난이도가 선택한 학생 수준에 맞춰집니다.
             </p>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="auto-generate">AI 설명 자동 생성</Label>
+                <p className="text-sm text-muted-foreground">
+                  새로운 뉴스를 수집할 때 AI 설명을 자동으로 생성합니다.
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  id="auto-generate"
+                  className="sr-only peer"
+                  checked={autoGenerate}
+                  onChange={(e) => setAutoGenerate(e.target.checked)}
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+            {autoGenerate && (
+              <div className="p-3 rounded-md bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800">
+                <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                  ⚠️ 자동 생성 활성화 시 뉴스 수집마다 Gemini API가 호출됩니다.
+                  무료 티어는 분당 15개 요청으로 제한되므로 참고하세요.
+                </p>
+              </div>
+            )}
           </div>
 
           {saveMessage && (
