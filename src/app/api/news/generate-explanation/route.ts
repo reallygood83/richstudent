@@ -39,10 +39,10 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // 뉴스 설정에서 Gemini API 키 가져오기
+    // 뉴스 설정에서 Gemini API 키와 학생 레벨 가져오기
     const { data: settings } = await supabase
       .from('news_settings')
-      .select('gemini_api_key')
+      .select('gemini_api_key, student_level')
       .eq('teacher_id', teacher.id)
       .single()
 
@@ -52,6 +52,9 @@ export async function POST(request: NextRequest) {
         error: 'Gemini API 키가 설정되지 않았습니다. 설정에서 API 키를 등록해주세요.'
       }, { status: 400 })
     }
+
+    // 기본 레벨은 초등학생
+    const currentLevel = settings.student_level || 'elementary'
 
     // 뉴스 내용 가져오기
     const { data: news } = await supabase
@@ -95,9 +98,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // 현재 설정된 레벨의 설명 찾기
+    const currentExplanation = explanations.find(exp => exp.student_level === currentLevel)
+
     return NextResponse.json({
       success: true,
-      explanations,
+      explanation: currentExplanation, // 프론트엔드가 기대하는 단일 객체
+      explanations, // 전체 설명 목록도 포함
       count: explanations.length,
       message: `${explanations.length}개 레벨의 AI 설명이 생성되었습니다.`
     })
