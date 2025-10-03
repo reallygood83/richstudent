@@ -7,8 +7,8 @@ export async function signInWithGoogle(): Promise<AuthResponse> {
     console.log('Starting new Google OAuth system...')
     
     // 현재 환경에 따른 리다이렉트 URL 설정
-    const redirectUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://richstudent.vercel.app/auth/google/callback'
+    const redirectUrl = process.env.NODE_ENV === 'production'
+      ? 'https://richstudent.dev/auth/google/callback'
       : `${window.location.origin}/auth/google/callback`
     
     console.log('Redirect URL:', redirectUrl)
