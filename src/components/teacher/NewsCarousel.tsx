@@ -19,6 +19,10 @@ export default function NewsCarousel() {
 
   useEffect(() => {
     fetchNews()
+
+    // 30분마다 자동 업데이트
+    const interval = setInterval(fetchNews, 30 * 60 * 1000)
+    return () => clearInterval(interval)
   }, [])
 
   async function fetchNews() {

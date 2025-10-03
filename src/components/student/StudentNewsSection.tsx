@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Card, CardContent } from '@/components/ui/card'
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
@@ -11,7 +12,7 @@ import { Newspaper, ExternalLink, Sparkles, BookOpen } from 'lucide-react'
 
 interface NewsWithExplanation {
   id: string
-  source: 'maeil' | 'yonhap'
+  source: 'maeil' | 'yonhap' | 'hankyung'
   title: string
   description: string | null
   link: string
@@ -34,12 +35,16 @@ export default function StudentNewsSection() {
 
   useEffect(() => {
     fetchNews()
+
+    // 30분마다 자동 업데이트
+    const interval = setInterval(fetchNews, 30 * 60 * 1000)
+    return () => clearInterval(interval)
   }, [])
 
   async function fetchNews() {
     try {
-      // 학생 레벨은 elementary로 기본 설정 (추후 학생 프로필에서 가져올 수 있음)
-      const res = await fetch('/api/news/list?limit=6&student_level=elementary')
+      // 12개 뉴스 가져오기 (캐러셀용)
+      const res = await fetch('/api/news/list?limit=12&student_level=elementary')
       const data = await res.json()
       if (data.success) {
         setNews(data.news)
@@ -77,20 +82,17 @@ export default function StudentNewsSection() {
     return (
       <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 border-purple-200 dark:border-purple-800">
         <CardContent className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Newspaper className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold">오늘의 경제 뉴스</h3>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Newspaper className="h-5 w-5 text-primary" />
+              <h3 className="font-semibold">오늘의 경제 뉴스</h3>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3].map((i) => (
-              <Card key={i}>
-                <CardContent className="p-4 space-y-2">
-                  <Skeleton className="h-4 w-20" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-3 w-full" />
-                </CardContent>
-              </Card>
-            ))}
+          <div className="flex items-center justify-center py-12">
+            <div className="flex flex-col items-center gap-2">
+              <Skeleton className="h-48 w-full max-w-md" />
+              <Skeleton className="h-4 w-32" />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -117,46 +119,68 @@ export default function StudentNewsSection() {
     <>
       <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 border-purple-200 dark:border-purple-800">
         <CardContent className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Newspaper className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold">오늘의 경제 뉴스</h3>
-            <Badge variant="secondary">{news.length}개</Badge>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Newspaper className="h-5 w-5 text-primary" />
+              <h3 className="font-semibold">오늘의 경제 뉴스</h3>
+              <Badge variant="secondary">{news.length}개</Badge>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {news.map((item) => (
-              <Card
-                key={item.id}
-                className="cursor-pointer hover:shadow-md transition-shadow bg-white dark:bg-slate-900"
-                onClick={() => setSelectedNews(item)}
-              >
-                <CardContent className="p-4">
-                  <div className="space-y-2">
-                    <div className="flex items-start justify-between gap-2">
-                      {getSourceBadge(item.source)}
-                      <span className="text-xs text-muted-foreground">
-                        {formatDate(item.pub_date)}
-                      </span>
-                    </div>
-                    <h4 className="font-medium text-sm line-clamp-2 leading-snug">
-                      {item.title}
-                    </h4>
-                    {item.description && (
-                      <p className="text-xs text-muted-foreground line-clamp-2">
-                        {item.description}
-                      </p>
-                    )}
-                    {item.explanation && (
-                      <div className="flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400">
-                        <Sparkles className="h-3 w-3" />
-                        <span>쉬운 설명 보기</span>
+          <Carousel className="w-full">
+            <CarouselContent>
+              {news.map((item) => (
+                <CarouselItem key={item.id} className="md:basis-1/2 lg:basis-1/3">
+                  <Card
+                    className="cursor-pointer hover:shadow-lg transition-shadow h-full bg-white dark:bg-slate-900"
+                    onClick={() => setSelectedNews(item)}
+                  >
+                    <CardContent className="p-4 flex flex-col h-full">
+                      {item.image_url && (
+                        <div className="relative w-full h-40 mb-3 rounded-md overflow-hidden">
+                          <Image
+                            src={item.image_url}
+                            alt={item.title}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1 space-y-2">
+                        <div className="flex items-start justify-between gap-2">
+                          {getSourceBadge(item.source)}
+                          <span className="text-xs text-muted-foreground">
+                            {formatDate(item.pub_date)}
+                          </span>
+                        </div>
+                        <h4 className="font-medium text-sm line-clamp-3 leading-snug">
+                          {item.title}
+                        </h4>
+                        {item.description && (
+                          <p className="text-xs text-muted-foreground line-clamp-2">
+                            {item.description}
+                          </p>
+                        )}
+                        {item.explanation && (
+                          <div className="flex items-center gap-1 text-xs text-purple-600 dark:text-purple-400 pt-2">
+                            <Sparkles className="h-3 w-3" />
+                            <span className="font-medium">쉬운 설명 보기</span>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-2" />
+            <CarouselNext className="right-2" />
+          </Carousel>
+
+          <p className="text-xs text-muted-foreground text-center mt-4">
+            30분마다 자동으로 업데이트됩니다
+          </p>
         </CardContent>
       </Card>
 
