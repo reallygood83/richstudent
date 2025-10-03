@@ -5,7 +5,8 @@ import { NewsFeed, NewsSource } from '@/types/news'
 
 const RSS_FEEDS = {
   maeil: 'https://www.mk.co.kr/rss/30100041/', // 매일경제 증권 RSS
-  yonhap: 'https://www.yna.co.kr/rss/economy.xml'   // 연합뉴스 경제 RSS
+  yonhap: 'https://www.yna.co.kr/rss/economy.xml', // 연합뉴스 경제 RSS
+  hankyung: 'https://www.hankyung.com/feed/finance' // 한국경제 금융 RSS
 }
 
 interface ParsedItem {
@@ -116,7 +117,7 @@ export class RSSFeedParser {
    * 모든 소스에서 뉴스 수집
    */
   async fetchAllNews(): Promise<Omit<NewsFeed, 'id' | 'cached_at'>[]> {
-    const sources: NewsSource[] = ['maeil', 'yonhap']
+    const sources: NewsSource[] = ['maeil', 'yonhap', 'hankyung']
     const results = await Promise.allSettled(
       sources.map(source => this.fetchNews(source))
     )

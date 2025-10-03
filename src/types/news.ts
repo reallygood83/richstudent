@@ -1,7 +1,7 @@
 // 경제뉴스 피드 시스템 타입 정의
 
 export type StudentLevel = 'elementary' | 'middle' | 'high'
-export type NewsSource = 'maeil' | 'yonhap'
+export type NewsSource = 'maeil' | 'yonhap' | 'hankyung'
 
 export interface NewsSettings {
   id: string

@@ -50,9 +50,12 @@ export default function NewsCarousel() {
     }
   }
 
-  function getSourceBadge(source: 'maeil' | 'yonhap') {
+  function getSourceBadge(source: 'maeil' | 'yonhap' | 'hankyung') {
     if (source === 'maeil') {
       return <Badge className="bg-red-500 hover:bg-red-600">매일경제</Badge>
+    }
+    if (source === 'hankyung') {
+      return <Badge className="bg-green-500 hover:bg-green-600">한국경제</Badge>
     }
     return <Badge className="bg-blue-500 hover:bg-blue-600">연합뉴스</Badge>
   }
