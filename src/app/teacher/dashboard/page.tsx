@@ -15,6 +15,8 @@ import EconomicEntitiesManager from '@/components/teacher/EconomicEntitiesManage
 import StudentInvestmentMonitor from '@/components/teacher/StudentInvestmentMonitor'
 import ClassroomSeatsAdmin from '@/components/teacher/ClassroomSeatsAdmin'
 import ClassManagement from '@/components/teacher/ClassManagement'
+import NewsCarousel from '@/components/teacher/NewsCarousel'
+import NewsSettings from '@/components/teacher/NewsSettings'
 import { Student } from '@/types'
 
 export default function TeacherDashboard() {
@@ -111,6 +113,11 @@ export default function TeacherDashboard() {
           </p>
         </div>
 
+        {/* News Section */}
+        <div className="mb-8">
+          <NewsCarousel />
+        </div>
+
         {/* Session Info Card */}
         <div className="mb-8">
           <Card className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
@@ -125,8 +132,8 @@ export default function TeacherDashboard() {
                 <div className="text-3xl font-bold tracking-wider">
                   {teacher.session_code || 'ABC123'}
                 </div>
-                <Button 
-                  variant="secondary" 
+                <Button
+                  variant="secondary"
                   size="sm"
                   onClick={() => navigator.clipboard.writeText(teacher.session_code || 'ABC123')}
                 >
@@ -199,7 +206,7 @@ export default function TeacherDashboard() {
 
         {/* Main Tabs */}
         <Tabs defaultValue="students" className="w-full">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="students" className="flex items-center space-x-2">
               <Users className="w-4 h-4" />
               <span>학생 관리</span>
@@ -227,6 +234,10 @@ export default function TeacherDashboard() {
             <TabsTrigger value="class-management" className="flex items-center space-x-2">
               <Settings className="w-4 h-4" />
               <span>학급 관리</span>
+            </TabsTrigger>
+            <TabsTrigger value="news-settings" className="flex items-center space-x-2">
+              <Settings className="w-4 h-4" />
+              <span>뉴스 설정</span>
             </TabsTrigger>
           </TabsList>
 
@@ -258,6 +269,10 @@ export default function TeacherDashboard() {
 
           <TabsContent value="class-management" className="mt-6">
             <ClassManagement />
+          </TabsContent>
+
+          <TabsContent value="news-settings" className="mt-6">
+            <NewsSettings />
           </TabsContent>
         </Tabs>
 
