@@ -157,10 +157,34 @@ export default function HomePage() {
               미래의 금융 리더를 키우는 혁신적인 경제 교육 플랫폼으로, 
               학생들이 실전 경험을 통해 경제 원리를 배울 수 있도록 돕습니다.
             </p>
-            <div className="border-t border-white/20 pt-6">
-              <p className="text-white/50 text-sm">
-                © 2024 RichStudent. 모든 권리 보유. | 교육용 시뮬레이션 플랫폼
+            <div className="border-t border-white/20 pt-6 space-y-4">
+              <p className="text-white/70 text-sm">
+                © 2025 RichStudent Moon-Jung Kim |
+                <a
+                  href="https://www.youtube.com/@%EB%B0%B0%EC%9B%80%EC%9D%98%EB%8B%AC%EC%9D%B8-p5v"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-1 text-financial-gold hover:text-yellow-300 underline transition-colors"
+                >
+                  유튜브 배움의 달인
+                </a>
               </p>
+              <div>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="bg-white/10 text-white border-white/30 hover:bg-white/20 hover:border-white/50"
+                >
+                  <a
+                    href="https://open.kakao.com/me/vesa"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    개발자에게 연락하기
+                  </a>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
