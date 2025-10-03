@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ExternalLink, RefreshCw, Newspaper } from 'lucide-react'
+import { ExternalLink, RefreshCw, Newspaper, Sparkles } from 'lucide-react'
 import type { NewsWithExplanation } from '@/types/news'
 
 export default function NewsCarousel() {
@@ -16,6 +16,7 @@ export default function NewsCarousel() {
   const [selectedNews, setSelectedNews] = useState<NewsWithExplanation | null>(null)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+  const [generatingAI, setGeneratingAI] = useState(false)
 
   useEffect(() => {
     fetchNews()
@@ -27,7 +28,7 @@ export default function NewsCarousel() {
 
   async function fetchNews() {
     try {
-      const res = await fetch('/api/news/list?limit=10')
+      const res = await fetch('/api/news/list?limit=25')
       const data = await res.json()
 
       if (data.success) {
@@ -51,6 +52,34 @@ export default function NewsCarousel() {
       console.error('Failed to refresh news:', error)
     } finally {
       setRefreshing(false)
+    }
+  }
+
+  async function generateAIExplanation() {
+    if (!selectedNews) return
+
+    setGeneratingAI(true)
+    try {
+      const res = await fetch('/api/news/generate-explanation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newsId: selectedNews.id })
+      })
+
+      const data = await res.json()
+
+      if (data.success) {
+        // 뉴스 목록 새로고침
+        await fetchNews()
+        alert('AI 설명이 생성되었습니다!')
+      } else {
+        alert('AI 설명 생성 실패: ' + (data.error || '알 수 없는 오류'))
+      }
+    } catch (error) {
+      console.error('Failed to generate AI explanation:', error)
+      alert('AI 설명 생성 중 오류가 발생했습니다.')
+    } finally {
+      setGeneratingAI(false)
     }
   }
 
@@ -197,6 +226,25 @@ export default function NewsCarousel() {
                 </div>
               )}
 
+              {/* AI 쉬운 설명 섹션 */}
+              {selectedNews.explanation && (
+                <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-900 border-purple-200 dark:border-purple-700">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Sparkles className="h-5 w-5 text-purple-600 dark:text-purple-300" />
+                      <h4 className="font-semibold text-purple-900 dark:text-purple-100">
+                        AI가 쉽게 설명해줘요 (초등학생용)
+                      </h4>
+                    </div>
+                    <div className="prose dark:prose-invert max-w-none">
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                        {selectedNews.explanation.explanation}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {selectedNews.original_content && (
                 <div className="prose dark:prose-invert max-w-none">
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">
@@ -206,6 +254,17 @@ export default function NewsCarousel() {
               )}
 
               <div className="flex gap-2 pt-4 border-t">
+                {!selectedNews.explanation && (
+                  <Button
+                    variant="default"
+                    className="flex-1 bg-purple-600 hover:bg-purple-700"
+                    onClick={generateAIExplanation}
+                    disabled={generatingAI}
+                  >
+                    <Sparkles className={`mr-2 h-4 w-4 ${generatingAI ? 'animate-spin' : ''}`} />
+                    {generatingAI ? 'AI 설명 생성 중...' : 'AI 쉬운 설명 생성'}
+                  </Button>
+                )}
                 <Button variant="outline" className="flex-1" asChild>
                   <a
                     href={selectedNews.link}

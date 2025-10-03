@@ -43,8 +43,8 @@ export default function StudentNewsSection() {
 
   async function fetchNews() {
     try {
-      // 12개 뉴스 가져오기 (캐러셀용)
-      const res = await fetch('/api/news/list?limit=12&student_level=elementary')
+      // 25개 뉴스 가져오기 (캐러셀용)
+      const res = await fetch('/api/news/list?limit=25&student_level=elementary')
       const data = await res.json()
       if (data.success) {
         setNews(data.news)
