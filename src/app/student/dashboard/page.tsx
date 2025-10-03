@@ -22,6 +22,7 @@ import { Student, Transaction } from '@/types'
 import TransferForm from '@/components/student/TransferForm'
 import AccountTransfer from '@/components/student/AccountTransfer'
 import ClassroomSeats from '@/components/student/ClassroomSeats'
+import StudentNewsSection from '@/components/student/StudentNewsSection'
 
 interface StudentSession {
   studentId: string
@@ -240,6 +241,11 @@ export default function StudentDashboard() {
               </p>
             </CardContent>
           </Card>
+        </div>
+
+        {/* News Section */}
+        <div className="mb-8">
+          <StudentNewsSection />
         </div>
 
         {/* Total Balance */}

@@ -5,7 +5,7 @@ import { NewsFeed, NewsSource } from '@/types/news'
 
 const RSS_FEEDS = {
   maeil: 'https://www.mk.co.kr/rss/30100041/', // 매일경제 증권 RSS
-  yonhap: 'https://www.yna.co.kr/rss/news.xml'   // 연합뉴스 전체 RSS
+  yonhap: 'https://www.yna.co.kr/rss/economy.xml'   // 연합뉴스 경제 RSS
 }
 
 interface ParsedItem {
