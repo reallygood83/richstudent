@@ -71,42 +71,35 @@ export async function POST(request: NextRequest) {
     }
 
     const gemini = new GeminiNewsService(settings.gemini_api_key)
-    const levels: StudentLevel[] = ['elementary', 'middle', 'high']
-    const explanations = []
 
-    // 모든 레벨에 대해 해설 생성
-    for (const level of levels) {
-      const content = news.original_content || news.description || ''
-      const explanation = await gemini.explainNews(news.title, content, level)
+    // 교사가 설정한 레벨로만 AI 설명 생성
+    const content = news.original_content || news.description || ''
+    const explanation = await gemini.explainNews(news.title, content, currentLevel)
 
-      const { data, error: insertError } = await supabase
-        .from('news_explanations')
-        .upsert({
-          news_id: newsId,
-          student_level: level,
-          explanation
-        }, {
-          onConflict: 'news_id,student_level'
-        })
-        .select()
-        .single()
+    const { data, error: insertError } = await supabase
+      .from('news_explanations')
+      .upsert({
+        news_id: newsId,
+        student_level: currentLevel,
+        explanation
+      }, {
+        onConflict: 'news_id,student_level'
+      })
+      .select()
+      .single()
 
-      if (data) {
-        explanations.push(data)
-      } else if (insertError) {
-        console.error(`Failed to save ${level} explanation:`, insertError)
-      }
+    if (insertError) {
+      console.error(`Failed to save ${currentLevel} explanation:`, insertError)
+      return NextResponse.json({
+        success: false,
+        error: `AI 설명 저장 실패: ${insertError.message}`
+      }, { status: 500 })
     }
-
-    // 현재 설정된 레벨의 설명 찾기
-    const currentExplanation = explanations.find(exp => exp.student_level === currentLevel)
 
     return NextResponse.json({
       success: true,
-      explanation: currentExplanation, // 프론트엔드가 기대하는 단일 객체
-      explanations, // 전체 설명 목록도 포함
-      count: explanations.length,
-      message: `${explanations.length}개 레벨의 AI 설명이 생성되었습니다.`
+      explanation: data, // 생성된 설명 반환
+      message: `${currentLevel === 'elementary' ? '초등학생' : currentLevel === 'middle' ? '중학생' : '고등학생'} 레벨 AI 설명이 생성되었습니다.`
     })
 
   } catch (error) {
