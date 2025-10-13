@@ -33,38 +33,65 @@ export default function StudentLogin() {
     setLoading(true)
 
     try {
+      // 입력 검증 강화
       if (!formData.session_code.trim()) {
         setError('세션 코드를 입력해주세요.')
+        setLoading(false)
         return
       }
 
       if (!formData.student_code.trim()) {
         setError('학생 코드를 입력해주세요.')
+        setLoading(false)
         return
       }
+
+      // 디버깅을 위한 상세 로그
+      console.log('=== Student Login Attempt ===')
+      console.log('Session Code:', formData.session_code)
+      console.log('Student Code:', formData.student_code)
+      console.log('Has Password:', !!formData.password)
+
+      const payload = {
+        session_code: formData.session_code.trim().toUpperCase(),
+        student_code: formData.student_code.trim().toUpperCase(),
+        password: formData.password.trim()
+      }
+
+      console.log('Sending payload:', payload)
 
       const response = await fetch('/api/student/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       })
 
+      console.log('Response status:', response.status)
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()))
+
       const data = await response.json()
+      console.log('Response data:', data)
 
       if (data.success) {
+        console.log('✅ Login successful! Redirecting to dashboard...')
         // 로그인 성공시 학생 대시보드로 이동
         router.push('/student/dashboard')
       } else {
-        console.error('Login error:', data)
+        console.error('❌ Login failed:', data)
         setError(data.error || '로그인에 실패했습니다.')
         if (data.debug) {
           console.error('Debug info:', data.debug)
+          // 디버그 정보를 사용자에게도 표시 (개발 환경에서만)
+          if (process.env.NODE_ENV === 'development') {
+            setError(`${data.error}\n\n디버그: ${JSON.stringify(data.debug, null, 2)}`)
+          }
         }
       }
-    } catch {
-      setError('서버 연결에 실패했습니다.')
+    } catch (err) {
+      console.error('❌ Network/Server error:', err)
+      setError('서버 연결에 실패했습니다. 네트워크 연결을 확인해주세요.')
     } finally {
       setLoading(false)
     }
