@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { GeminiNewsService } from '@/lib/gemini'
-import { StudentLevel } from '@/types/news'
 import { validateSession } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
