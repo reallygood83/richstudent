@@ -79,15 +79,59 @@ export default function GoogleCallbackPage() {
         if (existingTeacher) {
           // 기존 교사 계정 업데이트
           console.log('Updating existing teacher account')
+
+          // session_code가 없는 경우 생성
+          const updateData: {
+            google_id: string
+            auth_provider: string
+            email_verified: boolean
+            profile_image_url: string | null
+            updated_at: string
+            session_code?: string
+          } = {
+            google_id: user.id,
+            auth_provider: 'google',
+            email_verified: true,
+            profile_image_url: user.user_metadata?.avatar_url || null,
+            updated_at: new Date().toISOString()
+          }
+
+          if (!existingTeacher.session_code) {
+            console.log('⚠️ Existing teacher missing session_code, generating one...')
+
+            const generateSessionCode = () => {
+              const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+              let code = ''
+              for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length))
+              }
+              return code
+            }
+
+            let sessionCode = generateSessionCode()
+            let codeExists = true
+
+            while (codeExists) {
+              const { data: existing } = await supabase
+                .from('teachers')
+                .select('id')
+                .eq('session_code', sessionCode)
+                .single()
+
+              if (!existing) {
+                codeExists = false
+              } else {
+                sessionCode = generateSessionCode()
+              }
+            }
+
+            updateData.session_code = sessionCode
+            console.log('Generated session code for existing teacher:', sessionCode)
+          }
+
           const { error: updateError } = await supabase
             .from('teachers')
-            .update({
-              google_id: user.id,
-              auth_provider: 'google',
-              email_verified: true,
-              profile_image_url: user.user_metadata?.avatar_url || null,
-              updated_at: new Date().toISOString()
-            })
+            .update(updateData)
             .eq('email', userEmail)
 
           if (updateError) {
@@ -95,15 +139,49 @@ export default function GoogleCallbackPage() {
             setError('계정 업데이트에 실패했습니다.')
             return
           }
+
+          console.log('✅ Existing teacher account updated')
         } else {
           // 새 교사 계정 생성
           console.log('Creating new teacher account')
+
+          // 고유한 6자리 세션 코드 생성
+          const generateSessionCode = () => {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+            let code = ''
+            for (let i = 0; i < 6; i++) {
+              code += chars.charAt(Math.floor(Math.random() * chars.length))
+            }
+            return code
+          }
+
+          let sessionCode = generateSessionCode()
+          let codeExists = true
+
+          // 중복되지 않는 세션 코드 생성
+          while (codeExists) {
+            const { data: existing } = await supabase
+              .from('teachers')
+              .select('id')
+              .eq('session_code', sessionCode)
+              .single()
+
+            if (!existing) {
+              codeExists = false
+            } else {
+              sessionCode = generateSessionCode()
+            }
+          }
+
+          console.log('Generated unique session code:', sessionCode)
+
           const { error: insertError } = await supabase
             .from('teachers')
             .insert({
               email: userEmail,
               name: user.user_metadata?.full_name || userEmail.split('@')[0],
               school: '',
+              session_code: sessionCode,  // 🔥 핵심 수정: 세션 코드 추가!
               google_id: user.id,
               auth_provider: 'google',
               email_verified: true,
@@ -119,6 +197,8 @@ export default function GoogleCallbackPage() {
             setError('계정 생성에 실패했습니다.')
             return
           }
+
+          console.log('✅ New teacher account created with session code:', sessionCode)
         }
 
         // 세션 생성
