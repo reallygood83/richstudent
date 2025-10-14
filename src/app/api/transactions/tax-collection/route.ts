@@ -87,7 +87,19 @@ export async function POST(request: NextRequest) {
       `)
       .eq('account_type', account_type)
       .in('student_id', student_ids)
-      .eq('students.teacher_id', teacher.id)
+      .eq('students.teacher_id', teacher.id) as {
+        data: Array<{
+          id: string
+          balance: number
+          student_id: string
+          students: {
+            id: string
+            name: string
+            teacher_id: string
+          }
+        }> | null
+        error: any
+      }
 
     if (accountsError) {
       return NextResponse.json(
