@@ -46,14 +46,16 @@ export async function POST(request: NextRequest) {
     }
 
     if (tax_type === 'percentage') {
-      if (!percentage_rate || percentage_rate <= 0 || percentage_rate > 100) {
+      // percentage_rate는 반드시 존재하고 1~100 사이여야 함
+      if (typeof percentage_rate !== 'number' || percentage_rate <= 0 || percentage_rate > 100) {
         return NextResponse.json(
           { success: false, error: '올바른 세율을 입력해주세요. (1-100)' },
           { status: 400 }
         )
       }
     } else if (tax_type === 'fixed') {
-      if (!fixed_amount || fixed_amount <= 0) {
+      // fixed_amount는 반드시 존재하고 양수여야 함
+      if (typeof fixed_amount !== 'number' || fixed_amount <= 0) {
         return NextResponse.json(
           { success: false, error: '올바른 세금 금액을 입력해주세요.' },
           { status: 400 }
@@ -176,7 +178,6 @@ export async function POST(request: NextRequest) {
       const { data: txData, error: txError } = await supabase
         .from('transactions')
         .insert({
-          teacher_id: teacher.id,
           from_student_id: account.student_id,
           to_entity: 'Government',
           from_account_type: account_type,
