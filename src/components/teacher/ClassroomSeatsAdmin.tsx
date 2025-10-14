@@ -87,18 +87,26 @@ export default function ClassroomSeatsAdmin() {
     }
   }, []);
 
-  const calculateStats = (seatData: Seat[]) => {
+  const calculateStats = async (seatData: Seat[]) => {
     const owned = seatData.filter(seat => seat.owner_id).length;
     const available = seatData.filter(seat => !seat.owner_id).length;
     const totalValue = seatData
       .filter(seat => seat.owner_id)
       .reduce((sum, seat) => sum + seat.purchase_price, 0);
 
-    // 현재 가격: 구매 가능한 좌석 우선, 없으면 모든 좌석 중 가장 높은 가격
-    let currentPrice = seatData.find(seat => !seat.owner_id)?.current_price || 0;
-    if (currentPrice === 0 && seatData.length > 0) {
-      // 모든 좌석이 판매된 경우, 가장 최근 current_price 사용
-      currentPrice = Math.max(...seatData.map(seat => seat.current_price));
+    // 실시간 시세 계산: API를 통해 현재 통화량 기반으로 계산된 가격 가져오기
+    let currentPrice = 0;
+    try {
+      const priceResponse = await fetch('/api/real-estate/current-price');
+      const priceData = await priceResponse.json();
+      currentPrice = priceData.current_price || 0;
+    } catch (error) {
+      console.error('Failed to fetch current price:', error);
+      // 실패 시 기존 로직: 구매 가능한 좌석의 가격 사용
+      currentPrice = seatData.find(seat => !seat.owner_id)?.current_price || 0;
+      if (currentPrice === 0 && seatData.length > 0) {
+        currentPrice = Math.max(...seatData.map(seat => seat.current_price));
+      }
     }
 
     setStats({
