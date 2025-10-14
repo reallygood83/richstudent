@@ -211,6 +211,7 @@ export async function POST(request: NextRequest) {
         const { data: senderTransaction, error: senderTxError } = await supabase
           .from('transactions')
           .insert({
+            teacher_id: teacher.id,
             from_student_id: from_student_id,
             to_student_id: recipient.student_id,
             from_account_type: from_account_type,
@@ -218,14 +219,16 @@ export async function POST(request: NextRequest) {
             amount: recipient.amount,
             transaction_type: 'multi_transfer',
             status: 'completed',
-            memo: `${recipientData.name}에게 ${transactionDescription}`
+            description: `${recipientData.name}에게 ${transactionDescription}`
           })
           .select()
           .single()
 
         if (senderTxError) {
+          console.error(`Transaction record error for ${recipientData.name}:`, senderTxError)
           errors.push(`${recipientData.name}의 거래 기록 생성에 실패했습니다.`)
         } else {
+          console.log(`✅ Transaction recorded for ${recipientData.name}: ₩${recipient.amount}`)
           transactionRecords.push({
             transaction_id: senderTransaction.id,
             recipient_name: recipientData.name,
