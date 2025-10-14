@@ -1,8 +1,12 @@
 'use client'
 
 import { useEffect } from 'react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { AlertCircle, RefreshCw } from 'lucide-react'
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
 
 export default function Error({
   error,
@@ -38,14 +42,15 @@ export default function Error({
             <RefreshCw className="w-4 h-4 mr-2" />
             다시 시도
           </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={() => window.location.href = '/'}
-            className="w-full sm:w-auto"
-          >
-            홈으로 가기
-          </Button>
+          <Link href="/">
+            <Button
+              variant="outline"
+              size="lg"
+              className="w-full sm:w-auto"
+            >
+              홈으로 가기
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

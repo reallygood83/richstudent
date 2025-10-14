@@ -1469,3 +1469,506 @@ If you need interactivity, consider converting part of this to a Client Componen
 [2m[ 3.55ms][22m  [2m ↳ [22mUpdate PostCSS AST
 
  ✓ Compiled in 163ms
+
+[2m[58.28ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.21ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[14.95ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 6.11ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[20.20ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 7.26ms][22m  [2m ↳ [22mTransform Tailwind CSS AST into PostCSS AST
+[2m[ 8.19ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[27.60ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.13ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[12.17ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 7.79ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.61ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 6.82ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+ ✓ Compiled in 657ms
+ GET /api/news/list?limit=25 200 in 843ms
+
+[2m[59.70ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.10ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.31ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[26.36ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 7.94ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 6.31ms][22m  [2m ↳ [22mBuild utilities
+[2m[13.92ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[29.23ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.06ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 9.10ms][22m  [2m ↳ [22mScan for candidates
+[2m[11.30ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.27ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 8.42ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[33.87ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.08ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[16.08ms][22m  [2m ↳ [22mScan for candidates
+[2m[11.56ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 1.60ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 4.44ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[25.36ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.13ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[10.79ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 7.93ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.49ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 5.90ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+ ✓ Compiled in 714ms
+ ⨯ Error: Event handlers cannot be passed to Client Component props.
+  <... variant="outline" size="lg" onClick={function onClick} className=... children=...>
+                                           ^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '1233678019'
+}
+ GET /teacher/dashboard 200 in 1802ms
+
+[2m[36.94ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.18ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[11.31ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 9.68ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.67ms][22m  [2m ↳ [22mBuild utilities
+[2m[14.93ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[21.56ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.12ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 5.97ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 9.64ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.54ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 5.13ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[27.52ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.20ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 7.29ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 9.63ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 3.90ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 6.36ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[47.53ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.10ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 7.83ms][22m  [2m ↳ [22mScan for candidates
+[2m[29.96ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.27ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 9.30ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[27.72ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.24ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[10.24ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 8.96ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.87ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 7.22ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[19.67ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.08ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 8.08ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 8.85ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.28ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 2.30ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[103.70ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[  0.02ms][22m  [2m ↳ [22mQuick bail check
+[2m[  0.23ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 35.93ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 16.68ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[  1.34ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 49.20ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[32.21ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.10ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[13.04ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 9.74ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.60ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 8.59ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+}
+ ✓ Compiled in 1053ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+ ✓ Compiled /teacher/dashboard in 4ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+ ✓ Compiled /_not-found/page in 108ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/_not-found/page/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/_not-found/page/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+}
+
+[2m[174.21ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[  0.06ms][22m  [2m ↳ [22mQuick bail check
+[2m[  2.02ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 29.80ms][22m  [2m ↳ [22mScan for candidates
+[2m[  9.24ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 10.91ms][22m  [2m ↳ [22mBuild utilities
+[2m[121.06ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[26.65ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.11ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 9.07ms][22m  [2m ↳ [22mScan for candidates
+[2m[10.74ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.28ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 6.36ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[30.51ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.20ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[11.92ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 8.90ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.72ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 8.58ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[24.22ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.13ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 9.69ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 9.89ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.43ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 3.99ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[31.55ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.25ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[14.56ms][22m  [2m ↳ [22mScan for candidates
+[2m[11.29ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.72ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 4.53ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[16.75ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.07ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 6.80ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 6.01ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.23ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 3.58ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[53.37ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.19ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[23.85ms][22m  [2m ↳ [22mScan for candidates
+[2m[12.63ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.96ms][22m  [2m ↳ [22mBuild utilities
+[2m[15.50ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[20.08ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.12ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 8.08ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 5.33ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.24ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 6.25ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[34.19ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.27ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[13.29ms][22m  [2m ↳ [22mScan for candidates
+[2m[10.51ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.65ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 9.21ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[15.11ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.14ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 5.02ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 7.15ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.22ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 2.46ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+ ✓ Compiled in 269ms
+
+[2m[57.81ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.21ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[18.67ms][22m  [2m ↳ [22mScan for candidates
+[2m[17.30ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 1.05ms][22m  [2m ↳ [22mBuild utilities
+[2m[20.44ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[29.29ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.06ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[10.24ms][22m  [2m ↳ [22mScan for candidates
+[2m[13.51ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.50ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 4.91ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[52.22ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.77ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 2.87ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[26.68ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 9.76ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.64ms][22m  [2m ↳ [22mBuild utilities
+[2m[10.18ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[20.51ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.07ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 7.16ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 6.97ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.27ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 5.99ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[63.87ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.23ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[13.36ms][22m  [2m ↳ [22mScan for candidates
+[2m[42.08ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.48ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 7.56ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[16.57ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.05ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 6.73ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 5.71ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.25ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 3.78ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+ ✓ Compiled in 202ms
+
+[2m[46.18ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.59ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 1.52ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[26.53ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 7.49ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.52ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 9.16ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[19.36ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.11ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 7.60ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 6.12ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.27ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 5.20ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+ ⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+   ▲ Next.js 15.3.3 (Turbopack)
+   - Local:        http://localhost:3007
+   - Network:      http://192.168.123.111:3007
+   - Environments: .env.local
+
+ ✓ Starting...
+ ⚠ Invalid next.config.ts options detected: 
+ ⚠     Unrecognized key(s) in object: 'skipTrailingSlashRedirect' at "experimental"
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+ ⚠ `experimental.skipTrailingSlashRedirect` has been moved to `skipTrailingSlashRedirect`. Please update your next.config.ts file accordingly.
+Creating turbopack project { dir: '/Users/moon/Desktop/richstudent-main', testMode: true }
+ ✓ Ready in 951ms
+ ⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+   ▲ Next.js 15.3.3 (Turbopack)
+   - Local:        http://localhost:3007
+   - Network:      http://192.168.123.111:3007
+   - Environments: .env.local
+
+ ✓ Starting...
+Creating turbopack project { dir: '/Users/moon/Desktop/richstudent-main', testMode: true }
+ ✓ Ready in 890ms

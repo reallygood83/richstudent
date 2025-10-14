@@ -1,0 +1,45 @@
+
+> richstudent-web@0.1.0 build
+> next build
+
+ ⚠ You are using a non-standard "NODE_ENV" value in your environment. This creates inconsistencies in the project and is strongly advised against. Read more: https://nextjs.org/docs/messages/non-standard-node-env
+   ▲ Next.js 15.3.3
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+
+[2m[134.37ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[  0.04ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 63.40ms][22m  [2m ↳ [22mSetup compiler
+[2m[  0.37ms][22m    [2m ↳ [22mPostCSS AST -> Tailwind CSS AST
+[2m[ 63.01ms][22m    [2m ↳ [22mCreate compiler
+[2m[  0.07ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[  0.87ms][22m  [2m ↳ [22mSetup scanner
+[2m[ 15.52ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 14.25ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 30.78ms][22m  [2m ↳ [22mBuild utilities
+[2m[  4.89ms][22m  [2m ↳ [22mTransform Tailwind CSS AST into PostCSS AST
+[2m[  4.26ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+ ✓ Compiled successfully in 8.0s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/88) ...
+Error: <Html> should not be imported outside of pages/_document.
+Read more: https://nextjs.org/docs/messages/no-document-import-in-page
+    at y (.next/server/chunks/8548.js:6:1351)
+Error occurred prerendering page "/404". Read more: https://nextjs.org/docs/messages/prerender-error
+Error: <Html> should not be imported outside of pages/_document.
+Read more: https://nextjs.org/docs/messages/no-document-import-in-page
+    at K (/Users/moon/Desktop/richstudent-main/node_modules/next/dist/compiled/next-server/pages.runtime.prod.js:16:6526)
+    at y (/Users/moon/Desktop/richstudent-main/.next/server/chunks/8548.js:6:1351)
+    at react-stack-bottom-frame (/Users/moon/Desktop/richstudent-main/node_modules/react-dom/cjs/react-dom-server.edge.development.js:9251:18)
+    at renderWithHooks (/Users/moon/Desktop/richstudent-main/node_modules/react-dom/cjs/react-dom-server.edge.development.js:4898:19)
+    at renderElement (/Users/moon/Desktop/richstudent-main/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5333:23)
+    at retryNode (/Users/moon/Desktop/richstudent-main/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6092:31)
+    at renderNodeDestructive (/Users/moon/Desktop/richstudent-main/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6042:11)
+    at renderElement (/Users/moon/Desktop/richstudent-main/node_modules/react-dom/cjs/react-dom-server.edge.development.js:5319:11)
+    at retryNode (/Users/moon/Desktop/richstudent-main/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6092:31)
+    at renderNodeDestructive (/Users/moon/Desktop/richstudent-main/node_modules/react-dom/cjs/react-dom-server.edge.development.js:6042:11)
+Export encountered an error on /_error: /404, exiting the build.
+ ⨯ Next.js build worker exited with code: 1 and signal: null

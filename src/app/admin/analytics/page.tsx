@@ -5,17 +5,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Users, 
-  GraduationCap, 
-  Activity, 
-  Database, 
-  TrendingUp, 
+import {
+  Users,
+  GraduationCap,
+  Activity,
+  Database,
+  TrendingUp,
   AlertCircle,
   RefreshCw,
   Download,
   BarChart3
 } from 'lucide-react'
+
+// Force dynamic rendering (disable static generation)
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 interface AnalyticsData {
   overview: {
