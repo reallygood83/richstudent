@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
       }
 
       // 거래 내역 기록
-      const { error: txError } = await supabase
+      const { data: txData, error: txError } = await supabase
         .from('transactions')
         .insert({
           teacher_id: teacher.id,
@@ -186,10 +186,36 @@ export async function POST(request: NextRequest) {
           status: 'completed',
           created_at: new Date().toISOString()
         })
+        .select()
 
       if (txError) {
-        console.error('거래 내역 기록 오류:', txError)
+        console.error('❌ 거래 내역 기록 실패:', {
+          error: txError,
+          message: txError.message,
+          details: txError.details,
+          hint: txError.hint,
+          code: txError.code,
+          student_id: account.student_id,
+          student_name: account.students.name,
+          amount: taxAmount
+        })
+        // 에러 발생 시 롤백 (학생 계좌와 정부 잔액 복구)
+        await supabase
+          .from('accounts')
+          .update({ balance: account.balance })
+          .eq('id', account.id)
+        await supabase
+          .from('economic_entities')
+          .update({ balance: government.balance })
+          .eq('id', government.id)
+        continue
       }
+
+      console.log('✅ 거래 내역 기록 성공:', {
+        student_name: account.students.name,
+        amount: taxAmount,
+        transaction_id: txData?.[0]?.id
+      })
 
       transactions.push({
         student_name: account.students.name,
