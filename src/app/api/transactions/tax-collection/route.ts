@@ -77,6 +77,17 @@ export async function POST(request: NextRequest) {
     }
 
     // 학생 계좌 조회
+    type StudentAccountWithJoin = {
+      id: string
+      balance: number
+      student_id: string
+      students: {
+        id: string
+        name: string
+        teacher_id: string
+      }
+    }
+
     const { data: studentAccounts, error: accountsError } = await supabase
       .from('accounts')
       .select(`
@@ -88,17 +99,8 @@ export async function POST(request: NextRequest) {
       .eq('account_type', account_type)
       .in('student_id', student_ids)
       .eq('students.teacher_id', teacher.id) as {
-        data: Array<{
-          id: string
-          balance: number
-          student_id: string
-          students: {
-            id: string
-            name: string
-            teacher_id: string
-          }
-        }> | null
-        error: any
+        data: StudentAccountWithJoin[] | null
+        error: Error | null
       }
 
     if (accountsError) {
