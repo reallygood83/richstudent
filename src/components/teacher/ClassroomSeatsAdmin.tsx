@@ -93,7 +93,13 @@ export default function ClassroomSeatsAdmin() {
     const totalValue = seatData
       .filter(seat => seat.owner_id)
       .reduce((sum, seat) => sum + seat.purchase_price, 0);
-    const currentPrice = seatData.find(seat => !seat.owner_id)?.current_price || 0;
+
+    // 현재 가격: 구매 가능한 좌석 우선, 없으면 모든 좌석 중 가장 높은 가격
+    let currentPrice = seatData.find(seat => !seat.owner_id)?.current_price || 0;
+    if (currentPrice === 0 && seatData.length > 0) {
+      // 모든 좌석이 판매된 경우, 가장 최근 current_price 사용
+      currentPrice = Math.max(...seatData.map(seat => seat.current_price));
+    }
 
     setStats({
       total_seats: 30,
