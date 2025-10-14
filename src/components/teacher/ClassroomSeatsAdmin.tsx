@@ -40,6 +40,7 @@ export default function ClassroomSeatsAdmin() {
   const [updating, setUpdating] = useState(false);
   const [manualStudentCount, setManualStudentCount] = useState('');
   const [debugging, setDebugging] = useState(false);
+  const [selectedSeat, setSelectedSeat] = useState<Seat | null>(null); // 선택된 좌석 (모달용)
   const [stats, setStats] = useState<SeatStats>({
     total_seats: 30,
     owned_seats: 0,
@@ -360,40 +361,17 @@ export default function ClassroomSeatsAdmin() {
             {seatGrid.map((row, rowIndex) => (
               <div key={rowIndex} className="flex justify-center gap-2">
                 {row.map((seat, colIndex) => (
-                  <div key={seat ? seat.id : `empty-${rowIndex}-${colIndex}`} className="relative group">
+                  <div key={seat ? seat.id : `empty-${rowIndex}-${colIndex}`}>
                     {seat ? (
-                      <>
-                        <div
-                          className={`w-16 h-16 text-xs font-bold flex items-center justify-center rounded cursor-pointer transition-all ${getSeatColor(seat)}`}
-                        >
-                          {seat.seat_number}
-                        </div>
-
-                        {/* 좌석 정보 툴팁 */}
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                          <div className="bg-black text-white text-xs rounded px-3 py-2 whitespace-nowrap">
-                            <div className="font-bold">좌석 {seat.seat_number}번</div>
-                            {seat.owner_id ? (
-                              <>
-                                <div>소유자: {seat.owner?.name}</div>
-                                <div>구매가: ₩{seat.purchase_price.toLocaleString()}</div>
-                                <div>구매일: {seat.purchase_date ? new Date(seat.purchase_date).toLocaleDateString() : '-'}</div>
-                                <div className={`font-semibold ${
-                                  stats.current_price > seat.purchase_price ? 'text-green-400' : 'text-red-400'
-                                }`}>
-                                  평가손익: {stats.current_price > seat.purchase_price ? '+' : ''}
-                                  ₩{(stats.current_price - seat.purchase_price).toLocaleString()}
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <div>상태: 구매 가능</div>
-                                <div>가격: ₩{seat.current_price.toLocaleString()}</div>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </>
+                      <button
+                        onClick={() => setSelectedSeat(seat)}
+                        className={`w-16 h-16 text-xs font-bold flex flex-col items-center justify-center rounded cursor-pointer transition-all hover:scale-110 hover:shadow-lg ${getSeatColor(seat)}`}
+                      >
+                        <div>{seat.seat_number}</div>
+                        {seat.owner_id && (
+                          <div className="text-[8px] mt-1 truncate w-14">{seat.owner?.name}</div>
+                        )}
+                      </button>
                     ) : (
                       <div className="w-16 h-16 bg-transparent" />
                     )}
@@ -406,7 +384,7 @@ export default function ClassroomSeatsAdmin() {
           {/* 새로고침 안내 */}
           <div className="mt-6 text-center text-sm text-gray-600">
             <div>좌석 정보는 30초마다 자동으로 새로고침됩니다</div>
-            <div>좌석에 마우스를 올리면 상세 정보를 볼 수 있습니다</div>
+            <div className="font-semibold text-blue-600">💡 좌석을 클릭하면 상세 정보를 볼 수 있습니다</div>
           </div>
         </CardContent>
       </Card>
@@ -447,6 +425,132 @@ export default function ClassroomSeatsAdmin() {
           </div>
         </CardContent>
       </Card>
+
+      {/* 좌석 상세 정보 모달 */}
+      {selectedSeat && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedSeat(null)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-2xl max-w-md w-full p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 모달 헤더 */}
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-2xl font-bold text-gray-900">
+                좌석 {selectedSeat.seat_number}번
+              </h3>
+              <button
+                onClick={() => setSelectedSeat(null)}
+                className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* 좌석 상태 배지 */}
+            <div className="mb-4">
+              {selectedSeat.owner_id ? (
+                <Badge className="bg-red-500 text-white text-sm px-3 py-1">소유됨</Badge>
+              ) : (
+                <Badge className="bg-green-500 text-white text-sm px-3 py-1">구매 가능</Badge>
+              )}
+            </div>
+
+            {/* 좌석 정보 */}
+            <div className="space-y-4">
+              {selectedSeat.owner_id ? (
+                <>
+                  <div className="border-b pb-3">
+                    <div className="text-sm text-gray-600 mb-1">소유자</div>
+                    <div className="text-xl font-bold text-gray-900">
+                      {selectedSeat.owner?.name || '알 수 없음'}
+                    </div>
+                  </div>
+
+                  <div className="border-b pb-3">
+                    <div className="text-sm text-gray-600 mb-1">구매가</div>
+                    <div className="text-xl font-bold text-gray-900">
+                      ₩{selectedSeat.purchase_price.toLocaleString()}
+                    </div>
+                  </div>
+
+                  <div className="border-b pb-3">
+                    <div className="text-sm text-gray-600 mb-1">구매일</div>
+                    <div className="text-lg text-gray-900">
+                      {selectedSeat.purchase_date
+                        ? new Date(selectedSeat.purchase_date).toLocaleDateString('ko-KR', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })
+                        : '-'}
+                    </div>
+                  </div>
+
+                  <div className="border-b pb-3">
+                    <div className="text-sm text-gray-600 mb-1">현재 시세</div>
+                    <div className="text-xl font-bold text-blue-600">
+                      ₩{stats.current_price.toLocaleString()}
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="text-sm text-gray-600 mb-2">평가손익</div>
+                    <div className={`text-2xl font-bold ${
+                      stats.current_price > selectedSeat.purchase_price
+                        ? 'text-green-600'
+                        : stats.current_price < selectedSeat.purchase_price
+                        ? 'text-red-600'
+                        : 'text-gray-900'
+                    }`}>
+                      {stats.current_price > selectedSeat.purchase_price ? '+' : ''}
+                      ₩{(stats.current_price - selectedSeat.purchase_price).toLocaleString()}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">
+                      ({stats.current_price > selectedSeat.purchase_price ? '+' : ''}
+                      {selectedSeat.purchase_price > 0
+                        ? ((stats.current_price - selectedSeat.purchase_price) / selectedSeat.purchase_price * 100).toFixed(2)
+                        : '0.00'}%)
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="border-b pb-3">
+                    <div className="text-sm text-gray-600 mb-1">상태</div>
+                    <div className="text-xl font-bold text-green-600">
+                      구매 가능
+                    </div>
+                  </div>
+
+                  <div className="border-b pb-3">
+                    <div className="text-sm text-gray-600 mb-1">현재 가격</div>
+                    <div className="text-2xl font-bold text-blue-600">
+                      ₩{selectedSeat.current_price.toLocaleString()}
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 rounded-lg p-4 text-sm text-blue-800">
+                    💡 학생들이 구매할 수 있는 좌석입니다
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* 닫기 버튼 */}
+            <div className="mt-6">
+              <Button
+                onClick={() => setSelectedSeat(null)}
+                className="w-full bg-gray-600 hover:bg-gray-700"
+              >
+                닫기
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
