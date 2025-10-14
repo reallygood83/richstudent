@@ -22,8 +22,6 @@ export default function TransactionManager({ students, onRefreshStudents }: Tran
   const [showMultiTransferModal, setShowMultiTransferModal] = useState(false)
   const [showAllowanceModal, setShowAllowanceModal] = useState(false)
   const [showTaxCollectionModal, setShowTaxCollectionModal] = useState(false)
-  const [transactions, setTransactions] = useState([])
-  const [loading, setLoading] = useState(false)
 
   const totalStudents = students.length
   const totalAssets = students.reduce((sum, student) => sum + student.total_balance, 0)
@@ -37,48 +35,24 @@ export default function TransactionManager({ students, onRefreshStudents }: Tran
     }).format(amount)
   }
 
-  const fetchTransactions = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch('/api/transactions/list')
-      const data = await response.json()
-      
-      if (data.success) {
-        setTransactions(data.transactions)
-      }
-    } catch (error) {
-      console.error('Failed to fetch transactions:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchTransactions()
-  }, [])
-
   const handleTransferSuccess = () => {
     setShowTransferModal(false)
     onRefreshStudents()
-    fetchTransactions()
   }
 
   const handleMultiTransferSuccess = () => {
     setShowMultiTransferModal(false)
     onRefreshStudents()
-    fetchTransactions()
   }
 
   const handleAllowanceSuccess = () => {
     setShowAllowanceModal(false)
     onRefreshStudents()
-    fetchTransactions()
   }
 
   const handleTaxCollectionSuccess = () => {
     setShowTaxCollectionModal(false)
     onRefreshStudents()
-    fetchTransactions()
   }
 
   return (
@@ -219,7 +193,7 @@ export default function TransactionManager({ students, onRefreshStudents }: Tran
         </TabsContent>
 
         <TabsContent value="history">
-          <TransactionHistory transactions={transactions} loading={loading} />
+          <TransactionHistory students={students} />
         </TabsContent>
       </Tabs>
 
