@@ -83,9 +83,15 @@ export async function GET(request: NextRequest) {
     const { data: transactions, error } = await query
 
     if (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Transactions fetch error:', error)
-      }
+      // 프로덕션 에러 로깅 (Vercel 로그 시스템에 기록)
+      console.error('[PRODUCTION ERROR] Transactions fetch error:', {
+        error: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+        teacher_id: teacher.id,
+        student_filter: studentId
+      })
       return NextResponse.json(
         { success: false, error: '거래 목록 조회 중 오류가 발생했습니다.' },
         { status: 500 }
