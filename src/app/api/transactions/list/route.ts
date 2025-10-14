@@ -46,7 +46,25 @@ export async function GET(request: NextRequest) {
       console.log('Limit:', limit)
     }
 
-    // 기본 쿼리 빌더
+    // 선생님의 학생 ID 목록 먼저 가져오기
+    const { data: teacherStudents } = await supabase
+      .from('students')
+      .select('id')
+      .eq('teacher_id', teacher.id)
+
+    if (!teacherStudents || teacherStudents.length === 0) {
+      // 학생이 없으면 빈 배열 반환
+      return NextResponse.json({
+        success: true,
+        transactions: [],
+        statistics: null,
+        filter: studentId ? { student_id: studentId } : null
+      })
+    }
+
+    const studentIds = teacherStudents.map(s => s.id)
+
+    // 기본 쿼리 빌더 (teacher의 학생들이 관련된 거래만)
     let query = supabase
       .from('transactions')
       .select(`
@@ -61,7 +79,7 @@ export async function GET(request: NextRequest) {
         status,
         created_at
       `)
-      .eq('teacher_id', teacher.id)
+      .or(`from_student_id.in.(${studentIds.join(',')}),to_student_id.in.(${studentIds.join(',')})`)
       .order('created_at', { ascending: false })
       .limit(limit)
 
@@ -75,8 +93,16 @@ export async function GET(request: NextRequest) {
           { status: 400 }
         )
       }
-      // Supabase의 파라미터화된 쿼리는 SQL injection에 안전하지만,
-      // 명시적 검증으로 추가 보안 계층 제공
+
+      // 해당 학생이 선생님의 학생인지 검증
+      if (!studentIds.includes(studentId)) {
+        return NextResponse.json(
+          { success: false, error: '해당 학생에 대한 권한이 없습니다.' },
+          { status: 403 }
+        )
+      }
+
+      // 해당 학생이 관련된 거래만 필터링
       query = query.or(`from_student_id.eq.${studentId},to_student_id.eq.${studentId}`)
     }
 
