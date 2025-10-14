@@ -1390,3 +1390,82 @@ Limit: 100
 [2m[ 6.54ms][22m  [2m ↳ [22mUpdate PostCSS AST
 
  ✓ Compiled in 380ms
+
+[2m[47.74ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.25ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 2.99ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[22.54ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 7.23ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.61ms][22m  [2m ↳ [22mBuild utilities
+[2m[13.80ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[15.56ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.12ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 6.09ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 5.38ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.35ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 3.56ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+ ✓ Compiled in 1671ms
+ ✓ Compiled /teacher/dashboard in 377ms
+ ⨯ Error: Event handlers cannot be passed to Client Component props.
+  <... variant="outline" size="lg" onClick={function onClick} className=... children=...>
+                                           ^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '1233678019'
+}
+ GET /teacher/dashboard 200 in 2082ms
+ ⨯ Error: Event handlers cannot be passed to Client Component props.
+  <... variant="outline" size="lg" onClick={function onClick} className=... children=...>
+                                           ^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '1233678019'
+}
+ GET /teacher/dashboard 200 in 274ms
+ ⨯ Error: Event handlers cannot be passed to Client Component props.
+  <... variant="outline" size="lg" onClick={function onClick} className=... children=...>
+                                           ^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '1233678019'
+}
+ GET /teacher/dashboard 200 in 419ms
+ ⨯ Error: Event handlers cannot be passed to Client Component props.
+  <... variant="outline" size="lg" onClick={function onClick} className=... children=...>
+                                           ^^^^^^^^^^^^^^^^^^
+If you need interactivity, consider converting part of this to a Client Component.
+    at stringify (<anonymous>)
+    at stringify (<anonymous>)
+    at stringify (<anonymous>) {
+  digest: '1233678019'
+}
+ GET /teacher/dashboard 200 in 293ms
+
+[2m[22.17ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.03ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 1.00ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[11.99ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 5.36ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.35ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 3.27ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+
+[2m[15.89ms][22m [@tailwindcss/postcss] src/app/globals.css
+[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
+[2m[ 0.12ms][22m  [2m ↳ [22mRegister full rebuild paths
+[2m[ 5.62ms][22m  [2m ↳ [22mScan for candidates
+[2m[ 6.02ms][22m  [2m ↳ [22mRegister dependency messages
+[2m[ 0.49ms][22m  [2m ↳ [22mBuild utilities
+[2m[ 3.55ms][22m  [2m ↳ [22mUpdate PostCSS AST
+
+ ✓ Compiled in 163ms
