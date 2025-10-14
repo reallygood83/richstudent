@@ -71,6 +71,8 @@ export async function GET(request: NextRequest) {
         id,
         from_student_id,
         to_student_id,
+        from_entity,
+        to_entity,
         transaction_type,
         amount,
         from_account_type,
@@ -136,7 +138,7 @@ export async function GET(request: NextRequest) {
 
     const studentMap = new Map(students?.map(s => [s.id, s.name]) || [])
 
-    // 거래 목록에 학생 이름 추가
+    // 거래 목록에 학생 이름과 경제 기구 이름 추가
     const enrichedTransactions = transactions?.map(transaction => ({
       ...transaction,
       from_student_name: transaction.from_student_id
@@ -144,7 +146,9 @@ export async function GET(request: NextRequest) {
         : null,
       to_student_name: transaction.to_student_id
         ? studentMap.get(transaction.to_student_id)
-        : null
+        : null,
+      from_entity_name: transaction.from_entity || null,
+      to_entity_name: transaction.to_entity || null
     })) || []
 
     // 학생별 통계 계산 (특정 학생 필터링 시에만)

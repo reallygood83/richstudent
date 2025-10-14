@@ -12,6 +12,8 @@ interface Transaction {
   id: string
   from_student_name?: string
   to_student_name?: string
+  from_entity_name?: string
+  to_entity_name?: string
   transaction_type: string
   amount: number
   description: string
@@ -353,18 +355,24 @@ export default function TransactionHistory({ students }: TransactionHistoryProps
                       </div>
 
                       <div className="flex items-center space-x-2 text-sm text-gray-600 mb-2">
-                        {transaction.from_student_name && (
+                        {/* 송금자 (학생 또는 경제 기구) */}
+                        {(transaction.from_student_name || transaction.from_entity_name) && (
                           <>
-                            <span className="font-medium">{transaction.from_student_name}</span>
+                            <span className="font-medium">
+                              {transaction.from_student_name || transaction.from_entity_name}
+                            </span>
                             {transaction.from_account_type && (
                               <span className="text-xs text-gray-500">({transaction.from_account_type})</span>
                             )}
                             <ArrowRight className="w-4 h-4" />
                           </>
                         )}
-                        {transaction.to_student_name && (
+                        {/* 수신자 (학생 또는 경제 기구) */}
+                        {(transaction.to_student_name || transaction.to_entity_name) && (
                           <>
-                            <span className="font-medium">{transaction.to_student_name}</span>
+                            <span className="font-medium">
+                              {transaction.to_student_name || transaction.to_entity_name}
+                            </span>
                             {transaction.to_account_type && (
                               <span className="text-xs text-gray-500">({transaction.to_account_type})</span>
                             )}

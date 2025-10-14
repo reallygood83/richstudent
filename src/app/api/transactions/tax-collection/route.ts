@@ -2,285 +2,212 @@ import { NextRequest, NextResponse } from 'next/server'
 import { validateSession } from '@/lib/auth'
 import { supabase } from '@/lib/supabase/client'
 
-interface TaxCollectionRequest {
-  tax_type: 'percentage' | 'fixed'
-  account_type: string
-  description?: string
-  percentage_rate?: number
-  fixed_amount?: number
-  student_ids: string[]
-}
-
 export async function POST(request: NextRequest) {
   try {
     const sessionToken = request.cookies.get('session_token')?.value
 
     if (!sessionToken) {
-      return NextResponse.json({
-        success: false,
-        error: '인증이 필요합니다.'
-      }, { status: 401 })
+      return NextResponse.json(
+        { success: false, error: '인증이 필요합니다.' },
+        { status: 401 }
+      )
     }
 
-    // 세션 검증
     const teacher = await validateSession(sessionToken)
     if (!teacher) {
-      return NextResponse.json({
-        success: false,
-        error: '유효하지 않은 세션입니다.'
-      }, { status: 401 })
+      return NextResponse.json(
+        { success: false, error: '유효하지 않은 세션입니다.' },
+        { status: 401 }
+      )
     }
 
-    const body: TaxCollectionRequest = await request.json()
-    const { 
-      tax_type, 
-      account_type, 
-      description = '',
+    const body = await request.json()
+    const {
+      student_ids,
+      tax_type,
       percentage_rate,
       fixed_amount,
-      student_ids 
+      account_type = 'checking'
     } = body
 
     // 입력 검증
-    if (!tax_type || !account_type || !student_ids || student_ids.length === 0) {
-      return NextResponse.json({
-        success: false,
-        error: '필수 정보가 누락되었습니다.'
-      }, { status: 400 })
+    if (!student_ids || !Array.isArray(student_ids) || student_ids.length === 0) {
+      return NextResponse.json(
+        { success: false, error: '학생을 선택해주세요.' },
+        { status: 400 }
+      )
+    }
+
+    if (!tax_type || !['percentage', 'fixed'].includes(tax_type)) {
+      return NextResponse.json(
+        { success: false, error: '세금 유형을 선택해주세요.' },
+        { status: 400 }
+      )
     }
 
     if (tax_type === 'percentage') {
       if (!percentage_rate || percentage_rate <= 0 || percentage_rate > 100) {
-        return NextResponse.json({
-          success: false,
-          error: '세율은 0%보다 크고 100% 이하여야 합니다.'
-        }, { status: 400 })
+        return NextResponse.json(
+          { success: false, error: '올바른 세율을 입력해주세요. (1-100)' },
+          { status: 400 }
+        )
       }
     } else if (tax_type === 'fixed') {
       if (!fixed_amount || fixed_amount <= 0) {
-        return NextResponse.json({
-          success: false,
-          error: '고정 금액은 0보다 커야 합니다.'
-        }, { status: 400 })
+        return NextResponse.json(
+          { success: false, error: '올바른 세금 금액을 입력해주세요.' },
+          { status: 400 }
+        )
       }
     }
 
-    // 학생들 정보 조회
-    const { data: students, error: studentsError } = await supabase
-      .from('students')
-      .select('id, name, student_code')
-      .eq('teacher_id', teacher.id)
-      .in('id', student_ids)
-
-    if (studentsError || !students || students.length === 0) {
-      return NextResponse.json({
-        success: false,
-        error: '학생 정보를 찾을 수 없습니다.'
-      }, { status: 404 })
-    }
-
-    // Government 계정 정보 조회 (세금을 받을 계정)
+    // Government 경제 기구 조회
     const { data: government, error: govError } = await supabase
       .from('economic_entities')
-      .select('id, name')
+      .select('id, name, balance')
       .eq('name', 'Government')
       .eq('teacher_id', teacher.id)
       .single()
 
     if (govError || !government) {
-      return NextResponse.json({
-        success: false,
-        error: 'Government 계정을 찾을 수 없습니다. 경제 기구를 먼저 초기화해주세요.'
-      }, { status: 404 })
+      return NextResponse.json(
+        { success: false, error: 'Government 경제 기구를 찾을 수 없습니다.' },
+        { status: 404 }
+      )
     }
 
-    // Government 계좌 조회
-    const { data: governmentAccount, error: govAccountError } = await supabase
-      .from('economic_entity_accounts')
-      .select('balance')
-      .eq('entity_id', government.id)
+    // 학생 계좌 조회
+    const { data: studentAccounts, error: accountsError } = await supabase
+      .from('accounts')
+      .select(`
+        id,
+        balance,
+        student_id,
+        students!inner(id, name, teacher_id)
+      `)
       .eq('account_type', account_type)
-      .single()
+      .in('student_id', student_ids)
+      .eq('students.teacher_id', teacher.id)
 
-    if (govAccountError || !governmentAccount) {
-      return NextResponse.json({
-        success: false,
-        error: `Government ${account_type} 계좌를 찾을 수 없습니다.`
-      }, { status: 404 })
+    if (accountsError) {
+      return NextResponse.json(
+        { success: false, error: '학생 계좌 조회 중 오류가 발생했습니다.' },
+        { status: 500 }
+      )
     }
 
-    // 세금 계산 및 검증
-    const taxCollections = []
-    const errors = []
+    if (!studentAccounts || studentAccounts.length === 0) {
+      return NextResponse.json(
+        { success: false, error: '선택한 학생의 계좌를 찾을 수 없습니다.' },
+        { status: 404 }
+      )
+    }
 
-    for (const student of students) {
-      // 학생 계좌 잔액 조회
-      const { data: studentAccount, error: accountError } = await supabase
-        .from('accounts')
-        .select('balance')
-        .eq('student_id', student.id)
-        .eq('account_type', account_type)
-        .single()
+    // 세금 징수 처리
+    const transactions = []
+    let totalTaxCollected = 0
 
-      if (accountError || !studentAccount) {
-        errors.push(`${student.name}의 ${account_type} 계좌를 찾을 수 없습니다.`)
-        continue
+    for (const account of studentAccounts) {
+      let taxAmount = 0
+
+      if (tax_type === 'percentage') {
+        taxAmount = Math.floor(account.balance * (percentage_rate / 100))
+      } else {
+        taxAmount = fixed_amount
       }
 
-      const currentBalance = studentAccount.balance
-      
-      let taxAmount = 0
-      if (tax_type === 'percentage') {
-        taxAmount = Math.round(currentBalance * (percentage_rate! / 100))
-      } else {
-        taxAmount = fixed_amount!
+      // 잔액 부족 확인
+      if (taxAmount > account.balance) {
+        continue // 잔액 부족한 학생은 건너뛰기
       }
 
       if (taxAmount <= 0) {
-        continue // 세금이 0인 경우 건너뛰기
+        continue // 세금이 0원 이하면 건너뛰기
       }
 
-      if (taxAmount > currentBalance) {
-        errors.push(`${student.name}: 잔액 부족 (잔액: ₩${currentBalance.toLocaleString()}, 세금: ₩${taxAmount.toLocaleString()})`)
+      // 학생 계좌에서 차감
+      const { error: deductError } = await supabase
+        .from('accounts')
+        .update({
+          balance: account.balance - taxAmount,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', account.id)
+
+      if (deductError) {
+        console.error('학생 계좌 차감 오류:', deductError)
         continue
       }
 
-      taxCollections.push({
-        student,
-        taxAmount,
-        currentBalance
-      })
-    }
+      // Government 잔액에 추가
+      const { error: addError } = await supabase
+        .from('economic_entities')
+        .update({
+          balance: government.balance + taxAmount,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', government.id)
 
-    if (errors.length > 0) {
-      return NextResponse.json({
-        success: false,
-        error: `일부 학생의 잔액이 부족합니다:\n${errors.join('\n')}`,
-        data: { errors }
-      }, { status: 400 })
-    }
-
-    if (taxCollections.length === 0) {
-      return NextResponse.json({
-        success: false,
-        error: '세금을 징수할 수 있는 학생이 없습니다.'
-      }, { status: 400 })
-    }
-
-    // 트랜잭션 실행
-    const totalTaxAmount = taxCollections.reduce((sum, collection) => sum + collection.taxAmount, 0)
-    const transactionRecords = []
-
-    // Government 계정에 세금 추가
-    const { error: govUpdateError } = await supabase
-      .from('economic_entity_accounts')
-      .update({ balance: governmentAccount.balance + totalTaxAmount })
-      .eq('entity_id', government.id)
-      .eq('account_type', account_type)
-
-    if (govUpdateError) {
-      return NextResponse.json({
-        success: false,
-        error: 'Government 계정 업데이트에 실패했습니다.'
-      }, { status: 500 })
-    }
-
-    // 각 학생에서 세금 징수
-    for (const collection of taxCollections) {
-      const { student, taxAmount, currentBalance } = collection
-
-      try {
-        // 학생 계좌에서 세금 차감
-        const { error: studentUpdateError } = await supabase
+      if (addError) {
+        console.error('Government 잔액 추가 오류:', addError)
+        // 롤백: 학생 계좌 복구
+        await supabase
           .from('accounts')
-          .update({ balance: currentBalance - taxAmount })
-          .eq('student_id', student.id)
-          .eq('account_type', account_type)
-
-        if (studentUpdateError) {
-          errors.push(`${student.name}의 계좌 업데이트에 실패했습니다.`)
-          continue
-        }
-
-        // 거래 기록 생성
-        const taxDescription = description 
-          ? `${description} (${tax_type === 'percentage' ? `${percentage_rate}% 비례세` : `₩${fixed_amount!.toLocaleString()} 정액세`})`
-          : `${tax_type === 'percentage' ? `${percentage_rate}% 비례세` : `₩${fixed_amount!.toLocaleString()} 정액세`} 징수`
-
-        // 학생 거래 기록 (세금 지출)
-        const { data: studentTransaction, error: studentTxError } = await supabase
-          .from('transactions')
-          .insert({
-            from_student_id: student.id,
-            to_economic_entity_id: government.id,
-            from_account_type: account_type,
-            to_account_type: account_type,
-            amount: taxAmount,
-            transaction_type: 'tax_payment',
-            status: 'completed',
-            memo: taxDescription
-          })
-          .select()
-          .single()
-
-        if (studentTxError) {
-          errors.push(`${student.name}의 거래 기록 생성에 실패했습니다.`)
-        } else {
-          transactionRecords.push({
-            transaction_id: studentTransaction.id,
-            student_name: student.name,
-            student_code: student.student_code,
-            tax_amount: taxAmount
-          })
-        }
-
-      } catch (error) {
-        console.error(`Tax collection error for ${student.id}:`, error)
-        errors.push(`${student.name}의 세금 징수 중 오류가 발생했습니다.`)
+          .update({ balance: account.balance })
+          .eq('id', account.id)
+        continue
       }
+
+      // 거래 내역 기록
+      const { error: txError } = await supabase
+        .from('transactions')
+        .insert({
+          teacher_id: teacher.id,
+          from_student_id: account.student_id,
+          to_entity: 'Government',
+          from_account_type: account_type,
+          amount: taxAmount,
+          transaction_type: 'tax',
+          description: `세금 징수 (${tax_type === 'percentage' ? percentage_rate + '%' : '₩' + fixed_amount.toLocaleString()})`,
+          status: 'completed',
+          created_at: new Date().toISOString()
+        })
+
+      if (txError) {
+        console.error('거래 내역 기록 오류:', txError)
+      }
+
+      transactions.push({
+        student_name: account.students.name,
+        amount: taxAmount
+      })
+
+      totalTaxCollected += taxAmount
+      government.balance += taxAmount // 다음 학생 처리를 위해 업데이트
     }
 
-    // 결과 반환
-    const successCount = transactionRecords.length
-    
-    if (errors.length > 0) {
-      return NextResponse.json({
-        success: false,
-        error: `일부 세금 징수가 실패했습니다: ${errors.join(', ')}`,
-        data: {
-          success_count: successCount,
-          error_count: errors.length,
-          total_tax_amount: totalTaxAmount,
-          errors
-        }
-      }, { status: 207 }) // 207 Multi-Status
+    if (transactions.length === 0) {
+      return NextResponse.json(
+        { success: false, error: '세금을 징수할 수 있는 학생이 없습니다.' },
+        { status: 400 }
+      )
     }
 
     return NextResponse.json({
       success: true,
-      message: `${successCount}명에게서 총 ₩${totalTaxAmount.toLocaleString()}의 세금을 징수했습니다.`,
-      data: {
-        success_count: successCount,
-        total_tax_amount: totalTaxAmount,
-        average_tax_amount: Math.round(totalTaxAmount / successCount),
-        transactions: transactionRecords,
-        tax_type,
-        percentage_rate: tax_type === 'percentage' ? percentage_rate : null,
-        fixed_amount: tax_type === 'fixed' ? fixed_amount : null,
-        account_type,
-        government: {
-          id: government.id,
-          name: government.name,
-          new_balance: governmentAccount.balance + totalTaxAmount
-        }
-      }
+      message: `${transactions.length}명의 학생으로부터 총 ₩${totalTaxCollected.toLocaleString()}의 세금을 징수했습니다.`,
+      transactions,
+      total_collected: totalTaxCollected
     })
 
   } catch (error) {
-    console.error('Tax collection error:', error)
-    return NextResponse.json({
-      success: false,
-      error: '세금 징수 처리 중 오류가 발생했습니다.'
-    }, { status: 500 })
+    console.error('세금 징수 오류:', error)
+    return NextResponse.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : '세금 징수 중 오류가 발생했습니다.'
+      },
+      { status: 500 }
+    )
   }
 }

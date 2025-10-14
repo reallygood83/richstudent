@@ -142,6 +142,8 @@ export default function TaxCollectionModal({ students, onClose, onSuccess }: Tax
       const data = await response.json()
 
       if (data.success) {
+        // 성공 팝업 표시
+        alert(`✅ 세금 징수 완료!\n\n${data.message}\n\n징수된 학생: ${data.transactions.map((t: { student_name: string, amount: number }) => `${t.student_name} (₩${t.amount.toLocaleString()})`).join('\n')}`)
         onSuccess()
       } else {
         setError(data.error || '세금 징수에 실패했습니다.')
