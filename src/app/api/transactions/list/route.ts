@@ -25,11 +25,26 @@ export async function GET(request: NextRequest) {
     // URL 파라미터에서 학생 ID 필터 가져오기
     const { searchParams } = new URL(request.url)
     const studentId = searchParams.get('student_id')
-    const limit = parseInt(searchParams.get('limit') || '100')
 
-    console.log('=== Transaction List Request ===')
-    console.log('Student ID filter:', studentId)
-    console.log('Limit:', limit)
+    // Limit 파라미터 검증 (보안 및 성능 최적화)
+    const limitParam = searchParams.get('limit')
+    let limit = 100 // 기본값
+
+    if (limitParam) {
+      const parsedLimit = parseInt(limitParam, 10)
+      // NaN, 음수, 0 체크 및 최대값 제한
+      if (!isNaN(parsedLimit) && parsedLimit > 0 && parsedLimit <= 500) {
+        limit = parsedLimit
+      } else if (parsedLimit > 500) {
+        limit = 500 // 최대 500개로 제한
+      }
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('=== Transaction List Request ===')
+      console.log('Student ID filter:', studentId)
+      console.log('Limit:', limit)
+    }
 
     // 기본 쿼리 빌더
     let query = supabase
@@ -51,21 +66,35 @@ export async function GET(request: NextRequest) {
       .limit(limit)
 
     // 학생 ID 필터링 적용 (해당 학생이 송금자 또는 수신자인 거래)
-    if (studentId) {
+    if (studentId && studentId !== 'all') {
+      // UUID 형식 검증 (SQL injection 방어)
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+      if (!uuidRegex.test(studentId)) {
+        return NextResponse.json(
+          { success: false, error: '유효하지 않은 학생 ID 형식입니다.' },
+          { status: 400 }
+        )
+      }
+      // Supabase의 파라미터화된 쿼리는 SQL injection에 안전하지만,
+      // 명시적 검증으로 추가 보안 계층 제공
       query = query.or(`from_student_id.eq.${studentId},to_student_id.eq.${studentId}`)
     }
 
     const { data: transactions, error } = await query
 
     if (error) {
-      console.error('Transactions fetch error:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Transactions fetch error:', error)
+      }
       return NextResponse.json(
         { success: false, error: '거래 목록 조회 중 오류가 발생했습니다.' },
         { status: 500 }
       )
     }
 
-    console.log(`✅ Fetched ${transactions?.length || 0} transactions`)
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`✅ Fetched ${transactions?.length || 0} transactions`)
+    }
 
     // 학생 정보 매핑을 위해 학생 목록도 가져오기
     const { data: students } = await supabase
@@ -128,7 +157,9 @@ export async function GET(request: NextRequest) {
         student_name: studentMap.get(studentId) || 'Unknown'
       }
 
-      console.log('📊 Student statistics calculated:', statistics)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('📊 Student statistics calculated:', statistics)
+      }
     }
 
     return NextResponse.json({
@@ -139,7 +170,9 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Transactions list error:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Transactions list error:', error)
+    }
     return NextResponse.json(
       { success: false, error: '서버 오류가 발생했습니다.' },
       { status: 500 }

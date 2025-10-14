@@ -102,23 +102,47 @@ export default function TransactionHistory({ students }: TransactionHistoryProps
         ? '/api/transactions/list'
         : `/api/transactions/list?student_id=${selectedStudentId}`
 
-      console.log('Fetching transactions:', url)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Fetching transactions:', url)
+      }
 
       const response = await fetch(url)
+
+      // HTTP 에러 응답 처리
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: '알 수 없는 오류가 발생했습니다.' }))
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`)
+      }
+
       const data = await response.json()
 
       if (data.success) {
-        setTransactions(data.transactions)
+        setTransactions(data.transactions || [])
         setStatistics(data.statistics || null)
-        console.log('✅ Transactions loaded:', data.transactions.length)
-        if (data.statistics) {
-          console.log('📊 Statistics:', data.statistics)
+
+        if (process.env.NODE_ENV === 'development') {
+          console.log('✅ Transactions loaded:', data.transactions?.length || 0)
+          if (data.statistics) {
+            console.log('📊 Statistics:', data.statistics)
+          }
         }
       } else {
-        console.error('Failed to fetch transactions:', data.error)
+        throw new Error(data.error || '거래 내역을 불러오는데 실패했습니다.')
       }
     } catch (error) {
-      console.error('Failed to fetch transactions:', error)
+      // 에러를 사용자에게 표시
+      const errorMessage = error instanceof Error ? error.message : '거래 내역을 불러오는데 실패했습니다.'
+
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to fetch transactions:', error)
+      }
+
+      // 빈 배열로 설정하여 UI가 깨지지 않도록 함
+      setTransactions([])
+      setStatistics(null)
+
+      // TODO: 사용자에게 토스트 메시지나 에러 UI 표시
+      alert(errorMessage)
     } finally {
       setLoading(false)
     }
