@@ -97,11 +97,35 @@ export async function POST(request: NextRequest) {
 
     const createdEntities = results.map(result => result.data).filter(Boolean)
 
-    return NextResponse.json({ 
-      success: true, 
-      message: `${createdEntities.length}개의 경제 주체가 성공적으로 생성되었습니다.`,
+    // 각 경제 기구에 계좌 생성 (checking, savings, investment)
+    const accountCreationPromises = createdEntities.flatMap(entity =>
+      ['checking', 'savings', 'investment'].map(accountType =>
+        supabase
+          .from('economic_entity_accounts')
+          .insert({
+            entity_id: entity.id,
+            account_type: accountType,
+            balance: accountType === 'checking' ? entity.balance : 0,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+      )
+    )
+
+    const accountResults = await Promise.all(accountCreationPromises)
+    const accountErrors = accountResults.filter(result => result.error)
+
+    if (accountErrors.length > 0) {
+      console.error('Economic entity accounts creation errors:', accountErrors)
+      // 계좌 생성 실패해도 경제 기구는 생성되었으므로 경고만 표시
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `${createdEntities.length}개의 경제 주체와 ${accountCreationPromises.length}개의 계좌가 성공적으로 생성되었습니다.`,
       entities: createdEntities,
-      created_types: entitiesToCreate.map(e => e.entity_type)
+      created_types: entitiesToCreate.map(e => e.entity_type),
+      accounts_created: accountCreationPromises.length - accountErrors.length
     })
 
   } catch (error) {

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경제 기구 초기화</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #0070f3;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background: #0051cc;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏛️ 경제 기구 초기화</h1>
+
+        <div class="info">
+            <strong>📝 사용 방법:</strong><br>
+            1. http://localhost:3007 에서 교사로 로그인하세요<br>
+            2. 이 페이지에서 아래 버튼을 클릭하세요<br>
+            3. 한국 정부, RichStudent 은행, RichStudent 증권이 생성됩니다
+        </div>
+
+        <button id="initButton" onclick="initializeEntities()">
+            경제 기구 초기화 실행
+        </button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function initializeEntities() {
+            const button = document.getElementById('initButton');
+            const result = document.getElementById('result');
+
+            button.disabled = true;
+            button.textContent = '초기화 중...';
+            result.style.display = 'none';
+
+            try {
+                const response = await fetch('http://localhost:3007/api/economic-entities/initialize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                result.style.display = 'block';
+
+                if (data.success) {
+                    result.className = 'success';
+                    result.innerHTML = `
+                        <strong>✅ 성공!</strong><br>
+                        ${data.message}<br><br>
+                        <strong>생성된 경제 기구:</strong><br>
+                        ${data.created_types ? data.created_types.join(', ') : '없음'}<br><br>
+                        <strong>생성된 계좌 수:</strong> ${data.accounts_created || 0}개
+                    `;
+                } else {
+                    result.className = 'error';
+                    result.innerHTML = `
+                        <strong>❌ 오류 발생</strong><br>
+                        ${data.error}<br><br>
+                        ${data.error.includes('인증') ? '먼저 http://localhost:3007 에서 로그인해주세요!' : ''}
+                    `;
+                }
+            } catch (error) {
+                result.style.display = 'block';
+                result.className = 'error';
+                result.innerHTML = `
+                    <strong>❌ 연결 오류</strong><br>
+                    서버에 연결할 수 없습니다.<br>
+                    개발 서버가 실행 중인지 확인해주세요.
+                `;
+            } finally {
+                button.disabled = false;
+                button.textContent = '경제 기구 초기화 실행';
+            }
+        }
+    </script>
+</body>
+</html>

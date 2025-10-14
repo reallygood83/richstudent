@@ -133,8 +133,8 @@ export default function TaxCollectionModal({ students, onClose, onSuccess }: Tax
           tax_type: formData.tax_type,
           account_type: formData.account_type,
           description: formData.description,
-          percentage_rate: formData.tax_type === 'percentage' ? parseFloat(formData.percentage_rate) : null,
-          fixed_amount: formData.tax_type === 'fixed' ? parseFloat(formData.fixed_amount) : null,
+          percentage_rate: formData.tax_type === 'percentage' ? parseFloat(formData.percentage_rate) : undefined,
+          fixed_amount: formData.tax_type === 'fixed' ? parseFloat(formData.fixed_amount) : undefined,
           student_ids: selectedStudents.length > 0 ? selectedStudents : students.map(s => s.id)
         }),
       })
