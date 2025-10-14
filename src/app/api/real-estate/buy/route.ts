@@ -7,6 +7,10 @@ export async function POST(request: NextRequest) {
     const supabase = createClient();
     const { seat_number, student_id } = await request.json();
 
+    console.log('=== Seat Purchase Request ===');
+    console.log('Seat Number:', seat_number);
+    console.log('Student ID:', student_id);
+
     if (!seat_number || !student_id) {
       return NextResponse.json(
         { error: 'seat_number and student_id are required' },
@@ -22,24 +26,39 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (studentError || !studentData) {
+      console.error('Student not found:', studentError);
       return NextResponse.json(
         { error: '학생 정보를 찾을 수 없습니다.' },
         { status: 404 }
       );
     }
 
-    // 1. 좌석 정보 조회 (구매 가능한지 확인)
+    console.log('Student Teacher ID:', studentData.teacher_id);
+
+    // 1. 좌석 정보 조회 (구매 가능한지 확인) - teacher_id 필터링 추가!
     const { data: seat, error: seatError } = await supabase
       .from('classroom_seats')
-      .select('id, current_price, owner_id, is_available')
+      .select('id, current_price, owner_id, is_available, teacher_id')
+      .eq('teacher_id', studentData.teacher_id)
       .eq('seat_number', seat_number)
-      .is('owner_id', null)
       .eq('is_available', true)
       .single();
 
+    console.log('Seat query result:', { seat, error: seatError });
+
     if (seatError || !seat) {
+      console.error('Seat not available:', seatError);
       return NextResponse.json(
         { error: '해당 좌석을 구매할 수 없습니다.' },
+        { status: 400 }
+      );
+    }
+
+    // owner_id가 null이 아니면 이미 소유된 좌석
+    if (seat.owner_id !== null) {
+      console.log('Seat already owned by:', seat.owner_id);
+      return NextResponse.json(
+        { error: '이미 다른 학생이 소유한 좌석입니다.' },
         { status: 400 }
       );
     }
@@ -52,7 +71,10 @@ export async function POST(request: NextRequest) {
       .eq('account_type', 'checking')
       .single();
 
+    console.log('Account query result:', { balance: account?.balance, error: accountError });
+
     if (accountError || !account) {
+      console.error('Account not found:', accountError);
       return NextResponse.json(
         { error: '계좌 정보를 찾을 수 없습니다.' },
         { status: 404 }
@@ -60,6 +82,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (account.balance < seat.current_price) {
+      console.log('Insufficient balance:', {
+        required: seat.current_price,
+        current: account.balance
+      });
       return NextResponse.json(
         { error: '잔액이 부족합니다.', required: seat.current_price, current: account.balance },
         { status: 400 }
@@ -75,7 +101,8 @@ export async function POST(request: NextRequest) {
         purchase_date: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
-      .eq('id', seat.id);
+      .eq('id', seat.id)
+      .eq('teacher_id', studentData.teacher_id);
 
     if (updateSeatError) {
       console.error('Error updating seat:', updateSeatError);
@@ -84,6 +111,8 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    console.log('✅ Seat ownership updated');
 
     // 4. 학생 잔액 차감 (당좌계좌)
     const { error: updateBalanceError } = await supabase
@@ -104,13 +133,16 @@ export async function POST(request: NextRequest) {
           purchase_price: 0,
           purchase_date: null
         })
-        .eq('id', seat.id);
+        .eq('id', seat.id)
+        .eq('teacher_id', studentData.teacher_id);
 
       return NextResponse.json(
         { error: '잔액 차감 중 오류가 발생했습니다.' },
         { status: 500 }
       );
     }
+
+    console.log('✅ Balance updated');
 
     // 5. 거래 기록 저장
     await supabase.from('seat_transactions').insert({
@@ -121,6 +153,8 @@ export async function POST(request: NextRequest) {
       transaction_type: 'buy'
     });
 
+    console.log('✅ Seat transaction recorded');
+
     // 6. transactions 테이블에도 기록
     await supabase.from('transactions').insert({
       student_id,
@@ -129,6 +163,8 @@ export async function POST(request: NextRequest) {
       description: `좌석 ${seat_number}번 구매`,
       created_at: new Date().toISOString()
     });
+
+    console.log('✅ General transaction recorded');
 
     // 7. 좌석 가격 자동 업데이트 (구매 후 즉시 반영)
     try {
