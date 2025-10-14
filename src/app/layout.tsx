@@ -7,6 +7,10 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+// Force dynamic rendering globally
+export const dynamic = 'force-dynamic'
+export const dynamicParams = true
+
 export const metadata: Metadata = {
   title: "RichStudent - 미래의 금융 리더를 키우는 특별한 경험",
   description: "실제 금융 시장과 똑같은 환경에서 투자, 거래, 대출을 체험하며 경제 원리를 자연스럽게 학습하는 혁신적인 교육 플랫폼입니다. 학생들의 금융 이해력과 경제적 사고력을 키워주세요.",
