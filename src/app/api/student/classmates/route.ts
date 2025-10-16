@@ -5,27 +5,28 @@ import { cookies } from 'next/headers'
 export async function GET() {
   try {
     const cookieStore = await cookies()
-    const sessionToken = cookieStore.get('student_session')?.value
+    const studentId = cookieStore.get('student_id')?.value
+    const teacherId = cookieStore.get('teacher_id')?.value
 
-    if (!sessionToken) {
+    if (!studentId || !teacherId) {
       return NextResponse.json({
         success: false,
         error: '인증이 필요합니다.'
       }, { status: 401 })
     }
 
-    // 학생 세션 확인
-    const { data: sessionData } = await supabase
-      .from('student_sessions')
-      .select('student_id, teacher_id')
-      .eq('session_token', sessionToken)
-      .eq('is_active', true)
+    // 현재 학생 정보 확인
+    const { data: currentStudent } = await supabase
+      .from('students')
+      .select('id, teacher_id')
+      .eq('id', studentId)
+      .eq('teacher_id', teacherId)
       .single()
 
-    if (!sessionData) {
+    if (!currentStudent) {
       return NextResponse.json({
         success: false,
-        error: '유효하지 않은 세션입니다.'
+        error: '유효하지 않은 학생 정보입니다.'
       }, { status: 401 })
     }
 
@@ -33,7 +34,7 @@ export async function GET() {
     const { data: students, error } = await supabase
       .from('students')
       .select('id, name, student_code')
-      .eq('teacher_id', sessionData.teacher_id)
+      .eq('teacher_id', teacherId)
       .order('name')
 
     if (error) {

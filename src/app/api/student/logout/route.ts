@@ -1,20 +1,15 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { logoutStudent } from '@/lib/student-session'
 
 // 학생 로그아웃 API
 export async function POST() {
   try {
     const cookieStore = await cookies()
-    const sessionToken = cookieStore.get('student_session_token')?.value
 
-    if (sessionToken) {
-      // 데이터베이스에서 세션 삭제
-      await logoutStudent(sessionToken)
-    }
-    
-    // 학생 세션 쿠키 삭제
-    cookieStore.delete('student_session_token')
+    // 모든 학생 세션 쿠키 삭제
+    cookieStore.delete('student_id')
+    cookieStore.delete('teacher_id')
+    cookieStore.delete('student_name')
 
     return NextResponse.json({
       success: true,

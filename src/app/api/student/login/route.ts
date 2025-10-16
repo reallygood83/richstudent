@@ -77,37 +77,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 학생 세션 토큰 생성
-    const crypto = await import('crypto')
-    const sessionToken = crypto.randomUUID()
-    const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000) // 8시간
-
-    // 기존 세션 삭제 (동일 학생의 기존 세션)
-    await supabase
-      .from('student_sessions')
-      .delete()
-      .eq('student_id', student.id)
-
-    // 새 세션 저장
-    const { error: sessionError } = await supabase
-      .from('student_sessions')
-      .insert({
-        student_id: student.id,
-        session_token: sessionToken,
-        expires_at: expiresAt.toISOString()
-      })
-
-    if (sessionError) {
-      console.error('Session creation error:', sessionError)
-      return NextResponse.json(
-        { success: false, error: '세션 생성에 실패했습니다.' },
-        { status: 500 }
-      )
-    }
-
-    // 세션 토큰을 쿠키에 저장
+    // 학생 정보를 쿠키에 저장 (간단한 세션 관리)
     const cookieStore = await cookies()
-    cookieStore.set('student_session_token', sessionToken, {
+
+    // 학생 ID 저장
+    cookieStore.set('student_id', student.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -115,7 +89,30 @@ export async function POST(request: NextRequest) {
       path: '/'
     })
 
-    // 세션 데이터가 DB에 저장되었습니다
+    // 교사 ID 저장 (같은 반 학생 조회용)
+    cookieStore.set('teacher_id', teacher.id, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 8 * 60 * 60, // 8시간
+      path: '/'
+    })
+
+    // 학생 이름 저장 (UI 표시용)
+    cookieStore.set('student_name', student.name, {
+      httpOnly: false, // 클라이언트에서 읽을 수 있도록
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 8 * 60 * 60, // 8시간
+      path: '/'
+    })
+
+    console.log('Student login successful:', {
+      studentId: student.id,
+      teacherId: teacher.id,
+      studentName: student.name
+    })
+
     return NextResponse.json({
       success: true,
       student: {
@@ -126,8 +123,7 @@ export async function POST(request: NextRequest) {
       teacher: {
         name: teacher.name,
         session_code: session_code.toUpperCase()
-      },
-      session_token: sessionToken
+      }
     })
 
   } catch (error) {
