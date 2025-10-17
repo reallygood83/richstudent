@@ -50,7 +50,13 @@ export async function generateQuizWithGemini(
       throw new Error('Invalid response format: questions array not found')
     }
 
-    const questions: QuizQuestion[] = parsed.questions.map((q: any) => ({
+    interface RawQuestion {
+      question: string
+      options: string[]
+      correct_answer: string
+      explanation: string
+    }
+    const questions: QuizQuestion[] = parsed.questions.map((q: RawQuestion) => ({
       question: q.question,
       options: q.options,
       correct_answer: q.correct_answer,

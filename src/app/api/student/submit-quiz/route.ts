@@ -108,7 +108,12 @@ export async function POST(request: NextRequest) {
     }
 
     // 자동 채점
-    const questions = quiz.questions as any[] // JSONB 배열
+    interface QuizQuestion {
+      question: string
+      options: string[]
+      correct_answer: string
+    }
+    const questions = quiz.questions as QuizQuestion[] // JSONB 배열
     const gradedAnswers = []
     let correctCount = 0
 

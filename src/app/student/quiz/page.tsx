@@ -72,6 +72,7 @@ export default function StudentQuizPage() {
 
   useEffect(() => {
     loadQuiz()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const loadQuiz = async () => {
