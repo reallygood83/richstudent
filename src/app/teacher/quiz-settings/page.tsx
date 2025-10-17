@@ -90,7 +90,8 @@ function QuizSettingsPageContent() {
     try {
       const sessionToken = localStorage.getItem('teacher_session')
       if (!sessionToken) {
-        router.push('/auth/login')
+        setMessage({ type: 'error', text: '세션이 만료되었습니다. 다시 로그인해주세요.' })
+        setSaving(false)
         return
       }
 
@@ -104,6 +105,19 @@ function QuizSettingsPageContent() {
       })
 
       const data = await response.json()
+
+      // 인증 실패 처리
+      if (response.status === 401) {
+        setMessage({ type: 'error', text: '세션이 만료되었습니다. 다시 로그인해주세요.' })
+        setSaving(false)
+        return
+      }
+
+      if (!response.ok) {
+        setMessage({ type: 'error', text: data.error || '설정 저장 실패' })
+        setSaving(false)
+        return
+      }
 
       if (data.success) {
         setMessage({ type: 'success', text: '퀴즈 설정이 저장되었습니다!' })
