@@ -94,6 +94,7 @@ export async function POST(request: NextRequest) {
     // 교사 인증 확인
     const authHeader = request.headers.get('authorization')
     if (!authHeader) {
+      console.error('❌ Authorization 헤더 없음')
       return NextResponse.json(
         { success: false, error: '로그인이 필요합니다.' },
         { status: 401 }
@@ -101,16 +102,25 @@ export async function POST(request: NextRequest) {
     }
 
     const sessionToken = authHeader.replace('Bearer ', '')
+    console.log('🔑 POST 세션 토큰 (마지막 10자):', sessionToken.slice(-10))
 
     // 세션에서 교사 정보 조회
     const { data: sessionData, error: sessionError } = await supabase
       .from('teacher_sessions')
-      .select('teacher_id')
+      .select('teacher_id, expires_at')
       .eq('session_token', sessionToken)
       .gt('expires_at', new Date().toISOString())
       .single()
 
+    console.log('📊 POST 세션 조회 결과:', {
+      found: !!sessionData,
+      error: sessionError?.message,
+      expires_at: sessionData?.expires_at,
+      current_time: new Date().toISOString()
+    })
+
     if (sessionError || !sessionData) {
+      console.error('❌ POST 세션 검증 실패:', sessionError)
       return NextResponse.json(
         { success: false, error: '유효하지 않은 세션입니다.' },
         { status: 401 }
