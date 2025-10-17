@@ -97,7 +97,7 @@ export async function GET() {
         
         console.log(`Student ${student.name} portfolio:`, portfolio)
 
-        // 최근 거래 내역 조회 (최근 10개)
+        // 최근 거래 내역 조회 (최근 10개) - market_assets와 조인하여 symbol과 name 가져오기
         const { data: transactions } = await supabase
           .from('asset_transactions')
           .select(`
@@ -107,28 +107,26 @@ export async function GET() {
             total_amount,
             fee,
             created_at,
-            asset_symbol
+            market_assets!inner(symbol, name)
           `)
           .eq('student_id', student.id)
           .order('created_at', { ascending: false })
           .limit(10)
 
-        // 거래 내역에 시장 자산 정보 추가 (portfolio에서 가져온 정보 활용)
+        // 거래 내역 데이터 정리
         const transactionsWithAssets = transactions?.map(tx => {
-          // 포트폴리오에서 해당 asset_symbol을 가진 market_assets 정보 찾기
-          const portfolioAsset = portfolio?.find(p => {
-            const marketAsset = Array.isArray(p.market_assets) ? p.market_assets[0] : p.market_assets
-            return marketAsset?.symbol === tx.asset_symbol
-          })
-          const marketAsset = Array.isArray(portfolioAsset?.market_assets) 
-            ? portfolioAsset.market_assets[0] 
-            : portfolioAsset?.market_assets
-          
+          const marketAsset = Array.isArray(tx.market_assets) ? tx.market_assets[0] : tx.market_assets
+
           return {
-            ...tx,
+            transaction_type: tx.transaction_type,
+            quantity: tx.quantity,
+            price: tx.price,
+            total_amount: tx.total_amount,
+            fee: tx.fee,
+            created_at: tx.created_at,
             market_assets: {
-              symbol: tx.asset_symbol,
-              name: marketAsset?.name || tx.asset_symbol
+              symbol: marketAsset?.symbol || '',
+              name: marketAsset?.name || ''
             }
           }
         }) || []
