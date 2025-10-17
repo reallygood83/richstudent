@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase/client'
 import { cookies } from 'next/headers'
 
 // 학생 거래 내역 조회 API
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const cookieStore = await cookies()
     const studentId = cookieStore.get('student_id')?.value
