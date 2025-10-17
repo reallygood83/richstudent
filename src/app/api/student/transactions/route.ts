@@ -1,24 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase/client'
+import { cookies } from 'next/headers'
 
 // 학생 거래 내역 조회 API
 export async function GET(request: NextRequest) {
   try {
-    const sessionToken = request.cookies.get('student_session_token')?.value
-    const { searchParams } = new URL(request.url)
-    const studentId = searchParams.get('student_id')
+    const cookieStore = await cookies()
+    const studentId = cookieStore.get('student_id')?.value
+    const teacherId = cookieStore.get('teacher_id')?.value
 
-    if (!sessionToken) {
+    if (!studentId || !teacherId) {
       return NextResponse.json(
         { success: false, error: '인증이 필요합니다.' },
         { status: 401 }
-      )
-    }
-
-    if (!studentId) {
-      return NextResponse.json(
-        { success: false, error: '학생 ID가 필요합니다.' },
-        { status: 400 }
       )
     }
 

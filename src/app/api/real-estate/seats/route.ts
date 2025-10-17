@@ -8,18 +8,11 @@ export async function GET() {
     const cookieStore = await cookies();
 
     console.log('=== Fetching classroom seats ===');
-    console.log('All cookies:', cookieStore.getAll().map(c => ({ name: c.name, value: c.value.substring(0, 10) + '...' })));
-
-    // 교사 세션 또는 학생 세션 확인
-    const sessionToken = cookieStore.get('session_token')?.value;
-    const studentToken = cookieStore.get('student_session_token')?.value; // Fixed: was 'student_token'
-
-    console.log('Session token exists:', !!sessionToken);
-    console.log('Student token exists:', !!studentToken);
 
     let teacherId: string | null = null;
 
-    // 1. 교사 세션 확인
+    // 1. 교사 세션 확인 (session_token 쿠키)
+    const sessionToken = cookieStore.get('session_token')?.value;
     if (sessionToken) {
       const { data: teacher, error: sessionError } = await supabase
         .from('teacher_sessions')
@@ -29,57 +22,27 @@ export async function GET() {
 
       if (!sessionError && teacher) {
         teacherId = teacher.teacher_id;
-        console.log('Teacher session detected, Teacher ID:', teacherId);
+        console.log('✅ Teacher session detected, Teacher ID:', teacherId);
       }
     }
 
-    // 2. 학생 세션 확인 (교사 세션이 없는 경우)
-    if (!teacherId && studentToken) {
-      console.log('Checking student session with token...');
-      const { data: studentSession, error: studentError } = await supabase
-        .from('student_sessions')
-        .select('student_id')
-        .eq('session_token', studentToken)
-        .single();
+    // 2. 학생 세션 확인 (교사 세션이 없는 경우) - 쿠키 기반
+    if (!teacherId) {
+      const studentId = cookieStore.get('student_id')?.value;
+      const studentTeacherId = cookieStore.get('teacher_id')?.value;
 
-      console.log('Student session query result:', { studentSession, error: studentError });
-
-      if (!studentError && studentSession) {
-        console.log('Found student session, fetching student data...');
-        // 학생의 teacher_id 가져오기
-        const { data: student, error: studentDataError } = await supabase
-          .from('students')
-          .select('teacher_id')
-          .eq('id', studentSession.student_id)
-          .single();
-
-        console.log('Student data query result:', { student, error: studentDataError });
-
-        if (!studentDataError && student) {
-          teacherId = student.teacher_id;
-          console.log('✅ Student session detected, Teacher ID:', teacherId);
-        } else {
-          console.error('❌ Failed to get student teacher_id:', studentDataError);
-        }
-      } else {
-        console.error('❌ Student session not found or error:', studentError);
+      if (studentId && studentTeacherId) {
+        // 쿠키에서 바로 teacher_id 사용
+        teacherId = studentTeacherId;
+        console.log('✅ Student session detected (cookie-based), Teacher ID:', teacherId);
       }
     }
 
     // 3. 인증 실패
     if (!teacherId) {
       console.error('❌ Authentication failed - no teacherId found');
-      console.error('Debug info:', {
-        hasSessionToken: !!sessionToken,
-        hasStudentToken: !!studentToken,
-        teacherId
-      });
       return NextResponse.json({
-        error: '인증이 필요합니다.',
-        debug: {
-          hasSessionToken: !!sessionToken,
-          hasStudentToken: !!studentToken
-        }
+        error: '인증이 필요합니다.'
       }, { status: 401 });
     }
 

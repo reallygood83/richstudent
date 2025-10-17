@@ -1972,3 +1972,4 @@ Creating turbopack project { dir: '/Users/moon/Desktop/richstudent-main', testMo
  ✓ Starting...
 Creating turbopack project { dir: '/Users/moon/Desktop/richstudent-main', testMode: true }
  ✓ Ready in 890ms
+[?25h
