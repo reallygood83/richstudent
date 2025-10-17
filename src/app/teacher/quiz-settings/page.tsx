@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -51,15 +51,7 @@ function QuizSettingsPageContent() {
     }
   }, [authLoading, isAuthenticated, router])
 
-  // Load existing settings
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadSettings()
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated])
-
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     try {
       const sessionToken = localStorage.getItem('teacher_session')
       if (!sessionToken) {
@@ -82,7 +74,14 @@ function QuizSettingsPageContent() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  // Load existing settings
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadSettings()
+    }
+  }, [isAuthenticated, loadSettings])
 
   const handleSave = async () => {
     setSaving(true)
@@ -381,7 +380,7 @@ function QuizSettingsPageContent() {
 
 export default function QuizSettingsPage() {
   return (
-    <RequireAuth requireTeacher>
+    <RequireAuth>
       <QuizSettingsPageContent />
     </RequireAuth>
   )

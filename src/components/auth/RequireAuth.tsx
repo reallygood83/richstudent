@@ -7,10 +7,9 @@ import { Loader2 } from 'lucide-react'
 
 interface RequireAuthProps {
   children: React.ReactNode
-  requireTeacher?: boolean
 }
 
-export default function RequireAuth({ children, requireTeacher = false }: RequireAuthProps) {
+export default function RequireAuth({ children }: RequireAuthProps) {
   const router = useRouter()
   const { isAuthenticated, isLoading } = useAuth()
 
