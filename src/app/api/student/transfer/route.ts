@@ -138,8 +138,16 @@ export async function POST(request: NextRequest) {
       }, { status: 500 })
     }
 
-    // 3. 거래 내역 기록
-    const { error: transactionError } = await supabase
+    // 3. 거래 내역 기록 (metadata 제거, from/to_account_type 사용)
+    console.log('💾 Saving student transfer transaction:', {
+      from_student_id: studentId,
+      to_student_id: to_student_id,
+      amount: amount,
+      from_account_type: from_account,
+      to_account_type: 'checking'
+    })
+
+    const { data: transactionData, error: transactionError } = await supabase
       .from('transactions')
       .insert({
         from_student_id: studentId,
@@ -148,15 +156,16 @@ export async function POST(request: NextRequest) {
         transaction_type: 'transfer',
         description: description || '학생 송금',
         status: 'completed',
-        metadata: JSON.stringify({
-          from_account: from_account,
-          to_account: 'checking'
-        })
+        from_account_type: from_account,
+        to_account_type: 'checking'
       })
+      .select()
 
     if (transactionError) {
-      console.warn('Transaction log error:', transactionError)
+      console.error('❌ Transaction log error:', transactionError)
       // 거래 로그 실패는 전체 송금을 실패시키지 않음
+    } else {
+      console.log('✅ Student transfer transaction saved:', transactionData)
     }
 
     return NextResponse.json({

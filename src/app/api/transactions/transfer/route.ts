@@ -124,7 +124,17 @@ export async function POST(request: NextRequest) {
     }
 
     // 거래 기록 저장 (teacher_id 제거 - transactions 테이블에 해당 필드 없음)
-    const { error: transactionError } = await supabase
+    console.log('💾 Saving transaction record:', {
+      from_student_id,
+      to_student_id,
+      transaction_type: 'transfer',
+      amount,
+      from_account_type,
+      to_account_type,
+      description
+    })
+
+    const { data: transactionData, error: transactionError } = await supabase
       .from('transactions')
       .insert({
         from_student_id,
@@ -136,10 +146,13 @@ export async function POST(request: NextRequest) {
         description,
         status: 'completed'
       })
+      .select()
 
     if (transactionError) {
-      console.error('Transaction record error:', transactionError)
+      console.error('❌ Transaction record error:', transactionError)
       // 거래는 성공했지만 기록 저장 실패 (로그만 남김)
+    } else {
+      console.log('✅ Transaction record saved successfully:', transactionData)
     }
 
     return NextResponse.json({
