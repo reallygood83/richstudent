@@ -13,7 +13,7 @@ interface SubmitAnswer {
 export async function POST(request: NextRequest) {
   try {
     const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = createClient()
 
     // 학생 인증 확인
     const studentToken = cookieStore.get('student_session')?.value

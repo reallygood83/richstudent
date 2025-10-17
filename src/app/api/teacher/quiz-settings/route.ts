@@ -12,7 +12,7 @@ import { cookies } from 'next/headers'
 export async function GET(request: NextRequest) {
   try {
     const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = createClient()
 
     // 교사 인증 확인
     const authHeader = request.headers.get('authorization')
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
+    const supabase = createClient()
 
     // 교사 인증 확인
     const authHeader = request.headers.get('authorization')

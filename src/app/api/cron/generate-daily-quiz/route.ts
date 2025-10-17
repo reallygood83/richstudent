@@ -18,8 +18,8 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const cookieStore = await cookies()
-    const supabase = createClient(cookieStore)
+    await cookies()
+    const supabase = createClient()
 
     console.log('🤖 Daily Quiz Generation Cron Job Started')
 
