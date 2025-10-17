@@ -6,17 +6,18 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  DollarSign, 
-  CreditCard, 
-  PiggyBank, 
-  TrendingUp, 
+import {
+  DollarSign,
+  CreditCard,
+  PiggyBank,
+  TrendingUp,
   ArrowRightLeft,
   History,
   LogOut,
   User,
   Building2,
-  MapPin
+  MapPin,
+  Brain
 } from 'lucide-react'
 import { Student, Transaction } from '@/types'
 import TransferForm from '@/components/student/TransferForm'
@@ -267,7 +268,7 @@ export default function StudentDashboard() {
         </Card>
 
         {/* Services Section */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           {/* Investment Section */}
           <Card>
             <CardHeader>
@@ -308,6 +309,28 @@ export default function StudentDashboard() {
               >
                 <Building2 className="w-4 h-4 mr-2" />
                 대출 신청 및 관리
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Quiz Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Brain className="w-5 h-5" />
+                <span>오늘의 퀴즈</span>
+              </CardTitle>
+              <CardDescription>
+                AI 생성 퀴즈를 풀고 보상을 받아보세요
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                onClick={() => router.push('/student/quiz')}
+                className="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700"
+              >
+                <Brain className="w-4 h-4 mr-2" />
+                퀴즈 풀기
               </Button>
             </CardContent>
           </Card>

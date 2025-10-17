@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useAuth } from '@/hooks/useAuth'
-import { Users, TrendingUp, DollarSign, Settings, LogOut, ArrowRightLeft, Building2, MapPin } from 'lucide-react'
+import { Users, TrendingUp, DollarSign, Settings, LogOut, ArrowRightLeft, Building2, MapPin, Brain } from 'lucide-react'
 import StudentList from '@/components/teacher/StudentList'
 import CreateStudentModal from '@/components/teacher/CreateStudentModal'
 import TransactionManager from '@/components/teacher/TransactionManager'
@@ -206,7 +206,7 @@ export default function TeacherDashboard() {
 
         {/* Main Tabs */}
         <Tabs defaultValue="students" className="w-full">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="students" className="flex items-center space-x-2">
               <Users className="w-4 h-4" />
               <span>학생 관리</span>
@@ -230,6 +230,10 @@ export default function TeacherDashboard() {
             <TabsTrigger value="market" className="flex items-center space-x-2">
               <DollarSign className="w-4 h-4" />
               <span>시장 데이터</span>
+            </TabsTrigger>
+            <TabsTrigger value="quiz-settings" className="flex items-center space-x-2">
+              <Brain className="w-4 h-4" />
+              <span>퀴즈 설정</span>
             </TabsTrigger>
             <TabsTrigger value="class-management" className="flex items-center space-x-2">
               <Settings className="w-4 h-4" />
@@ -265,6 +269,27 @@ export default function TeacherDashboard() {
 
           <TabsContent value="market" className="mt-6">
             <MarketDataView />
+          </TabsContent>
+
+          <TabsContent value="quiz-settings" className="mt-6">
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>퀴즈 보상 시스템 설정</CardTitle>
+                  <CardDescription>
+                    매일 오전 7시에 자동으로 AI 퀴즈가 생성됩니다.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button
+                    onClick={() => router.push('/teacher/quiz-settings')}
+                    className="w-full"
+                  >
+                    퀴즈 설정 페이지로 이동
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="class-management" className="mt-6">
