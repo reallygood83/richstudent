@@ -84,16 +84,23 @@ function QuizSettingsPageContent() {
   }, [isAuthenticated, loadSettings])
 
   const handleSave = async () => {
+    console.log('🔘 설정 저장 버튼 클릭됨')
+    console.log('📊 현재 settings 값:', settings)
+
     setSaving(true)
     setMessage(null)
 
     try {
       const sessionToken = localStorage.getItem('teacher_session')
+      console.log('🔑 세션 토큰 확인:', sessionToken ? '있음' : '없음')
+
       if (!sessionToken) {
         setMessage({ type: 'error', text: '세션이 만료되었습니다. 다시 로그인해주세요.' })
         setSaving(false)
         return
       }
+
+      console.log('📤 API 요청 전송 중...')
 
       const response = await fetch('/api/teacher/quiz-settings', {
         method: 'POST',
@@ -104,7 +111,10 @@ function QuizSettingsPageContent() {
         body: JSON.stringify(settings)
       })
 
+      console.log('📥 API 응답 상태:', response.status, response.statusText)
+
       const data = await response.json()
+      console.log('📋 API 응답 데이터:', data)
 
       // 인증 실패 처리
       if (response.status === 401) {
@@ -376,7 +386,13 @@ function QuizSettingsPageContent() {
           >
             취소
           </Button>
-          <Button onClick={handleSave} disabled={saving}>
+          <Button
+            onClick={() => {
+              alert('버튼 클릭됨!')
+              handleSave()
+            }}
+            disabled={saving}
+          >
             {saving ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
