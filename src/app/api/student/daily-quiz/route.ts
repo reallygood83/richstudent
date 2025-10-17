@@ -2,7 +2,7 @@
 // GET: 오늘의 퀴즈 가져오기 + 응시 기록 확인
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase-server'
+import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 
 export async function GET(request: NextRequest) {

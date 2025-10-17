@@ -2,7 +2,7 @@
 // POST: 퀴즈 답안 제출 → 자동 채점 → 보상 계산
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase-server'
+import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 
 interface SubmitAnswer {

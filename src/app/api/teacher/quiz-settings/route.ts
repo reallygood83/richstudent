@@ -3,7 +3,7 @@
 // POST: 새 설정 생성 또는 업데이트
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase-server'
+import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 
 // ============================================
