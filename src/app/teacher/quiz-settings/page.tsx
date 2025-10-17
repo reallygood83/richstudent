@@ -112,13 +112,16 @@ function QuizSettingsPageContent() {
       })
 
       console.log('📥 API 응답 상태:', response.status, response.statusText)
+      console.log('📥 응답 OK?:', response.ok)
 
       const data = await response.json()
       console.log('📋 API 응답 데이터:', data)
 
       // 인증 실패 처리
       if (response.status === 401) {
-        setMessage({ type: 'error', text: '세션이 만료되었습니다. 다시 로그인해주세요.' })
+        console.error('⚠️ 401 인증 실패 - 세션 만료')
+        console.error('⚠️ 응답 데이터:', data)
+        setMessage({ type: 'error', text: data.error || '세션이 만료되었습니다. 다시 로그인해주세요.' })
         setSaving(false)
         return
       }
@@ -387,10 +390,7 @@ function QuizSettingsPageContent() {
             취소
           </Button>
           <Button
-            onClick={() => {
-              alert('버튼 클릭됨!')
-              handleSave()
-            }}
+            onClick={handleSave}
             disabled={saving}
           >
             {saving ? (
