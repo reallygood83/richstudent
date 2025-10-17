@@ -123,11 +123,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 거래 기록 저장
+    // 거래 기록 저장 (teacher_id 제거 - transactions 테이블에 해당 필드 없음)
     const { error: transactionError } = await supabase
       .from('transactions')
       .insert({
-        teacher_id: teacher.id,
         from_student_id,
         to_student_id,
         transaction_type: 'transfer',
