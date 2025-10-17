@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { Loader2, CheckCircle, AlertCircle, BookOpen, Clock, DollarSign } from 'lucide-react'
+import { Loader2, CheckCircle, AlertCircle, BookOpen, Clock, DollarSign, Sparkles } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import RequireAuth from '@/components/auth/RequireAuth'
 
@@ -30,6 +30,7 @@ function QuizSettingsPageContent() {
   const { isAuthenticated, isLoading: authLoading } = useAuth()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [generating, setGenerating] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
   const [settings, setSettings] = useState<QuizSettings>({
@@ -143,6 +144,61 @@ function QuizSettingsPageContent() {
       setMessage({ type: 'error', text: '설정 저장 중 오류가 발생했습니다.' })
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleGenerateQuiz = async () => {
+    console.log('✨ 퀴즈 생성 버튼 클릭됨')
+
+    setGenerating(true)
+    setMessage(null)
+
+    try {
+      const sessionToken = localStorage.getItem('teacher_session')
+
+      if (!sessionToken) {
+        setMessage({ type: 'error', text: '세션이 만료되었습니다. 다시 로그인해주세요.' })
+        setGenerating(false)
+        return
+      }
+
+      console.log('📤 퀴즈 생성 API 호출 중...')
+
+      const response = await fetch('/api/teacher/generate-quiz', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${sessionToken}`
+        }
+      })
+
+      const data = await response.json()
+      console.log('📋 퀴즈 생성 응답:', data)
+
+      if (response.status === 401) {
+        setMessage({ type: 'error', text: data.error || '세션이 만료되었습니다. 다시 로그인해주세요.' })
+        setGenerating(false)
+        return
+      }
+
+      if (!response.ok) {
+        setMessage({ type: 'error', text: data.error || '퀴즈 생성 실패' })
+        setGenerating(false)
+        return
+      }
+
+      if (data.success) {
+        setMessage({
+          type: 'success',
+          text: data.data.message || '퀴즈가 성공적으로 생성되었습니다!'
+        })
+      } else {
+        setMessage({ type: 'error', text: data.error || '퀴즈 생성 실패' })
+      }
+    } catch (error) {
+      console.error('Quiz generation error:', error)
+      setMessage({ type: 'error', text: '퀴즈 생성 중 오류가 발생했습니다.' })
+    } finally {
+      setGenerating(false)
     }
   }
 
@@ -381,7 +437,7 @@ function QuizSettingsPageContent() {
           </CardContent>
         </Card>
 
-        {/* 저장 버튼 */}
+        {/* 저장 및 퀴즈 생성 버튼 */}
         <div className="flex justify-end gap-4">
           <Button
             variant="outline"
@@ -391,7 +447,7 @@ function QuizSettingsPageContent() {
           </Button>
           <Button
             onClick={handleSave}
-            disabled={saving}
+            disabled={saving || generating}
           >
             {saving ? (
               <>
@@ -400,6 +456,23 @@ function QuizSettingsPageContent() {
               </>
             ) : (
               '설정 저장'
+            )}
+          </Button>
+          <Button
+            onClick={handleGenerateQuiz}
+            disabled={generating || saving || !settings.id}
+            className="bg-purple-600 hover:bg-purple-700"
+          >
+            {generating ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                퀴즈 생성 중...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 mr-2" />
+                오늘의 퀴즈 생성
+              </>
             )}
           </Button>
         </div>
