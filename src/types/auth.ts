@@ -44,6 +44,7 @@ export interface AuthResponse {
   error?: string
   teacher?: Teacher
   sessionId?: string
+  sessionToken?: string // localStorage에 저장할 토큰
 }
 
 export interface SessionData {

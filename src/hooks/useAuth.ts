@@ -53,17 +53,23 @@ export function useAuth() {
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }))
       const response = await authApi.login(data)
-      
+
       if (response.success && response.teacher) {
-        setState(prev => ({ 
-          ...prev, 
-          teacher: response.teacher!, 
-          isLoading: false 
+        // sessionToken이 있으면 localStorage에 저장
+        if (response.sessionToken) {
+          localStorage.setItem('teacher_session', response.sessionToken)
+          console.log('✅ 세션 토큰 localStorage에 저장 완료')
+        }
+
+        setState(prev => ({
+          ...prev,
+          teacher: response.teacher!,
+          isLoading: false
         }))
         return { success: true }
       } else {
-        setState(prev => ({ 
-          ...prev, 
+        setState(prev => ({
+          ...prev,
           isLoading: false,
           error: response.error || '로그인 실패'
         }))
@@ -71,8 +77,8 @@ export function useAuth() {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : '로그인 중 오류 발생'
-      setState(prev => ({ 
-        ...prev, 
+      setState(prev => ({
+        ...prev,
         isLoading: false,
         error: errorMessage
       }))
@@ -114,17 +120,21 @@ export function useAuth() {
   const logout = async () => {
     try {
       await authApi.logout()
-      setState(prev => ({ 
-        ...prev, 
-        teacher: null, 
-        error: null 
+      // localStorage에서 토큰 제거
+      localStorage.removeItem('teacher_session')
+      console.log('✅ 세션 토큰 localStorage에서 제거 완료')
+
+      setState(prev => ({
+        ...prev,
+        teacher: null,
+        error: null
       }))
       return { success: true }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : '로그아웃 실패'
-      setState(prev => ({ 
-        ...prev, 
-        error: errorMessage 
+      setState(prev => ({
+        ...prev,
+        error: errorMessage
       }))
       return { success: false, error: errorMessage }
     }

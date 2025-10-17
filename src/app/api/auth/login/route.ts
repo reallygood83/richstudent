@@ -43,8 +43,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(result, { status: 401 })
     }
 
-    // 성공 시 세션 쿠키 설정
-    const response = NextResponse.json(result)
+    // 성공 시 세션 쿠키 설정 + sessionToken을 응답에 포함
+    const response = NextResponse.json({
+      ...result,
+      sessionToken: result.sessionId // 프론트엔드에서 localStorage에 저장할 수 있도록
+    })
+
     if (result.sessionId) {
       response.cookies.set('session_token', result.sessionId, {
         httpOnly: true,
