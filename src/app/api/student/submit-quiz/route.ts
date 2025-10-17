@@ -112,6 +112,7 @@ export async function POST(request: NextRequest) {
       question: string
       options: string[]
       correct_answer: string
+      explanation: string
     }
     const questions = quiz.questions as QuizQuestion[] // JSONB 배열
     const gradedAnswers = []

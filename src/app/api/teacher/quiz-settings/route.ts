@@ -11,7 +11,7 @@ import { cookies } from 'next/headers'
 // ============================================
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await cookies()
+    await cookies()
     const supabase = createClient()
 
     // 교사 인증 확인
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
 // ============================================
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = await cookies()
+    await cookies()
     const supabase = createClient()
 
     // 교사 인증 확인
