@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase/client'
 import { cookies } from 'next/headers'
+import crypto from 'crypto'
 
 // 학생 로그인 API
 export async function POST(request: NextRequest) {
@@ -77,10 +78,46 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 학생 정보를 쿠키에 저장 (간단한 세션 관리)
+    // 세션 토큰 생성 (교사와 동일한 방식)
+    const sessionToken = crypto.randomBytes(32).toString('hex')
+    const expiresAt = new Date()
+    expiresAt.setHours(expiresAt.getHours() + 8) // 8시간 후 만료
+
+    // student_sessions 테이블에 세션 저장
+    const { error: sessionInsertError } = await supabase
+      .from('student_sessions')
+      .insert({
+        student_id: student.id,
+        session_token: sessionToken,
+        expires_at: expiresAt.toISOString()
+      })
+
+    if (sessionInsertError) {
+      console.error('Failed to create student session:', sessionInsertError)
+      return NextResponse.json(
+        { success: false, error: '세션 생성에 실패했습니다.' },
+        { status: 500 }
+      )
+    }
+
+    console.log('✅ Student session created:', {
+      student_id: student.id,
+      expires_at: expiresAt.toISOString()
+    })
+
+    // 세션 토큰을 쿠키에 저장
     const cookieStore = await cookies()
 
-    // 학생 ID 저장
+    // 학생 세션 토큰 저장 (httpOnly로 보안 강화)
+    cookieStore.set('student_session', sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 8 * 60 * 60, // 8시간
+      path: '/'
+    })
+
+    // 학생 ID 저장 (기존 코드 호환성)
     cookieStore.set('student_id', student.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -110,7 +147,8 @@ export async function POST(request: NextRequest) {
     console.log('Student login successful:', {
       studentId: student.id,
       teacherId: teacher.id,
-      studentName: student.name
+      studentName: student.name,
+      sessionToken: sessionToken.substring(0, 10) + '...'
     })
 
     return NextResponse.json({
