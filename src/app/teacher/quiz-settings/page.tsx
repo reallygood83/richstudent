@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Loader2, CheckCircle, AlertCircle, BookOpen, Clock, DollarSign } from 'lucide-react'
+import { useAuth } from '@/hooks/useAuth'
+import RequireAuth from '@/components/auth/RequireAuth'
 
 interface QuizSettings {
   id?: string
@@ -23,8 +25,9 @@ interface QuizSettings {
   is_active: boolean
 }
 
-export default function QuizSettingsPage() {
+function QuizSettingsPageContent() {
   const router = useRouter()
+  const { isAuthenticated, isLoading: authLoading } = useAuth()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
@@ -41,17 +44,25 @@ export default function QuizSettingsPage() {
     is_active: true
   })
 
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/auth/login')
+    }
+  }, [authLoading, isAuthenticated, router])
+
   // Load existing settings
   useEffect(() => {
-    loadSettings()
+    if (isAuthenticated) {
+      loadSettings()
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [isAuthenticated])
 
   const loadSettings = async () => {
     try {
       const sessionToken = localStorage.getItem('teacher_session')
       if (!sessionToken) {
-        router.push('/auth/login')
         return
       }
 
@@ -116,7 +127,7 @@ export default function QuizSettingsPage() {
     return participation + score + bonus
   }
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <Loader2 className="w-8 h-8 animate-spin" />
@@ -365,5 +376,13 @@ export default function QuizSettingsPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function QuizSettingsPage() {
+  return (
+    <RequireAuth requireTeacher>
+      <QuizSettingsPageContent />
+    </RequireAuth>
   )
 }
