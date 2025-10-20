@@ -243,14 +243,18 @@ export async function POST() {
     const processAsset = async (asset: typeof assets[0]) => {
       const yahooSymbol = symbolMapping[asset.symbol] || asset.symbol
 
-      let newPrice = await fetchRealTimePrice(yahooSymbol)
-      let source = 'yahoo_finance'
+      const fetchedPrice = await fetchRealTimePrice(yahooSymbol)
+      let newPrice: number
+      let source: string
 
       // Yahoo Finance API 실패 시 이전 가격 유지
-      if (newPrice === null) {
+      if (fetchedPrice === null) {
         newPrice = asset.current_price // 이전 값 유지
         source = 'cached_previous'
         console.warn(`⚠️ Using previous price for ${asset.symbol}: ₩${newPrice.toLocaleString()}`)
+      } else {
+        newPrice = fetchedPrice
+        source = 'yahoo_finance'
       }
 
       updates.push({
