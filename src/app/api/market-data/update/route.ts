@@ -136,12 +136,6 @@ async function fetchRealTimeData(symbol: string, retries = 3): Promise<MarketDat
   return null
 }
 
-// 레거시 함수 (하위 호환성 유지)
-async function fetchRealTimePrice(symbol: string, retries = 3): Promise<number | null> {
-  const data = await fetchRealTimeData(symbol, retries)
-  return data?.price ?? null
-}
-
 // USD/KRW 환율 조회
 async function fetchExchangeRate(): Promise<number> {
   try {
