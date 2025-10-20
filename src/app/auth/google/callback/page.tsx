@@ -236,6 +236,10 @@ export default function GoogleCallbackPage() {
         // 쿠키 설정
         document.cookie = `session_token=${sessionToken}; path=/; max-age=86400; secure; samesite=strict`
 
+        // localStorage에 세션 토큰 저장 (일반 로그인과 동일하게)
+        localStorage.setItem('teacher_session', sessionToken)
+        console.log('✅ 세션 토큰 localStorage에 저장 완료')
+
         setStatus('로그인 완료! 대시보드로 이동 중...')
         
         // 대시보드로 리다이렉트
