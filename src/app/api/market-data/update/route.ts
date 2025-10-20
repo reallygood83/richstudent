@@ -6,7 +6,8 @@ interface YahooFinanceResponse {
     result: Array<{
       meta: {
         regularMarketPrice: number
-        previousClose: number
+        previousClose?: number
+        chartPreviousClose: number  // 전일 종가 (더 정확함)
         currency: string
         symbol: string
         exchangeName: string
@@ -15,6 +16,9 @@ interface YahooFinanceResponse {
       indicators: {
         quote: Array<{
           close: number[]
+          open: number[]
+          high: number[]
+          low: number[]
         }>
       }
     }>
@@ -41,13 +45,21 @@ async function fetchJPYKRWRate(): Promise<number> {
   }
 }
 
-// Yahoo Finance에서 실시간 가격 조회 (재시도 로직 포함)
-async function fetchRealTimePrice(symbol: string, retries = 3): Promise<number | null> {
+// 시장 데이터 (가격 + 변동률 포함)
+interface MarketData {
+  price: number
+  changePercent: number  // 변동률 (%)
+  previousClose: number  // 전일 종가
+}
+
+// Yahoo Finance에서 실시간 가격 및 변동률 조회 (재시도 로직 포함)
+async function fetchRealTimeData(symbol: string, retries = 3): Promise<MarketData | null> {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      // 일본 엔화는 대체 API 사용
+      // 일본 엔화는 대체 API 사용 (변동률 계산 불가)
       if (symbol === 'JPYKRW=X') {
-        return await fetchJPYKRWRate()
+        const price = await fetchJPYKRWRate()
+        return { price, changePercent: 0, previousClose: price }
       }
 
       const response = await fetch(
@@ -80,21 +92,34 @@ async function fetchRealTimePrice(symbol: string, retries = 3): Promise<number |
         return null
       }
 
-      const price = result.meta.regularMarketPrice || result.meta.previousClose
+      // 현재가 및 전일 종가 추출
+      const currentPrice = result.meta.regularMarketPrice
+      const previousClose = result.meta.chartPreviousClose || result.meta.previousClose || currentPrice
       const currency = result.meta.currency
+
+      // 변동률 계산: ((현재가 - 전일종가) / 전일종가) * 100
+      const changePercent = previousClose > 0
+        ? ((currentPrice - previousClose) / previousClose) * 100
+        : 0
+
+      let price = currentPrice
 
       // 환율 데이터 처리
       if (symbol.includes('KRW=X') || symbol.includes('=X')) {
-        return Math.round(price * 100) / 100 // 소수점 2자리까지
-      }
-
-      // USD 자산인 경우 KRW로 환율 변환
-      if (currency === 'USD') {
+        price = Math.round(currentPrice * 100) / 100 // 소수점 2자리까지
+      } else if (currency === 'USD') {
+        // USD 자산인 경우 KRW로 환율 변환
         const exchangeRate = await fetchExchangeRate()
-        return Math.round(price * exchangeRate)
+        price = Math.round(currentPrice * exchangeRate)
+      } else {
+        price = Math.round(currentPrice)
       }
 
-      return Math.round(price)
+      return {
+        price,
+        changePercent: Math.round(changePercent * 100) / 100, // 소수점 2자리
+        previousClose: Math.round(previousClose)
+      }
     } catch (error) {
       if (attempt < retries) {
         const backoffTime = Math.pow(2, attempt) * 1000
@@ -103,12 +128,18 @@ async function fetchRealTimePrice(symbol: string, retries = 3): Promise<number |
         continue
       }
 
-      console.error(`Error fetching price for ${symbol} after ${retries} attempts:`, error)
+      console.error(`Error fetching data for ${symbol} after ${retries} attempts:`, error)
       return null
     }
   }
 
   return null
+}
+
+// 레거시 함수 (하위 호환성 유지)
+async function fetchRealTimePrice(symbol: string, retries = 3): Promise<number | null> {
+  const data = await fetchRealTimeData(symbol, retries)
+  return data?.price ?? null
 }
 
 // USD/KRW 환율 조회
@@ -243,17 +274,20 @@ export async function POST() {
     const processAsset = async (asset: typeof assets[0]) => {
       const yahooSymbol = symbolMapping[asset.symbol] || asset.symbol
 
-      const fetchedPrice = await fetchRealTimePrice(yahooSymbol)
+      const marketData = await fetchRealTimeData(yahooSymbol)
       let newPrice: number
+      let changePercent: number
       let source: string
 
       // Yahoo Finance API 실패 시 이전 가격 유지
-      if (fetchedPrice === null) {
+      if (marketData === null) {
         newPrice = asset.current_price // 이전 값 유지
+        changePercent = 0 // 변동률 데이터 없음
         source = 'cached_previous'
         console.warn(`⚠️ Using previous price for ${asset.symbol}: ₩${newPrice.toLocaleString()}`)
       } else {
-        newPrice = fetchedPrice
+        newPrice = marketData.price
+        changePercent = marketData.changePercent
         source = 'yahoo_finance'
       }
 
@@ -270,6 +304,7 @@ export async function POST() {
           .from('market_assets')
           .update({
             current_price: newPrice,
+            change_percent: changePercent,
             updated_at: new Date().toISOString()
           })
           .eq('id', asset.id)
@@ -277,8 +312,9 @@ export async function POST() {
         if (updateError) {
           console.error(`❌ Failed to update ${asset.symbol}:`, updateError)
         } else {
-          const changeSymbol = newPrice > asset.current_price ? '📈' : newPrice < asset.current_price ? '📉' : '➡️'
-          console.log(`✅ ${asset.symbol}: ₩${newPrice.toLocaleString()} ${changeSymbol} (${source})`)
+          const changeSymbol = changePercent > 0 ? '📈' : changePercent < 0 ? '📉' : '➡️'
+          const changeStr = changePercent !== 0 ? ` (${changePercent > 0 ? '+' : ''}${changePercent.toFixed(2)}%)` : ''
+          console.log(`✅ ${asset.symbol}: ₩${newPrice.toLocaleString()} ${changeSymbol}${changeStr} (${source})`)
         }
       }
     }
