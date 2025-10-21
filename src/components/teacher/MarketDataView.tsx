@@ -54,7 +54,7 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
     return () => {
       clearInterval(refreshInterval)
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   const fetchMarketData = async () => {
     try {
@@ -219,7 +219,7 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
               </Button>
             </div>
             <p className="text-xs text-red-600 mt-2">
-              💡 가격 업데이트에 실패했습니다. "다시 시도" 버튼을 클릭하거나 잠시 후 자동으로 재시도됩니다.
+              💡 가격 업데이트에 실패했습니다. &quot;다시 시도&quot; 버튼을 클릭하거나 잠시 후 자동으로 재시도됩니다.
             </p>
           </CardContent>
         </Card>
