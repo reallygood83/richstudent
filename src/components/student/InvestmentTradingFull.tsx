@@ -476,7 +476,14 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
                 </div>
                 {lastUpdated && (
                   <div className="text-xs text-gray-500">
-                    마지막 업데이트: {lastUpdated.toLocaleString('ko-KR')}
+                    마지막 업데이트: {lastUpdated.toLocaleString('ko-KR', {
+                      timeZone: 'Asia/Seoul',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
                     <div className="text-[10px] text-gray-400 mt-0.5">
                       가격은 30분마다 자동으로 업데이트됩니다
                     </div>
@@ -719,7 +726,14 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
                 </div>
                 {lastUpdated && (
                   <div className="text-xs text-gray-500">
-                    마지막 업데이트: {lastUpdated.toLocaleString('ko-KR')}
+                    마지막 업데이트: {lastUpdated.toLocaleString('ko-KR', {
+                      timeZone: 'Asia/Seoul',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
                     <div className="text-[10px] text-gray-400 mt-0.5">
                       가격은 30분마다 자동으로 업데이트됩니다
                     </div>
