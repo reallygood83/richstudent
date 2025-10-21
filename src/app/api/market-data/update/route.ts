@@ -313,14 +313,14 @@ export async function POST() {
       }
     }
 
-    // 배치 처리 실행 (5개씩 나눠서 3초 간격, 배치 간 8초 대기)
-    // Rate Limit 방지를 위해 배치 크기를 줄이고 지연 시간을 늘림
+    // 배치 처리 실행 (10개씩 나눠서 200ms 간격, 배치 간 2초 대기)
+    // Yahoo Finance Rate Limit: 초당 5-10개, 분당 60-120개 (우리는 분당 ~30개로 안전)
     await processBatch(
       assets,
-      5,            // 배치 크기: 5개 (10→5로 축소)
+      10,           // 배치 크기: 10개 (분당 60개 한도에 여유)
       processAsset,
-      3000,         // 아이템 간 3초 대기 (2s→3s로 증가)
-      8000          // 배치 간 8초 대기 (5s→8s로 증가)
+      200,          // 아이템 간 200ms 대기 (초당 5개 = 안전)
+      2000          // 배치 간 2초 대기 (추가 안전 버퍼)
     )
 
     const yahooCount = updates.filter(u => u.source === 'yahoo_finance').length

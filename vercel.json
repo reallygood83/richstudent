@@ -1,5 +1,13 @@
 {
   "framework": "nextjs",
+  "functions": {
+    "api/market-data/update.ts": {
+      "maxDuration": 180
+    },
+    "api/market-data/auto-update.ts": {
+      "maxDuration": 180
+    }
+  },
   "crons": [
     {
       "path": "/api/market-data/auto-update",
