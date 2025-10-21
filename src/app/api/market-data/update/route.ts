@@ -1,357 +1,247 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase/client'
 
-interface YahooFinanceResponse {
-  chart: {
-    result: Array<{
-      meta: {
-        regularMarketPrice: number
-        previousClose?: number
-        chartPreviousClose: number  // 전일 종가 (더 정확함)
-        currency: string
-        symbol: string
-        exchangeName: string
-      }
-      timestamp: number[]
-      indicators: {
-        quote: Array<{
-          close: number[]
-          open: number[]
-          high: number[]
-          low: number[]
-        }>
-      }
-    }>
-    error?: unknown
-  }
+// Finnhub API 응답 인터페이스
+interface FinnhubQuote {
+  c: number  // Current price
+  d: number  // Change
+  dp: number // Percent change
+  h: number  // High price of the day
+  l: number  // Low price of the day
+  o: number  // Open price of the day
+  pc: number // Previous close price
+  t: number  // Timestamp
 }
 
-// 대체 환율 API에서 JPY/KRW 환율 조회
-async function fetchJPYKRWRate(): Promise<number> {
+// 심볼 변환 맵 (Yahoo Finance → Finnhub)
+const SYMBOL_MAP: Record<string, string> = {
+  // 한국 주식: 6자리 코드 → KOSPI 형식 (예: 005930 → 005930.KS)
+  '000270': '000270.KS',  // 기아
+  '000660': '000660.KS',  // SK하이닉스
+  '005380': '005380.KS',  // 현대자동차
+  '005490': '005490.KS',  // 포스코홀딩스
+  '005930': '005930.KS',  // 삼성전자
+  '006400': '006400.KS',  // 삼성SDI
+  '035420': '035420.KS',  // NAVER
+  '035720': '035720.KS',  // 카카오
+  '051910': '051910.KS',  // LG화학
+  '068270': '068270.KS',  // 셀트리온
+
+  // 미국 주식: 그대로 사용
+  'AAPL': 'AAPL',
+  'AMD': 'AMD',
+  'AMZN': 'AMZN',
+  'GOOGL': 'GOOGL',
+  'KO': 'KO',
+  'META': 'META',
+  'MSFT': 'MSFT',
+  'NFLX': 'NFLX',
+  'NVDA': 'NVDA',
+  'TSLA': 'TSLA',
+
+  // 암호화폐: Binance 거래소 형식 (예: BTC-USD → BINANCE:BTCUSDT)
+  'BTC-USD': 'BINANCE:BTCUSDT',
+  'ETH-USD': 'BINANCE:ETHUSDT',
+  'BNB-USD': 'BINANCE:BNBUSDT',
+  'XRP-USD': 'BINANCE:XRPUSDT',
+  'ADA-USD': 'BINANCE:ADAUSDT',
+
+  // ETF: 그대로 사용
+  'SPY': 'SPY',
+  'QQQ': 'QQQ',
+  'DIA': 'DIA',
+  'IWM': 'IWM',
+  'VTI': 'VTI',
+  'ARKK': 'ARKK',
+  'EEM': 'EEM',
+  'GLD': 'GLD',
+  'SLV': 'SLV',
+  'USO': 'USO',
+
+  // 환율: Forex 형식 (예: USDKRW=X → OANDA:USD_KRW)
+  'USDKRW=X': 'OANDA:USD_KRW',
+  'EURKRW=X': 'OANDA:EUR_KRW',
+  'JPYKRW=X': 'OANDA:JPY_KRW',
+  'GBPKRW=X': 'OANDA:GBP_KRW',
+  'CNYKRW=X': 'OANDA:CNY_KRW',
+}
+
+// Finnhub API에서 가격 데이터 조회
+async function fetchFinnhubPrice(originalSymbol: string): Promise<{ price: number; changePercent: number; previousClose: number } | null> {
+  const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY
+
+  if (!FINNHUB_API_KEY) {
+    console.error('❌ FINNHUB_API_KEY not found in environment variables')
+    return null
+  }
+
+  const finnhubSymbol = SYMBOL_MAP[originalSymbol] || originalSymbol
+
   try {
-    // ExchangeRate-API에서 JPY 기준 환율 조회
-    const response = await fetch('https://api.exchangerate-api.com/v4/latest/JPY')
+    // Finnhub Quote API 호출
+    const url = `https://finnhub.io/api/v1/quote?symbol=${finnhubSymbol}&token=${FINNHUB_API_KEY}`
+
+    console.log(`🔍 Fetching ${originalSymbol} (${finnhubSymbol}) from Finnhub...`)
+
+    const response = await fetch(url, {
+      headers: {
+        'Accept': 'application/json',
+      },
+    })
 
     if (!response.ok) {
-      return 960 // 기본값: 100엔 = 960원
-    }
-
-    const data = await response.json()
-    const jpyToKrw = data.rates?.KRW || 0.0096 // 1 JPY = 0.0096 KRW
-    return Math.round(jpyToKrw * 100 * 100) / 100 // 100 JPY = X KRW로 변환
-  } catch (error) {
-    console.error('JPY/KRW exchange rate fetch error:', error)
-    return 960 // 기본값: 100엔 = 960원
-  }
-}
-
-// 시장 데이터 (가격 + 변동률 포함)
-interface MarketData {
-  price: number
-  changePercent: number  // 변동률 (%)
-  previousClose: number  // 전일 종가
-}
-
-// Yahoo Finance에서 실시간 가격 및 변동률 조회 (재시도 로직 포함)
-async function fetchRealTimeData(symbol: string, retries = 3): Promise<MarketData | null> {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      // 일본 엔화는 대체 API 사용 (변동률 계산 불가)
-      if (symbol === 'JPYKRW=X') {
-        const price = await fetchJPYKRWRate()
-        return { price, changePercent: 0, previousClose: price }
-      }
-
-      const response = await fetch(
-        `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=2d`,
-        {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-          }
-        }
-      )
-
-      if (!response.ok) {
-        // Rate limit 에러인 경우 재시도
-        if (response.status === 429 && attempt < retries) {
-          const backoffTime = Math.pow(2, attempt) * 1000 // Exponential backoff: 2s, 4s, 8s
-          console.log(`⏳ Rate limit hit for ${symbol}, retrying in ${backoffTime}ms (attempt ${attempt}/${retries})`)
-          await new Promise(resolve => setTimeout(resolve, backoffTime))
-          continue
-        }
-
-        console.error(`Yahoo Finance API error for ${symbol}: ${response.status}`)
-        return null
-      }
-
-      const data: YahooFinanceResponse = await response.json()
-      const result = data.chart?.result?.[0]
-
-      if (!result || !result.meta) {
-        console.error(`No data found for symbol: ${symbol}`)
-        return null
-      }
-
-      // 현재가 및 전일 종가 추출
-      const currentPrice = result.meta.regularMarketPrice
-      const previousClose = result.meta.chartPreviousClose || result.meta.previousClose || currentPrice
-      const currency = result.meta.currency
-
-      // 변동률 계산: ((현재가 - 전일종가) / 전일종가) * 100
-      const changePercent = previousClose > 0
-        ? ((currentPrice - previousClose) / previousClose) * 100
-        : 0
-
-      let price = currentPrice
-
-      // 환율 데이터 처리
-      if (symbol.includes('KRW=X') || symbol.includes('=X')) {
-        price = Math.round(currentPrice * 100) / 100 // 소수점 2자리까지
-      } else if (currency === 'USD') {
-        // USD 자산인 경우 KRW로 환율 변환
-        const exchangeRate = await fetchExchangeRate()
-        price = Math.round(currentPrice * exchangeRate)
-      } else {
-        price = Math.round(currentPrice)
-      }
-
-      return {
-        price,
-        changePercent: Math.round(changePercent * 100) / 100, // 소수점 2자리
-        previousClose: Math.round(previousClose)
-      }
-    } catch (error) {
-      if (attempt < retries) {
-        const backoffTime = Math.pow(2, attempt) * 1000
-        console.log(`⚠️ Error fetching ${symbol}, retrying in ${backoffTime}ms (attempt ${attempt}/${retries})`)
-        await new Promise(resolve => setTimeout(resolve, backoffTime))
-        continue
-      }
-
-      console.error(`Error fetching data for ${symbol} after ${retries} attempts:`, error)
+      console.error(`❌ Finnhub API error for ${finnhubSymbol}: ${response.status} ${response.statusText}`)
       return null
     }
-  }
 
-  return null
+    const data: FinnhubQuote = await response.json()
+
+    // Finnhub는 데이터가 없을 때 모든 값이 0으로 반환됨
+    if (data.c === 0 && data.pc === 0) {
+      console.warn(`⚠️ No data available for ${finnhubSymbol}`)
+      return null
+    }
+
+    const currentPrice = data.c      // 현재가
+    const previousClose = data.pc    // 전일종가
+    const changePercent = data.dp    // 변동률 (이미 % 계산됨)
+
+    console.log(`✅ ${originalSymbol}: ₩${currentPrice.toLocaleString()} (${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%)`)
+
+    return {
+      price: Math.round(currentPrice),
+      changePercent: Math.round(changePercent * 100) / 100,
+      previousClose: Math.round(previousClose)
+    }
+
+  } catch (error) {
+    console.error(`❌ Error fetching ${finnhubSymbol}:`, error)
+    return null
+  }
 }
 
-// USD/KRW 환율 조회
-async function fetchExchangeRate(): Promise<number> {
+// USD/KRW 환율 조회 (Finnhub Forex API)
+async function fetchUSDKRWRate(): Promise<number> {
+  const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY
+
+  if (!FINNHUB_API_KEY) {
+    return 1300 // 기본값
+  }
+
   try {
-    const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD')
+    const url = `https://finnhub.io/api/v1/quote?symbol=OANDA:USD_KRW&token=${FINNHUB_API_KEY}`
+    const response = await fetch(url)
 
     if (!response.ok) {
-      return 1300 // 기본 환율
+      return 1300
     }
 
-    const data = await response.json()
-    return data.rates?.KRW || 1300
+    const data: FinnhubQuote = await response.json()
+    return data.c || 1300
   } catch (error) {
-    console.error('Exchange rate fetch error:', error)
-    return 1300 // 기본 환율
-  }
-}
-
-// 배치 처리 함수 - 자산을 그룹으로 나눠서 순차 처리
-async function processBatch<T>(
-  items: T[],
-  batchSize: number,
-  processor: (item: T) => Promise<void>,
-  delayBetweenItems: number = 2000,
-  delayBetweenBatches: number = 5000
-): Promise<void> {
-  const batches: T[][] = []
-
-  // 배치로 분할
-  for (let i = 0; i < items.length; i += batchSize) {
-    batches.push(items.slice(i, i + batchSize))
-  }
-
-  console.log(`📦 Processing ${items.length} items in ${batches.length} batches of ${batchSize}`)
-
-  // 각 배치 순차 처리
-  for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
-    const batch = batches[batchIndex]
-    console.log(`\n🔄 Processing batch ${batchIndex + 1}/${batches.length} (${batch.length} items)`)
-
-    // 배치 내 아이템들을 순차적으로 처리
-    for (const item of batch) {
-      await processor(item)
-      // 아이템 간 지연 (Rate Limit 방지)
-      if (batch.indexOf(item) < batch.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, delayBetweenItems))
-      }
-    }
-
-    // 배치 간 지연 (추가 안전 장치)
-    if (batchIndex < batches.length - 1) {
-      console.log(`⏳ Waiting ${delayBetweenBatches}ms before next batch...`)
-      await new Promise(resolve => setTimeout(resolve, delayBetweenBatches))
-    }
+    console.error('❌ USD/KRW rate fetch error:', error)
+    return 1300
   }
 }
 
 export async function POST() {
   try {
-    console.log('🚀 Market data update started...')
+    console.log('🚀 Market data update started (Finnhub API)...')
 
-    // 모든 시장 자산 조회
-    const { data: assets, error: assetsError } = await supabase
+    // 모든 활성 자산 조회
+    const { data: assets, error: fetchError } = await supabase
       .from('market_assets')
-      .select('id, symbol, name, current_price, asset_type')
+      .select('*')
       .eq('is_active', true)
 
-    if (assetsError || !assets) {
+    if (fetchError) {
       return NextResponse.json({
         success: false,
-        error: '시장 자산을 조회할 수 없습니다.'
+        error: `Database fetch error: ${fetchError.message}`
       }, { status: 500 })
     }
 
-    const updates: Array<{ id: string; symbol: string; new_price: number; source: string }> = []
-
-    // Yahoo Finance 심볼 매핑 (확장 버전 - 40개)
-    const symbolMapping: Record<string, string> = {
-      // 한국 주식 (10개)
-      '005930': '005930.KS',  // 삼성전자
-      '000660': '000660.KS',  // SK하이닉스
-      '035420': '035420.KS',  // NAVER
-      '051910': '051910.KS',  // LG화학
-      '006400': '006400.KS',  // 삼성SDI
-      '005380': '005380.KS',  // 현대자동차
-      '035720': '035720.KS',  // 카카오
-      '000270': '000270.KS',  // 기아
-      '005490': '005490.KS',  // 포스코홀딩스
-      '068270': '068270.KS',  // 셀트리온
-
-      // 미국 주식 (10개)
-      'AAPL': 'AAPL',     // Apple
-      'GOOGL': 'GOOGL',   // Alphabet
-      'MSFT': 'MSFT',     // Microsoft
-      'TSLA': 'TSLA',     // Tesla
-      'NVDA': 'NVDA',     // NVIDIA
-      'AMZN': 'AMZN',     // Amazon
-      'META': 'META',     // Meta
-      'NFLX': 'NFLX',     // Netflix
-      'AMD': 'AMD',       // AMD
-      'KO': 'KO',         // Coca-Cola
-
-      // 암호화폐 (5개)
-      'BTC-USD': 'BTC-USD',  // 비트코인
-      'ETH-USD': 'ETH-USD',  // 이더리움
-      'BNB-USD': 'BNB-USD',  // 바이낸스코인
-      'XRP-USD': 'XRP-USD',  // 리플
-      'ADA-USD': 'ADA-USD',  // 카르다노
-
-      // 환율 (5개)
-      'USDKRW=X': 'USDKRW=X',  // 미국 달러
-      'EURKRW=X': 'EURKRW=X',  // 유로
-      'JPYKRW=X': 'JPYKRW=X',  // 일본 엔
-      'CNYKRW=X': 'CNYKRW=X',  // 중국 위안
-      'GBPKRW=X': 'GBPKRW=X',  // 영국 파운드
-
-      // 원자재/ETF (10개)
-      'GLD': 'GLD',    // 금 ETF
-      'SLV': 'SLV',    // 은 ETF
-      'USO': 'USO',    // 석유 ETF
-      'QQQ': 'QQQ',    // 나스닥100 ETF
-      'SPY': 'SPY',    // S&P500 ETF
-      'IWM': 'IWM',    // 러셀2000 ETF
-      'DIA': 'DIA',    // 다우존스 ETF
-      'VTI': 'VTI',    // 미국전체 ETF
-      'EEM': 'EEM',    // 신흥국 ETF
-      'ARKK': 'ARKK'   // ARK혁신 ETF
+    if (!assets || assets.length === 0) {
+      return NextResponse.json({
+        success: false,
+        error: 'No active assets found'
+      }, { status: 404 })
     }
 
-    // 각 자산 처리 함수
-    const processAsset = async (asset: typeof assets[0]) => {
-      const yahooSymbol = symbolMapping[asset.symbol] || asset.symbol
+    console.log(`📊 Found ${assets.length} active assets`)
 
-      const marketData = await fetchRealTimeData(yahooSymbol)
-      let newPrice: number
-      let changePercent: number
-      let source: string
+    // USD/KRW 환율 조회 (미국 주식 가격 변환용)
+    const usdKrwRate = await fetchUSDKRWRate()
+    console.log(`💱 USD/KRW Rate: ₩${usdKrwRate.toLocaleString()}`)
 
-      // Yahoo Finance API 실패 시 이전 가격 유지
-      if (marketData === null) {
-        newPrice = asset.current_price // 이전 값 유지
-        changePercent = 0 // 변동률 데이터 없음
-        source = 'cached_previous'
-        console.warn(`⚠️ Using previous price for ${asset.symbol}: ₩${newPrice.toLocaleString()}`)
+    let successCount = 0
+    let failCount = 0
+    const updates = []
+
+    // 자산별로 순차 처리 (Rate Limit 방지)
+    for (const asset of assets) {
+      const marketData = await fetchFinnhubPrice(asset.symbol)
+
+      if (marketData) {
+        let finalPrice = marketData.price
+
+        // USD 자산은 KRW로 변환
+        if (asset.currency === 'USD' && !asset.symbol.includes('KRW')) {
+          finalPrice = Math.round(marketData.price * usdKrwRate)
+        }
+
+        updates.push({
+          id: asset.id,
+          current_price: finalPrice,
+          change_percent: marketData.changePercent,
+          previous_close: marketData.previousClose,
+          last_updated: new Date().toISOString()
+        })
+
+        successCount++
       } else {
-        newPrice = marketData.price
-        changePercent = marketData.changePercent
-        source = 'yahoo_finance'
+        failCount++
+        console.warn(`⚠️ Failed to update: ${asset.name} (${asset.symbol})`)
       }
 
-      updates.push({
-        id: asset.id,
-        symbol: asset.symbol,
-        new_price: newPrice,
-        source
-      })
+      // Rate Limit 방지: 1초당 1개 요청 (Finnhub 무료 티어: 60 calls/분)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+    }
 
-      // 데이터베이스 업데이트 (가격이 변경된 경우에만)
-      if (newPrice !== asset.current_price || source === 'yahoo_finance') {
+    // 데이터베이스 일괄 업데이트
+    if (updates.length > 0) {
+      for (const update of updates) {
         const { error: updateError } = await supabase
           .from('market_assets')
           .update({
-            current_price: newPrice,
-            change_percent: changePercent,
-            updated_at: new Date().toISOString()
+            current_price: update.current_price,
+            change_percent: update.change_percent,
+            previous_close: update.previous_close,
+            last_updated: update.last_updated
           })
-          .eq('id', asset.id)
+          .eq('id', update.id)
 
         if (updateError) {
-          console.error(`❌ Failed to update ${asset.symbol}:`, updateError)
-        } else {
-          const changeSymbol = changePercent > 0 ? '📈' : changePercent < 0 ? '📉' : '➡️'
-          const changeStr = changePercent !== 0 ? ` (${changePercent > 0 ? '+' : ''}${changePercent.toFixed(2)}%)` : ''
-          console.log(`✅ ${asset.symbol}: ₩${newPrice.toLocaleString()} ${changeSymbol}${changeStr} (${source})`)
+          console.error(`❌ Update error for asset ${update.id}:`, updateError)
         }
       }
     }
 
-    // 배치 처리 실행 (10개씩 나눠서 200ms 간격, 배치 간 2초 대기)
-    // Yahoo Finance Rate Limit: 초당 5-10개, 분당 60-120개 (우리는 분당 ~30개로 안전)
-    await processBatch(
-      assets,
-      10,           // 배치 크기: 10개 (분당 60개 한도에 여유)
-      processAsset,
-      200,          // 아이템 간 200ms 대기 (초당 5개 = 안전)
-      2000          // 배치 간 2초 대기 (추가 안전 버퍼)
-    )
-
-    const yahooCount = updates.filter(u => u.source === 'yahoo_finance').length
-    const cachedCount = updates.filter(u => u.source === 'cached_previous').length
-
-    console.log(`\n✅ Market update completed:`)
-    console.log(`   📊 Total: ${updates.length} assets`)
-    console.log(`   🌐 Yahoo Finance: ${yahooCount} (${(yahooCount/updates.length*100).toFixed(1)}%)`)
-    console.log(`   💾 Cached: ${cachedCount} (${(cachedCount/updates.length*100).toFixed(1)}%)`)
+    console.log(`✅ Update complete: ${successCount} success, ${failCount} failed`)
 
     return NextResponse.json({
       success: true,
-      message: `${updates.length}개 자산의 가격을 업데이트했습니다.`,
-      data: {
-        updated_count: updates.length,
-        yahoo_finance_count: yahooCount,
-        cached_count: cachedCount,
-        success_rate: `${(yahooCount/updates.length*100).toFixed(1)}%`,
-        updates: updates.map(u => ({
-          symbol: u.symbol,
-          price: u.new_price,
-          source: u.source
-        }))
-      }
+      message: `${successCount}/${assets.length} assets updated successfully`,
+      successCount,
+      failCount,
+      totalAssets: assets.length
     })
 
   } catch (error) {
-    console.error('Market data update error:', error)
+    console.error('❌ Market data update error:', error)
     return NextResponse.json({
       success: false,
-      error: '시장 데이터 업데이트 중 오류가 발생했습니다.'
+      error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 })
   }
 }
