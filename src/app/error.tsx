@@ -5,6 +5,9 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { AlertCircle, RefreshCw } from 'lucide-react'
 
+// Dynamic rendering to avoid prerendering issues
+export const dynamic = 'force-dynamic'
+
 export default function Error({
   error,
   reset,

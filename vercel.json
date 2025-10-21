@@ -2,7 +2,7 @@
   "framework": "nextjs",
   "crons": [
     {
-      "path": "/api/market-data/auto-update",
+      "path": "/api/cron/update-market-data",
       "schedule": "*/30 * * * *"
     },
     {

@@ -23,7 +23,8 @@ import {
   Bitcoin,
   DollarSign as Currency,
   BarChart3,
-  Sparkles
+  Sparkles,
+  Lock
 } from 'lucide-react'
 import TradeCompletionModal from './TradeCompletionModal'
 
@@ -111,6 +112,9 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
     account_type: 'investment'
   })
 
+  // 시장 데이터 마지막 업데이트 시간 (서버에서 Cron Job으로 자동 업데이트됨)
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+
   useEffect(() => {
     fetchData()
   }, [])
@@ -125,6 +129,11 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
 
       if (assetsData.success) {
         setAssets(assetsData.assets)
+
+        // 마지막 업데이트 시간 추출 (첫 번째 자산의 last_updated 사용)
+        if (assetsData.assets.length > 0 && assetsData.assets[0].last_updated) {
+          setLastUpdated(new Date(assetsData.assets[0].last_updated))
+        }
       }
 
       // 현재 포트폴리오 조회
@@ -172,6 +181,15 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
     if (!buyForm.asset_id || !buyForm.quantity || !buyForm.price) {
       setError('모든 필드를 입력해주세요.')
       return
+    }
+
+    // 암호화폐가 아닌 경우 정수 검증
+    if (selectedAsset && selectedAsset.category !== 'cryptocurrency') {
+      const qty = Number(buyForm.quantity)
+      if (qty < 1 || qty % 1 !== 0) {
+        setError('주식, ETF, 외환은 1주 이상의 정수만 구매 가능합니다.')
+        return
+      }
     }
 
     setTrading(true)
@@ -233,6 +251,15 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
     if (!sellForm.asset_id || !sellForm.quantity || !sellForm.price) {
       setError('모든 필드를 입력해주세요.')
       return
+    }
+
+    // 암호화폐가 아닌 경우 정수 검증
+    if (selectedHolding && selectedHolding.market_assets.category !== 'cryptocurrency') {
+      const qty = Number(sellForm.quantity)
+      if (qty < 1 || qty % 1 !== 0) {
+        setError('주식, ETF, 외환은 1주 이상의 정수만 매도 가능합니다.')
+        return
+      }
     }
 
     setTrading(true)
@@ -343,19 +370,23 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
 
   const handleAssetSelect = (asset: Asset) => {
     setSelectedAsset(asset)
+    const isCrypto = asset.category === 'cryptocurrency'
     setBuyForm(prev => ({
       ...prev,
       asset_id: asset.id,
-      price: Math.round(asset.current_price).toString()
+      price: Math.round(asset.current_price).toString(),
+      quantity: isCrypto ? '' : '1' // 암호화폐는 빈값, 기타는 1주로 시작
     }))
   }
 
   const handleHoldingSelect = (holding: PortfolioHolding) => {
     setSelectedHolding(holding)
+    const isCrypto = holding.market_assets.category === 'cryptocurrency'
     setSellForm(prev => ({
       ...prev,
       asset_id: holding.market_assets.id,
-      price: Math.round(holding.market_assets.current_price).toString()
+      price: Math.round(holding.market_assets.current_price).toString(),
+      quantity: isCrypto ? '' : '1' // 암호화폐는 빈값, 기타는 1주로 시작
     }))
   }
 
@@ -436,10 +467,22 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
         <TabsContent value="buy" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>자산 매수</CardTitle>
-              <CardDescription>
-                투자하고 싶은 자산을 선택하여 매수해보세요
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>자산 매수</CardTitle>
+                  <CardDescription>
+                    투자하고 싶은 자산을 선택하여 매수해보세요
+                  </CardDescription>
+                </div>
+                {lastUpdated && (
+                  <div className="text-xs text-gray-500">
+                    마지막 업데이트: {lastUpdated.toLocaleString('ko-KR')}
+                    <div className="text-[10px] text-gray-400 mt-0.5">
+                      가격은 30분마다 자동으로 업데이트됩니다
+                    </div>
+                  </div>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleBuy} className="space-y-6">
@@ -559,15 +602,17 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
                 {/* 수량과 가격 */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="buy-quantity">수량</Label>
+                    <Label htmlFor="buy-quantity">
+                      수량 {selectedAsset?.category === 'cryptocurrency' ? '(소수점 가능)' : '(1주 이상 정수)'}
+                    </Label>
                     <Input
                       id="buy-quantity"
                       type="number"
-                      step="0.0001"
-                      min="0"
+                      step={selectedAsset?.category === 'cryptocurrency' ? '0.0001' : '1'}
+                      min={selectedAsset?.category === 'cryptocurrency' ? '0' : '1'}
                       value={buyForm.quantity}
                       onChange={(e) => setBuyForm(prev => ({ ...prev, quantity: e.target.value }))}
-                      placeholder="구매할 수량"
+                      placeholder={selectedAsset?.category === 'cryptocurrency' ? '구매할 수량 (예: 0.001)' : '구매할 수량 (예: 1)'}
                       required
                     />
                     {selectedAsset?.min_quantity && (
@@ -575,20 +620,30 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
                         최소 주문 수량: {selectedAsset.min_quantity}
                       </p>
                     )}
+                    {selectedAsset?.category !== 'cryptocurrency' && (
+                      <p className="text-xs text-orange-600">
+                        ⚠️ 주식, ETF, 외환은 1주 이상 정수만 가능합니다
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="buy-price">가격 (원)</Label>
+                    <Label htmlFor="buy-price" className="flex items-center space-x-2">
+                      <span>가격 (원)</span>
+                      <Lock className="w-3 h-3 text-gray-500" />
+                      <span className="text-xs text-gray-500">현재가 고정</span>
+                    </Label>
                     <Input
                       id="buy-price"
                       type="number"
-                      step="1"
-                      min="0"
                       value={buyForm.price}
-                      onChange={(e) => setBuyForm(prev => ({ ...prev, price: e.target.value }))}
-                      placeholder="매수 가격"
+                      disabled
+                      className="bg-gray-100 cursor-not-allowed"
                       required
                     />
+                    <p className="text-xs text-gray-500">
+                      주식은 현재가로만 거래됩니다
+                    </p>
                   </div>
                 </div>
 
@@ -655,10 +710,22 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
         <TabsContent value="sell" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>자산 매도</CardTitle>
-              <CardDescription>
-                보유 중인 자산을 선택하여 매도해보세요
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>자산 매도</CardTitle>
+                  <CardDescription>
+                    보유 중인 자산을 선택하여 매도해보세요
+                  </CardDescription>
+                </div>
+                {lastUpdated && (
+                  <div className="text-xs text-gray-500">
+                    마지막 업데이트: {lastUpdated.toLocaleString('ko-KR')}
+                    <div className="text-[10px] text-gray-400 mt-0.5">
+                      가격은 30분마다 자동으로 업데이트됩니다
+                    </div>
+                  </div>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSell} className="space-y-6">
@@ -747,16 +814,18 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
                 {/* 수량과 가격 */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="sell-quantity">매도 수량</Label>
+                    <Label htmlFor="sell-quantity">
+                      매도 수량 {selectedHolding?.market_assets.category === 'cryptocurrency' ? '(소수점 가능)' : '(1주 이상 정수)'}
+                    </Label>
                     <Input
                       id="sell-quantity"
                       type="number"
-                      step="0.0001"
-                      min="0"
+                      step={selectedHolding?.market_assets.category === 'cryptocurrency' ? '0.0001' : '1'}
+                      min={selectedHolding?.market_assets.category === 'cryptocurrency' ? '0' : '1'}
                       max={selectedHolding?.quantity || undefined}
                       value={sellForm.quantity}
                       onChange={(e) => setSellForm(prev => ({ ...prev, quantity: e.target.value }))}
-                      placeholder="매도할 수량"
+                      placeholder={selectedHolding?.market_assets.category === 'cryptocurrency' ? '매도할 수량 (예: 0.001)' : '매도할 수량 (예: 1)'}
                       required
                     />
                     {selectedHolding && (
@@ -764,20 +833,30 @@ export default function InvestmentTradingFull({ cashBalance, onTradeComplete }: 
                         최대 매도 가능: {formatQuantity(selectedHolding.quantity)}
                       </p>
                     )}
+                    {selectedHolding?.market_assets.category !== 'cryptocurrency' && (
+                      <p className="text-xs text-orange-600">
+                        ⚠️ 주식, ETF, 외환은 1주 이상 정수만 가능합니다
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="sell-price">매도 가격 (원)</Label>
+                    <Label htmlFor="sell-price" className="flex items-center space-x-2">
+                      <span>매도 가격 (원)</span>
+                      <Lock className="w-3 h-3 text-gray-500" />
+                      <span className="text-xs text-gray-500">현재가 고정</span>
+                    </Label>
                     <Input
                       id="sell-price"
                       type="number"
-                      step="1"
-                      min="0"
                       value={sellForm.price}
-                      onChange={(e) => setSellForm(prev => ({ ...prev, price: e.target.value }))}
-                      placeholder="매도 가격"
+                      disabled
+                      className="bg-gray-100 cursor-not-allowed"
                       required
                     />
+                    <p className="text-xs text-gray-500">
+                      주식은 현재가로만 거래됩니다
+                    </p>
                   </div>
                 </div>
 

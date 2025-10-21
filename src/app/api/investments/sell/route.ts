@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     // 자산 정보 확인
     const { data: asset } = await supabase
       .from('market_assets')
-      .select('id, symbol, name, min_quantity')
+      .select('id, symbol, name, category, min_quantity, current_price')
       .eq('id', asset_id)
       .single()
 
@@ -72,6 +72,26 @@ export async function POST(request: NextRequest) {
         success: false,
         error: '존재하지 않는 자산입니다.'
       }, { status: 404 })
+    }
+
+    // ✅ CRITICAL: 현재가 검증 - 사용자가 입력한 가격이 현재가와 일치하는지 확인
+    const priceDifference = Math.abs(Number(price) - asset.current_price)
+    if (priceDifference > 1) {
+      return NextResponse.json({
+        success: false,
+        error: `현재가로만 거래 가능합니다. 현재가: ${Math.round(asset.current_price).toLocaleString()}원`
+      }, { status: 400 })
+    }
+
+    // ✅ CRITICAL: 자산별 수량 제한 - 암호화폐가 아닌 경우 정수만 허용
+    if (asset.category !== 'cryptocurrency') {
+      const qty = Number(quantity)
+      if (qty < 1 || qty % 1 !== 0) {
+        return NextResponse.json({
+          success: false,
+          error: '주식, ETF, 외환은 1주 이상의 정수만 매도 가능합니다.'
+        }, { status: 400 })
+      }
     }
 
     // 포트폴리오에서 보유 수량 확인
