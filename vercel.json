@@ -1,10 +1,10 @@
 {
   "framework": "nextjs",
   "functions": {
-    "api/market-data/update.ts": {
+    "api/market-data/update": {
       "maxDuration": 180
     },
-    "api/market-data/auto-update.ts": {
+    "api/market-data/auto-update": {
       "maxDuration": 180
     }
   },
