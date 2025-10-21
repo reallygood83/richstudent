@@ -29,7 +29,8 @@ export async function GET() {
       price_change: asset.previous_close
         ? asset.current_price - asset.previous_close
         : 0,
-      last_updated: asset.updated_at || asset.created_at
+      // last_updated 필드를 올바르게 사용 (updated_at이 아닌 last_updated)
+      last_updated: asset.last_updated || asset.created_at
     }))
 
     return NextResponse.json({

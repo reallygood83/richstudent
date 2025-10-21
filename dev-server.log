@@ -280,3 +280,340 @@ Creating turbopack project { dir: '/Users/moon/Desktop/richstudent-main', testMo
 
 ✅ Update complete: 35 success, 5 failed
  POST /api/market-data/update 200 in 64750ms
+ ○ Compiling /api/market/update-prices ...
+ ✓ Compiled /api/market/update-prices in 754ms
+Starting market data update...
+Current USD/KRW rate: 1421.03
+Fetching prices for symbols: [
+  'MSFT',      'NVDA',      'NFLX',
+  'USDKRW=X',  'GOOGL',     'META',
+  '005380.KS', 'ADA-USD',   'BNB-USD',
+  '035420.KS', 'XRP-USD',   '005490.KS',
+  '051910.KS', 'AAPL',      '006400.KS',
+  'EURKRW=X',  'BTC-USD',   'ETH-USD',
+  '000660.KS', '068270.KS', '035720.KS',
+  'KO',        'AMZN',      'AMD',
+  'TSLA',      '005930.KS', '000270.KS',
+  'CNYKRW=X',  'GBPKRW=X',  'GLD',
+  'SLV',       'USO',       'QQQ',
+  'SPY',       'IWM',       'DIA',
+  'VTI',       'EEM',       'ARKK',
+  'JPYKRW=X'
+]
+Fetched market data: 40 items
+Failed to update NVDA: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update GOOGL: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update KO: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update USDKRW=X: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update 035420: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update XRP-USD: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update CNYKRW=X: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update 000660: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update ADA-USD: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update BTC-USD: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update 035720: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update ETH-USD: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update 005930: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update 068270: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update 051910: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update NFLX: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update META: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update EEM: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update DIA: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update GBPKRW=X: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update AMD: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update SPY: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update 006400: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update EURKRW=X: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update ARKK: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update QQQ: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update BNB-USD: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update USO: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update JPYKRW=X: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update SLV: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update AMZN: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update TSLA: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update 000270: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update AAPL: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update 005380: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update MSFT: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update 005490: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update GLD: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update IWM: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Failed to update VTI: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'last_updated' column of 'market_assets' in the schema cache"
+}
+Market update completed: { total: 40, success: 0, errors: 40, noData: 0 }
+ POST /api/market/update-prices 200 in 2375ms
+   Reload env: .env.local
+ ⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+   ▲ Next.js 15.3.3 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.123.112:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ⚠ Invalid next.config.ts options detected: 
+ ⚠     Unrecognized key(s) in object: 'missingSuspenseWithCSRBailout' at "experimental"
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+Creating turbopack project { dir: '/Users/moon/Desktop/richstudent-main', testMode: true }
+ ✓ Ready in 1551ms
+ ⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+   ▲ Next.js 15.3.3 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.123.112:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+Creating turbopack project { dir: '/Users/moon/Desktop/richstudent-main', testMode: true }
+ ✓ Ready in 1227ms
+ ⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+   ▲ Next.js 15.3.3 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.123.112:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+Creating turbopack project { dir: '/Users/moon/Desktop/richstudent-main', testMode: true }
+ ✓ Ready in 1374ms
+ ⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+   ▲ Next.js 15.3.3 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.123.112:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+Creating turbopack project { dir: '/Users/moon/Desktop/richstudent-main', testMode: true }
+ ✓ Ready in 1310ms
+ ○ Compiling /api/market-data/update ...
+ ✓ Compiled /api/market-data/update in 1089ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/static/development/_buildManifest.js.tmp.ufgeu4tixgj'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/static/development/_buildManifest.js.tmp.ufgeu4tixgj'
+}
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 1218ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/static/development/_buildManifest.js.tmp.z1dnefpw8qs'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/static/development/_buildManifest.js.tmp.z1dnefpw8qs'
+}
+[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/static/development/_buildManifest.js.tmp.ufgeu4tixgj'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/static/development/_buildManifest.js.tmp.ufgeu4tixgj'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/static/development/_buildManifest.js.tmp.w8b9vv5cbz'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/static/development/_buildManifest.js.tmp.w8b9vv5cbz'
+}
+[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/static/development/_buildManifest.js.tmp.hjq9six3kac'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/moon/Desktop/richstudent-main/.next/static/development/_buildManifest.js.tmp.hjq9six3kac'
+}
