@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
 
+// Vercel Serverless Function 설정
+export const maxDuration = 180 // 3분 타임아웃 (Hobby 플랜 최대값)
+
 // 자동 업데이트를 위한 cron job 엔드포인트
 // Vercel Cron Jobs나 외부 서비스에서 호출
 

@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase/client'
 
+// Vercel Serverless Function 설정
+export const maxDuration = 180 // 3분 타임아웃 (Hobby 플랜 최대값)
+
 // Finnhub API 응답 인터페이스
 interface FinnhubQuote {
   c: number  // Current price
