@@ -31,13 +31,17 @@ interface YahooFinanceResponse {
   }
 }
 
-// 한국 주식 심볼 목록 (Yahoo Finance 전용)
-const KOREAN_STOCK_SYMBOLS = [
+// Yahoo Finance 사용 심볼 목록 (한국 주식 + 환율)
+const YAHOO_FINANCE_SYMBOLS = [
+  // 한국 주식 (10개)
   '000270', '000660', '005380', '005490', '005930',
-  '006400', '035420', '035720', '051910', '068270'
+  '006400', '035420', '035720', '051910', '068270',
+
+  // 환율 (5개) - Finnhub 무료 플랜은 환율 미지원
+  'USDKRW=X', 'EURKRW=X', 'JPYKRW=X', 'GBPKRW=X', 'CNYKRW=X'
 ]
 
-// Finnhub 심볼 매핑 (미국 주식, 암호화폐, ETF, 환율)
+// Finnhub 심볼 매핑 (미국 주식, 암호화폐, ETF만)
 const FINNHUB_SYMBOL_MAP: Record<string, string> = {
   // 미국 주식: 그대로 사용
   'AAPL': 'AAPL',
@@ -69,18 +73,12 @@ const FINNHUB_SYMBOL_MAP: Record<string, string> = {
   'GLD': 'GLD',
   'SLV': 'SLV',
   'USO': 'USO',
-
-  // 환율: Forex 형식
-  'USDKRW=X': 'OANDA:USD_KRW',
-  'EURKRW=X': 'OANDA:EUR_KRW',
-  'JPYKRW=X': 'OANDA:JPY_KRW',
-  'GBPKRW=X': 'OANDA:GBP_KRW',
-  'CNYKRW=X': 'OANDA:CNY_KRW',
 }
 
-// ==================== Yahoo Finance 함수 (한국 주식 전용) ====================
+// ==================== Yahoo Finance 함수 (한국 주식 + 환율) ====================
 async function fetchYahooPrice(symbol: string, retries = 3): Promise<{ price: number; changePercent: number; previousClose: number } | null> {
-  const yahooSymbol = `${symbol}.KS` // 한국 주식은 .KS 접미사
+  // 한국 주식은 .KS 접미사, 환율은 그대로 사용
+  const yahooSymbol = symbol.includes('=X') ? symbol : `${symbol}.KS`
 
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
@@ -123,12 +121,16 @@ async function fetchYahooPrice(symbol: string, retries = 3): Promise<{ price: nu
 
       const changePercent = ((currentPrice - previousClose) / previousClose) * 100
 
-      console.log(`✅ Yahoo ${symbol}: ₩${Math.round(currentPrice).toLocaleString()} (${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%)`)
+      // 환율은 소수점 2자리, 주식은 정수
+      const isForex = symbol.includes('=X')
+      const formattedPrice = isForex ? currentPrice.toFixed(2) : Math.round(currentPrice).toLocaleString()
+
+      console.log(`✅ Yahoo ${symbol}: ${isForex ? '' : '₩'}${formattedPrice} (${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%)`)
 
       return {
-        price: Math.round(currentPrice),
+        price: isForex ? Math.round(currentPrice * 100) / 100 : Math.round(currentPrice),
         changePercent: Math.round(changePercent * 100) / 100,
-        previousClose: Math.round(previousClose)
+        previousClose: isForex ? Math.round(previousClose * 100) / 100 : Math.round(previousClose)
       }
 
     } catch (error) {
@@ -202,30 +204,6 @@ async function fetchFinnhubPrice(originalSymbol: string): Promise<{ price: numbe
   }
 }
 
-// ==================== 환율 조회 ====================
-async function fetchUSDKRWRate(): Promise<number> {
-  const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY
-
-  if (!FINNHUB_API_KEY) {
-    return 1300 // 기본값
-  }
-
-  try {
-    const url = `https://finnhub.io/api/v1/quote?symbol=OANDA:USD_KRW&token=${FINNHUB_API_KEY}`
-    const response = await fetch(url)
-
-    if (!response.ok) {
-      return 1300
-    }
-
-    const data: FinnhubQuote = await response.json()
-    return data.c || 1300
-  } catch (error) {
-    console.error('❌ USD/KRW rate error:', error)
-    return 1300
-  }
-}
-
 // ==================== 메인 업데이트 함수 ====================
 export async function POST() {
   try {
@@ -253,24 +231,38 @@ export async function POST() {
 
     console.log(`📊 Found ${assets.length} active assets`)
 
-    // USD/KRW 환율 조회 (Finnhub)
-    const usdKrwRate = await fetchUSDKRWRate()
+    // USD/KRW 환율 조회 (Yahoo Finance)
+    const usdKrwData = await fetchYahooPrice('USDKRW=X')
+    const usdKrwRate = usdKrwData?.price || 1300
     console.log(`💱 USD/KRW Rate: ₩${usdKrwRate.toLocaleString()}`)
 
-    // 자산을 한국 주식과 나머지로 분리
-    const koreanStocks = assets.filter(a => KOREAN_STOCK_SYMBOLS.includes(a.symbol))
-    const otherAssets = assets.filter(a => !KOREAN_STOCK_SYMBOLS.includes(a.symbol))
+    // 자산을 Yahoo Finance와 Finnhub로 분리
+    const yahooAssets = assets.filter(a => YAHOO_FINANCE_SYMBOLS.includes(a.symbol))
+    const finnhubAssets = assets.filter(a => !YAHOO_FINANCE_SYMBOLS.includes(a.symbol))
 
-    console.log(`🇰🇷 Korean stocks (Yahoo): ${koreanStocks.length}`)
-    console.log(`🌍 Other assets (Finnhub): ${otherAssets.length}`)
+    console.log(`🇰🇷 Yahoo Finance assets (Korean stocks + Forex): ${yahooAssets.length}`)
+    console.log(`🌍 Finnhub assets (US stocks, Crypto, ETF): ${finnhubAssets.length}`)
 
     let successCount = 0
     let failCount = 0
     const updates = []
 
-    // ========== 한국 주식 처리 (Yahoo Finance) ==========
-    console.log('\n📊 Processing Korean stocks with Yahoo Finance...')
-    for (const asset of koreanStocks) {
+    // ========== Yahoo Finance 자산 처리 (한국 주식 + 환율) ==========
+    console.log('\n📊 Processing Yahoo Finance assets...')
+    for (const asset of yahooAssets) {
+      // USD/KRW는 이미 조회했으므로 스킵
+      if (asset.symbol === 'USDKRW=X' && usdKrwData) {
+        updates.push({
+          id: asset.id,
+          current_price: usdKrwData.price,
+          change_percent: usdKrwData.changePercent,
+          previous_close: usdKrwData.previousClose,
+          last_updated: new Date().toISOString()
+        })
+        successCount++
+        continue
+      }
+
       const marketData = await fetchYahooPrice(asset.symbol)
 
       if (marketData) {
@@ -287,13 +279,13 @@ export async function POST() {
         console.warn(`⚠️ Failed: ${asset.name} (${asset.symbol})`)
       }
 
-      // Yahoo Rate Limit 방지: 한국 주식 간 2초 대기
+      // Yahoo Rate Limit 방지: 2초 대기
       await new Promise(resolve => setTimeout(resolve, 2000))
     }
 
-    // ========== 나머지 자산 처리 (Finnhub) ==========
-    console.log('\n🌍 Processing other assets with Finnhub...')
-    for (const asset of otherAssets) {
+    // ========== Finnhub 자산 처리 (미국 주식, 암호화폐, ETF) ==========
+    console.log('\n🌍 Processing Finnhub assets...')
+    for (const asset of finnhubAssets) {
       const marketData = await fetchFinnhubPrice(asset.symbol)
 
       if (marketData) {
@@ -349,8 +341,8 @@ export async function POST() {
       successCount,
       failCount,
       totalAssets: assets.length,
-      koreanStocks: koreanStocks.length,
-      otherAssets: otherAssets.length
+      yahooAssets: yahooAssets.length,
+      finnhubAssets: finnhubAssets.length
     })
 
   } catch (error) {
