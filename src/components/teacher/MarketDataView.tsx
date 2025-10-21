@@ -45,14 +45,14 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
   useEffect(() => {
     fetchMarketData()
     
-    // 30분마다 자동으로 실시간 가격 업데이트
+    // 15분마다 자동으로 실시간 가격 업데이트 (Vercel Cron과 동기화)
     const autoUpdateInterval = setInterval(async () => {
       console.log('Auto-updating market prices...')
       await updatePrices()
-    }, 30 * 60 * 1000) // 30분
+    }, 15 * 60 * 1000) // 15분 (30분→15분으로 단축)
 
-    // 5분마다 데이터 새로고침 (DB에서 최신 데이터 조회)
-    const refreshInterval = setInterval(fetchMarketData, 5 * 60 * 1000)
+    // 3분마다 데이터 새로고침 (DB에서 최신 데이터 조회)
+    const refreshInterval = setInterval(fetchMarketData, 3 * 60 * 1000) // 5분→3분으로 단축
     
     return () => {
       clearInterval(autoUpdateInterval)
@@ -175,11 +175,11 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
           <div className="flex items-center mt-2 space-x-4 text-sm text-gray-500">
             <span className="flex items-center">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-              자동 업데이트: 30분마다
+              자동 업데이트: 15분마다
             </span>
             <span className="flex items-center">
               <div className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></div>
-              데이터 새로고침: 5분마다
+              데이터 새로고침: 3분마다
             </span>
           </div>
         </div>
@@ -206,10 +206,39 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
       {error && (
         <Card className="border-red-200 bg-red-50">
           <CardContent className="p-4">
-            <div className="flex items-center text-red-700">
-              <AlertCircle className="w-5 h-5 mr-2" />
-              {error}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center text-red-700">
+                <AlertCircle className="w-5 h-5 mr-2" />
+                {error}
+              </div>
+              <Button
+                onClick={updatePrices}
+                disabled={updating}
+                variant="destructive"
+                size="sm"
+                className="ml-4"
+              >
+                {updating ? '재시도 중...' : '다시 시도'}
+              </Button>
             </div>
+            <p className="text-xs text-red-600 mt-2">
+              💡 가격 업데이트에 실패했습니다. "다시 시도" 버튼을 클릭하거나 잠시 후 자동으로 재시도됩니다.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* 성공 메시지 (업데이트 완료 시) */}
+      {!error && updating && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardContent className="p-4">
+            <div className="flex items-center text-blue-700">
+              <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+              실시간 가격을 업데이트하는 중입니다... (약 2-3분 소요)
+            </div>
+            <p className="text-xs text-blue-600 mt-2">
+              📊 {assets.length}개 자산의 가격을 Yahoo Finance에서 가져오고 있습니다.
+            </p>
           </CardContent>
         </Card>
       )}

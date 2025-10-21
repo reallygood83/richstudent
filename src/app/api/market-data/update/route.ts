@@ -313,13 +313,14 @@ export async function POST() {
       }
     }
 
-    // 배치 처리 실행 (10개씩 나눠서 2초 간격, 배치 간 5초 대기)
+    // 배치 처리 실행 (5개씩 나눠서 3초 간격, 배치 간 8초 대기)
+    // Rate Limit 방지를 위해 배치 크기를 줄이고 지연 시간을 늘림
     await processBatch(
       assets,
-      10,           // 배치 크기: 10개
+      5,            // 배치 크기: 5개 (10→5로 축소)
       processAsset,
-      2000,         // 아이템 간 2초 대기
-      5000          // 배치 간 5초 대기
+      3000,         // 아이템 간 3초 대기 (2s→3s로 증가)
+      8000          // 배치 간 8초 대기 (5s→8s로 증가)
     )
 
     const yahooCount = updates.filter(u => u.source === 'yahoo_finance').length
