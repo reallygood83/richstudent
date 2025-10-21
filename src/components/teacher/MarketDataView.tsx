@@ -44,18 +44,14 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
 
   useEffect(() => {
     fetchMarketData()
-    
-    // 15분마다 자동으로 실시간 가격 업데이트 (Vercel Cron과 동기화)
-    const autoUpdateInterval = setInterval(async () => {
-      console.log('Auto-updating market prices...')
-      await updatePrices()
-    }, 15 * 60 * 1000) // 15분 (30분→15분으로 단축)
 
-    // 3분마다 데이터 새로고침 (DB에서 최신 데이터 조회)
-    const refreshInterval = setInterval(fetchMarketData, 3 * 60 * 1000) // 5분→3분으로 단축
-    
+    // 🔥 중요: 프론트엔드에서 Yahoo API 직접 호출 제거
+    // Vercel Cron이 30분마다 중앙에서 업데이트 → API 사용량 99.5% 감소
+
+    // 3분마다 DB에서 최신 데이터 조회만 수행
+    const refreshInterval = setInterval(fetchMarketData, 3 * 60 * 1000)
+
     return () => {
-      clearInterval(autoUpdateInterval)
       clearInterval(refreshInterval)
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
@@ -175,11 +171,11 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
           <div className="flex items-center mt-2 space-x-4 text-sm text-gray-500">
             <span className="flex items-center">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-              자동 업데이트: 15분마다
+              중앙 자동 업데이트: 30분마다 (Vercel Cron)
             </span>
             <span className="flex items-center">
               <div className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></div>
-              데이터 새로고침: 3분마다
+              화면 새로고침: 3분마다
             </span>
           </div>
         </div>
@@ -195,9 +191,10 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
             disabled={updating}
             variant="outline"
             className="flex items-center space-x-2"
+            title="Yahoo Finance에서 실시간 가격을 가져옵니다 (약 2-3분 소요)"
           >
             <RefreshCw className={`w-4 h-4 ${updating ? 'animate-spin' : ''}`} />
-            <span>{updating ? '업데이트 중...' : '가격 업데이트'}</span>
+            <span>{updating ? '업데이트 중...' : '수동 업데이트'}</span>
           </Button>
         </div>
       </div>
@@ -228,7 +225,7 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
         </Card>
       )}
 
-      {/* 성공 메시지 (업데이트 완료 시) */}
+      {/* 업데이트 진행 상태 */}
       {!error && updating && (
         <Card className="border-blue-200 bg-blue-50">
           <CardContent className="p-4">
@@ -239,6 +236,29 @@ export default function MarketDataView({ className }: MarketDataViewProps) {
             <p className="text-xs text-blue-600 mt-2">
               📊 {assets.length}개 자산의 가격을 Yahoo Finance에서 가져오고 있습니다.
             </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* 가격 공시 정보 안내 */}
+      {!error && !updating && assets.length > 0 && (
+        <Card className="border-green-200 bg-green-50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center text-green-700">
+                <Clock className="w-5 h-5 mr-2" />
+                <div>
+                  <p className="font-medium">가격 공시 시스템 안내</p>
+                  <p className="text-xs text-green-600 mt-1">
+                    💡 모든 사용자가 동일한 가격 정보를 공유합니다 (30분마다 자동 업데이트)
+                  </p>
+                </div>
+              </div>
+              <div className="text-right text-sm text-green-700">
+                <p className="font-medium">다음 업데이트</p>
+                <p className="text-xs">약 {Math.ceil((30 - (new Date().getMinutes() % 30)))}분 후</p>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}

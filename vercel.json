@@ -3,7 +3,7 @@
   "crons": [
     {
       "path": "/api/market-data/auto-update",
-      "schedule": "*/15 * * * *"
+      "schedule": "*/30 * * * *"
     },
     {
       "path": "/api/cron/generate-daily-quiz",
