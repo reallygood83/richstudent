@@ -37,8 +37,9 @@ const YAHOO_FINANCE_SYMBOLS = [
   '000270', '000660', '005380', '005490', '005930',
   '006400', '035420', '035720', '051910', '068270',
 
-  // 환율 (5개) - Finnhub 무료 플랜은 환율 미지원
-  'USDKRW=X', 'EURKRW=X', 'JPYKRW=X', 'GBPKRW=X', 'CNYKRW=X'
+  // 환율 (4개) - Yahoo Finance에서 직접 지원
+  // JPYKRW는 ExchangeRate-API로 별도 처리 (Yahoo Finance 미지원)
+  'USDKRW=X', 'EURKRW=X', 'GBPKRW=X', 'CNYKRW=X'
 ]
 
 // Finnhub 심볼 매핑 (미국 주식, 암호화폐, ETF만)
@@ -73,6 +74,43 @@ const FINNHUB_SYMBOL_MAP: Record<string, string> = {
   'GLD': 'GLD',
   'SLV': 'SLV',
   'USO': 'USO',
+}
+
+// ==================== ExchangeRate-API 함수 (JPY/KRW 환율) ====================
+async function fetchJpyKrwRate(): Promise<{ price: number; changePercent: number; previousClose: number } | null> {
+  try {
+    // ExchangeRate-API로 JPY→KRW 환율 조회
+    const response = await fetch('https://api.exchangerate-api.com/v4/latest/JPY')
+
+    if (!response.ok) {
+      console.error(`❌ ExchangeRate-API error: ${response.status}`)
+      return null
+    }
+
+    const data = await response.json()
+    const jpyToKrw = data.rates?.KRW
+
+    if (!jpyToKrw) {
+      console.error('❌ JPY/KRW rate not found in ExchangeRate-API response')
+      return null
+    }
+
+    // 100엔당 원화로 변환 (일반적인 표기 방식)
+    const price = Math.round(jpyToKrw * 100 * 100) / 100
+
+    console.log(`✅ ExchangeRate JPY/KRW: ₩${price.toFixed(2)} (100 JPY)`)
+
+    // previousClose는 현재가로 설정 (ExchangeRate-API는 실시간만 제공)
+    return {
+      price,
+      changePercent: 0, // 변동률 데이터 없음
+      previousClose: price
+    }
+
+  } catch (error) {
+    console.error('❌ ExchangeRate-API error for JPY/KRW:', error)
+    return null
+  }
 }
 
 // ==================== Yahoo Finance 함수 (한국 주식 + 환율) ====================
@@ -246,6 +284,26 @@ export async function POST() {
     let successCount = 0
     let failCount = 0
     const updates = []
+
+    // JPY/KRW 환율 조회 (ExchangeRate-API)
+    let jpyKrwData: { price: number; changePercent: number; previousClose: number } | null = null
+    const jpyKrwAsset = assets.find(a => a.symbol === 'JPYKRW=X')
+    if (jpyKrwAsset) {
+      jpyKrwData = await fetchJpyKrwRate()
+      if (jpyKrwData) {
+        updates.push({
+          id: jpyKrwAsset.id,
+          current_price: jpyKrwData.price,
+          change_percent: jpyKrwData.changePercent,
+          previous_close: jpyKrwData.previousClose,
+          last_updated: new Date().toISOString()
+        })
+        successCount++
+      } else {
+        failCount++
+        console.warn(`⚠️ Failed: ${jpyKrwAsset.name} (${jpyKrwAsset.symbol})`)
+      }
+    }
 
     // ========== Yahoo Finance 자산 처리 (한국 주식 + 환율) ==========
     console.log('\n📊 Processing Yahoo Finance assets...')
