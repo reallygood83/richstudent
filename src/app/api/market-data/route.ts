@@ -18,22 +18,19 @@ export async function GET() {
       }, { status: 500 })
     }
 
-    // 가격 변화 계산 (이전 종가 대비)
-    const assetsWithChanges = assets.map(asset => {
-      // 임시로 가격 변화를 랜덤으로 생성 (실제로는 이전 종가 데이터 필요)
-      const randomChange = (Math.random() - 0.5) * 0.1 // ±5% 범위
-      const previousPrice = asset.current_price / (1 + randomChange)
-      const priceChange = asset.current_price - previousPrice
-      const priceChangePercent = (priceChange / previousPrice) * 100
-
-      return {
-        ...asset,
-        previous_price: Math.round(previousPrice),
-        price_change: Math.round(priceChange),
-        price_change_percent: Number(priceChangePercent.toFixed(2)),
-        last_updated: asset.updated_at || asset.created_at
-      }
-    })
+    // DB에 저장된 실제 데이터 사용 (랜덤 생성 제거)
+    const assetsWithChanges = assets.map(asset => ({
+      ...asset,
+      // DB에 저장된 실제 change_percent 사용 (Yahoo/Finnhub에서 가져온 값)
+      price_change_percent: asset.change_percent || 0,
+      // previous_close는 DB에 저장된 값 사용
+      previous_price: asset.previous_close || asset.current_price,
+      // 가격 변화량 계산
+      price_change: asset.previous_close
+        ? asset.current_price - asset.previous_close
+        : 0,
+      last_updated: asset.updated_at || asset.created_at
+    }))
 
     return NextResponse.json({
       success: true,

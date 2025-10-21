@@ -2,1974 +2,281 @@
 > richstudent-web@0.1.0 dev
 > next dev --turbopack
 
- ⚠ Port 3000 is in use, using available port 3007 instead.
    ▲ Next.js 15.3.3 (Turbopack)
-   - Local:        http://localhost:3007
-   - Network:      http://192.168.123.111:3007
+   - Local:        http://localhost:3000
+   - Network:      http://11.153.96.166:3000
    - Environments: .env.local
 
  ✓ Starting...
 Creating turbopack project { dir: '/Users/moon/Desktop/richstudent-main', testMode: true }
- ✓ Ready in 976ms
- ○ Compiling /api/transactions/tax-collection ...
- ✓ Compiled /api/transactions/tax-collection in 764ms
- GET /api/transactions/tax-collection 405 in 931ms
- POST /api/transactions/tax-collection 401 in 53ms
- ○ Compiling / ...
+ ✓ Ready in 941ms
+ ✓ Compiled /api/market-data/update in 418ms
+🚀 Hybrid market data update started...
+📊 Found 40 active assets
+💱 USD/KRW Rate: ₩1,300
+🇰🇷 Korean stocks (Yahoo): 10
+🌍 Other assets (Finnhub): 30
 
-[2m[113.31ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[  0.04ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 22.19ms][22m  [2m ↳ [22mSetup compiler
-[2m[  0.45ms][22m    [2m ↳ [22mPostCSS AST -> Tailwind CSS AST
-[2m[ 21.72ms][22m    [2m ↳ [22mCreate compiler
-[2m[  0.07ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[  3.60ms][22m  [2m ↳ [22mSetup scanner
-[2m[ 24.28ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 23.62ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 29.60ms][22m  [2m ↳ [22mBuild utilities
-[2m[  5.14ms][22m  [2m ↳ [22mTransform Tailwind CSS AST into PostCSS AST
-[2m[  4.45ms][22m  [2m ↳ [22mUpdate PostCSS AST
+📊 Processing Korean stocks with Yahoo Finance...
+✅ Yahoo 005380: ₩256,500 (+3.43%)
+✅ Yahoo 035420: ₩254,500 (-1.36%)
+✅ Yahoo 005490: ₩295,000 (+0.17%)
+✅ Yahoo 051910: ₩346,000 (-0.43%)
+✅ Yahoo 006400: ₩259,000 (-0.58%)
+✅ Yahoo 000660: ₩479,000 (-1.34%)
+✅ Yahoo 068270: ₩178,700 (+0.90%)
+✅ Yahoo 035720: ₩62,300 (+5.95%)
+✅ Yahoo 005930: ₩97,500 (-0.61%)
+✅ Yahoo 000270: ₩115,800 (+1.14%)
 
- ✓ Compiled / in 2s
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- GET /?ide_webview_request_time=1760454847743 200 in 2682ms
- ○ Compiling /_not-found/page ...
- ✓ Compiled /_not-found/page in 697ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '3441943503'
-}
- GET /@vite/client 500 in 1112ms
- ○ Compiling /auth/login ...
- ✓ Compiled /auth/login in 806ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- GET /auth/login 200 in 1156ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '3441943503'
-}
- GET /@vite/client 500 in 434ms
-[TypeError: controller[kState].transformAlgorithm is not a function]
-[TypeError: controller[kState].transformAlgorithm is not a function]
- ○ Compiling /api/auth/me ...
- ✓ Compiled /api/auth/me in 527ms
- GET /api/auth/me 401 in 574ms
- ✓ Compiled /api/auth/login in 393ms
- POST /api/auth/login 200 in 1431ms
- ○ Compiling /teacher/dashboard ...
- ✓ Compiled /teacher/dashboard in 1317ms
- GET /teacher/dashboard 200 in 1378ms
- GET /api/auth/me 200 in 202ms
- GET /api/auth/me 200 in 145ms
- ○ Compiling /api/news/list ...
- ✓ Compiled /api/news/list in 724ms
- GET /api/news/list?limit=25 200 in 893ms
- GET /api/news/list?limit=25 200 in 146ms
- GET /api/students/list 200 in 1067ms
- GET /api/students/list 200 in 245ms
- GET /api/students/list 200 in 242ms
- POST /api/transactions/tax-collection 404 in 309ms
- POST /api/transactions/tax-collection 404 in 548ms
+🌍 Processing other assets with Finnhub...
+✅ Finnhub MSFT: $516.79 (+0.63%)
+✅ Finnhub NVDA: $182.64 (-0.32%)
+✅ Finnhub NFLX: $1238.56 (+3.27%)
+❌ Finnhub API error for OANDA:USD_KRW: 403
+⚠️ Failed: 미국 달러 (USDKRW=X)
+✅ Finnhub GOOGL: $256.55 (+1.28%)
+✅ Finnhub META: $732.17 (+2.13%)
+✅ Finnhub ADA-USD: $0.64 (-4.08%)
+✅ Finnhub BNB-USD: $1071.43 (-4.68%)
+✅ Finnhub XRP-USD: $2.42 (-1.92%)
+✅ Finnhub AAPL: $262.24 (+3.94%)
+❌ Finnhub API error for OANDA:EUR_KRW: 403
+⚠️ Failed: 유로 (EURKRW=X)
+✅ Finnhub BTC-USD: $107899.84 (-2.97%)
+✅ Finnhub ETH-USD: $3883.43 (-4.04%)
+✅ Finnhub KO: $68.44 (+0.00%)
+✅ Finnhub AMZN: $216.48 (+1.61%)
+✅ Finnhub AMD: $240.56 (+3.21%)
+✅ Finnhub TSLA: $447.43 (+1.85%)
+❌ Finnhub API error for OANDA:CNY_KRW: 403
+⚠️ Failed: 중국 위안 (CNYKRW=X)
+❌ Finnhub API error for OANDA:GBP_KRW: 403
+⚠️ Failed: 영국 파운드 (GBPKRW=X)
+✅ Finnhub GLD: $403.15 (+3.64%)
+✅ Finnhub SLV: $47.72 (+1.55%)
+✅ Finnhub USO: $67.83 (-0.22%)
+✅ Finnhub QQQ: $611.54 (+1.26%)
+✅ Finnhub SPY: $671.30 (+1.04%)
+✅ Finnhub IWM: $248.16 (+1.95%)
+✅ Finnhub DIA: $467.02 (+1.13%)
+✅ Finnhub VTI: $330.95 (+1.12%)
+✅ Finnhub EEM: $54.92 (+1.37%)
+✅ Finnhub ARKK: $90.01 (+4.37%)
+❌ Finnhub API error for OANDA:JPY_KRW: 403
+⚠️ Failed: 일본 엔 (JPYKRW=X)
 
-[2m[60.15ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.47ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[24.12ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 5.83ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 8.71ms][22m  [2m ↳ [22mBuild utilities
-[2m[18.82ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ○ Compiling /api/economic-entities ...
- ✓ Compiled /api/economic-entities in 842ms
- GET /api/economic-entities 200 in 1182ms
- GET /api/economic-entities 200 in 174ms
-
-[2m[59.91ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.71ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[36.88ms][22m  [2m ↳ [22mScan for candidates
-[2m[12.66ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.98ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 8.34ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[20.74ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.11ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 6.87ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 6.98ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.48ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 6.22ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- GET /teacher/dashboard 200 in 662ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- GET /teacher/dashboard 200 in 365ms
- ✓ Compiled /api/economic-entities/[id] in 467ms
- PUT /api/economic-entities/3d82d493-c59f-401e-9b0c-78a660625804 200 in 1224ms
- GET /api/economic-entities 200 in 229ms
- GET /api/students/list 200 in 291ms
-
-[2m[33.82ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.07ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.22ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[11.17ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 6.38ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 8.29ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 7.49ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[16.90ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.06ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 6.80ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 6.03ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.25ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 3.72ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- GET /api/economic-entities 200 in 530ms
- GET /api/economic-entities 200 in 186ms
- GET /api/economic-entities 200 in 182ms
- ○ Compiling /api/economic-entities/initialize ...
- ✓ Compiled /api/economic-entities/initialize in 571ms
- POST /api/economic-entities/initialize 400 in 705ms
-
-[2m[65.90ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 3.16ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[28.69ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 9.52ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[13.50ms][22m  [2m ↳ [22mBuild utilities
-[2m[10.50ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[25.59ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.10ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[10.81ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 9.49ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 1.01ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 4.06ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- OPTIONS /api/economic-entities/initialize 204 in 60ms
- OPTIONS /api/economic-entities/initialize 204 in 36ms
- OPTIONS /api/economic-entities/initialize 204 in 61ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '3441943503'
-}
- POST /api/transactions/tax-collection 500 in 665ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- GET /teacher/dashboard 200 in 549ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '3441943503'
-}
- GET /@vite/client 500 in 423ms
-[TypeError: controller[kState].transformAlgorithm is not a function]
-[TypeError: controller[kState].transformAlgorithm is not a function]
- GET /api/auth/me 200 in 1143ms
- GET /api/news/list?limit=25 200 in 181ms
- GET /api/students/list 200 in 260ms
- GET /api/news/list?limit=25 200 in 119ms
- GET /api/students/list 200 in 155ms
- GET /api/students/list 200 in 161ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '3441943503'
-}
- POST /api/transactions/tax-collection 500 in 405ms
- OPTIONS /api/economic-entities/initialize 204 in 52ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- GET /teacher/dashboard 200 in 306ms
- GET /api/auth/me 401 in 160ms
- GET /auth/login 200 in 71ms
- GET /api/auth/me 401 in 97ms
- GET /api/auth/me 401 in 92ms
- ○ Compiling /_error ...
- ✓ Compiled /_error in 1283ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.45db1c09.ico 500 in 1446ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.45db1c09.ico 500 in 23ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.45db1c09.ico 500 in 66ms
- POST /api/auth/login 200 in 525ms
- GET /teacher/dashboard 200 in 44ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.45db1c09.ico 500 in 30ms
- GET /api/auth/me 200 in 145ms
- GET /api/auth/me 200 in 126ms
- GET /api/news/list?limit=25 200 in 168ms
- GET /api/students/list 200 in 192ms
- GET /api/news/list?limit=25 200 in 190ms
- GET /api/students/list 200 in 237ms
- GET /api/students/list 200 in 148ms
- GET /api/economic-entities 200 in 134ms
- GET /api/economic-entities 200 in 109ms
- GET /api/economic-entities 200 in 109ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '3441943503'
-}
- GET /.well-known/appspecific/com.chrome.devtools.json 500 in 731ms
-[TypeError: controller[kState].transformAlgorithm is not a function]
-[TypeError: controller[kState].transformAlgorithm is not a function]
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '3441943503'
-}
- POST /api/transactions/tax-collection 500 in 570ms
-
-[2m[134.48ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[  0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[  1.30ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 37.77ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 11.80ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 49.53ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 32.80ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[26.70ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.14ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 9.45ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 8.57ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.41ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 7.99ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- GET /teacher/dashboard 200 in 1306ms
- GET /teacher/dashboard 200 in 1304ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- GET /teacher/dashboard 200 in 555ms
- GET /teacher/dashboard 200 in 544ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.45db1c09.ico 500 in 97ms
- POST /api/transactions/tax-collection 401 in 219ms
- ○ Compiling /api/auth/logout ...
- ✓ Compiled /api/auth/logout in 1301ms
- POST /api/auth/logout 200 in 2134ms
- GET / 200 in 110ms
- GET /auth/login 200 in 131ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.45db1c09.ico 500 in 122ms
- GET /api/auth/me 401 in 245ms
- GET /api/auth/me 401 in 62ms
- POST /api/auth/login 200 in 232ms
- GET /teacher/dashboard 200 in 79ms
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.45db1c09.ico 500 in 61ms
- GET /api/auth/me 200 in 160ms
- GET /api/auth/me 200 in 476ms
- GET /api/news/list?limit=25 200 in 502ms
- GET /api/students/list 200 in 590ms
- GET /api/news/list?limit=25 200 in 171ms
- GET /api/students/list 200 in 177ms
- GET /api/students/list 200 in 238ms
-
-[2m[112.47ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[  0.13ms][22m  [2m ↳ [22mQuick bail check
-[2m[  1.39ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 26.62ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 50.83ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 10.90ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 22.23ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[16.37ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.08ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 5.95ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 5.30ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.43ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 4.55ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- GET /teacher/dashboard 200 in 562ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '3441943503'
-}
- GET /.well-known/appspecific/com.chrome.devtools.json 500 in 638ms
-[TypeError: controller[kState].transformAlgorithm is not a function]
-[TypeError: controller[kState].transformAlgorithm is not a function]
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.45db1c09.ico 500 in 472ms
- GET /api/auth/me 200 in 923ms
- GET /api/news/list?limit=25 200 in 128ms
- GET /api/students/list 200 in 243ms
- GET /api/news/list?limit=25 200 in 124ms
- GET /api/students/list 200 in 169ms
- GET /api/students/list 200 in 148ms
- POST /api/transactions/tax-collection 404 in 523ms
-
-[2m[61.31ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.03ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.74ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[20.89ms][22m  [2m ↳ [22mScan for candidates
-[2m[10.43ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 1.34ms][22m  [2m ↳ [22mBuild utilities
-[2m[27.63ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[24.12ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.17ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[10.10ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 7.69ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.28ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 5.75ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ○ Compiling /api/debug/check-data ...
- ✓ Compiled /api/debug/check-data in 697ms
- GET /api/debug/check-data 200 in 1026ms
-
-[2m[120.57ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[  1.14ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 15.69ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 34.71ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 22.05ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 16.53ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 27.60ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[19.50ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.12ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 7.13ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 8.19ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.28ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 3.70ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[44.26ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.05ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.45ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[12.73ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 5.29ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 2.43ms][22m  [2m ↳ [22mBuild utilities
-[2m[23.17ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[17.44ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.08ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 7.00ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 5.62ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.31ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 4.37ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[48.82ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.03ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.33ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[15.66ms][22m  [2m ↳ [22mScan for candidates
-[2m[15.55ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 2.93ms][22m  [2m ↳ [22mBuild utilities
-[2m[14.15ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[24.89ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.07ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 5.26ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 5.55ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.61ms][22m  [2m ↳ [22mBuild utilities
-[2m[13.33ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- GET /teacher/dashboard 200 in 432ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '3441943503'
-}
- GET /.well-known/appspecific/com.chrome.devtools.json 500 in 692ms
-[TypeError: controller[kState].transformAlgorithm is not a function]
-[TypeError: controller[kState].transformAlgorithm is not a function]
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.45db1c09.ico 500 in 443ms
- GET /api/auth/me 200 in 937ms
- GET /api/news/list?limit=25 200 in 121ms
- GET /api/students/list 200 in 197ms
- GET /api/news/list?limit=25 200 in 179ms
- GET /api/students/list 200 in 259ms
- GET /api/students/list 200 in 140ms
-거래 내역 기록 오류: {
+💾 Updating database...
+❌ Update error for asset 4faabaa4-1ae2-48cd-a0de-577fd13e3e63: {
   code: 'PGRST204',
   details: null,
   hint: null,
-  message: "Could not find the 'to_entity_id' column of 'transactions' in the schema cache"
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- POST /api/transactions/tax-collection 200 in 606ms
- GET /api/students/list 200 in 248ms
- ○ Compiling /api/transactions/list ...
- ✓ Compiled /api/transactions/list in 642ms
-=== Transaction List Request ===
-Student ID filter: null
-Limit: 100
-✅ Fetched 100 transactions
- GET /api/transactions/list 200 in 1064ms
-=== Transaction List Request ===
-Student ID filter: null
-Limit: 100
-✅ Fetched 100 transactions
- GET /api/transactions/list 200 in 282ms
-=== Transaction List Request ===
-Student ID filter: 908727b8-6310-41bf-a8de-a597a3fa4d00
-Limit: 100
-✅ Fetched 5 transactions
-📊 Student statistics calculated: {
-  total_transactions: 5,
-  total_sent: 250008600,
-  total_received: 270000000,
-  net_change: 19991400,
-  sent_count: 4,
-  received_count: 3,
-  type_breakdown: {
-    transfer: 0,
-    multi_transfer: 0,
-    allowance: 1,
-    tax: 0,
-    loan: 0,
-    real_estate_purchase: 0,
-    real_estate_sale: 0,
-    investment_buy: 0,
-    investment_sell: 0,
-    other: 4
-  },
-  student_name: '킹문정'
-}
- GET /api/transactions/list?student_id=908727b8-6310-41bf-a8de-a597a3fa4d00 200 in 464ms
- ○ Compiling /api/real-estate/seats ...
- ✓ Compiled /api/real-estate/seats in 734ms
-=== Fetching classroom seats ===
-All cookies: [ { name: 'session_token', value: 'a988ce6f-e...' } ]
-Session token exists: true
-Student token exists: false
-Teacher session detected, Teacher ID: 0493aeec-42e7-4020-8b56-a30923994bcf
-Successfully fetched 22 seats
- GET /api/real-estate/seats 200 in 1011ms
-=== Fetching classroom seats ===
-All cookies: [ { name: 'session_token', value: 'a988ce6f-e...' } ]
-Session token exists: true
-Student token exists: false
-Teacher session detected, Teacher ID: 0493aeec-42e7-4020-8b56-a30923994bcf
-Successfully fetched 22 seats
- GET /api/real-estate/seats 200 in 251ms
- ✓ Compiled /api/real-estate/current-price in 424ms
- GET /api/real-estate/current-price 200 in 619ms
- GET /api/real-estate/current-price 200 in 217ms
-거래 내역 기록 오류: {
+❌ Update error for asset 1a82fd5e-26cb-4712-9bce-a8bd9b439190: {
   code: 'PGRST204',
   details: null,
   hint: null,
-  message: "Could not find the 'to_entity_id' column of 'transactions' in the schema cache"
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- POST /api/transactions/tax-collection 200 in 662ms
- GET /api/students/list 200 in 180ms
- GET /api/students/list 200 in 143ms
- GET /api/students/list 200 in 121ms
-=== Transaction List Request ===
-Student ID filter: null
-Limit: 100
-✅ Fetched 100 transactions
- GET /api/transactions/list 200 in 685ms
-=== Transaction List Request ===
-Student ID filter: null
-Limit: 100
-✅ Fetched 100 transactions
- GET /api/transactions/list 200 in 324ms
-=== Transaction List Request ===
-Student ID filter: 908727b8-6310-41bf-a8de-a597a3fa4d00
-Limit: 100
-✅ Fetched 5 transactions
-📊 Student statistics calculated: {
-  total_transactions: 5,
-  total_sent: 250008600,
-  total_received: 270000000,
-  net_change: 19991400,
-  sent_count: 4,
-  received_count: 3,
-  type_breakdown: {
-    transfer: 0,
-    multi_transfer: 0,
-    allowance: 1,
-    tax: 0,
-    loan: 0,
-    real_estate_purchase: 0,
-    real_estate_sale: 0,
-    investment_buy: 0,
-    investment_sell: 0,
-    other: 4
-  },
-  student_name: '킹문정'
-}
- GET /api/transactions/list?student_id=908727b8-6310-41bf-a8de-a597a3fa4d00 200 in 242ms
- GET /api/students/list 200 in 1009ms
- GET /api/students/list 200 in 292ms
-
-[2m[82.61ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.40ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[39.44ms][22m  [2m ↳ [22mScan for candidates
-[2m[19.84ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 9.35ms][22m  [2m ↳ [22mBuild utilities
-[2m[13.20ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[29.21ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.08ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 9.20ms][22m  [2m ↳ [22mScan for candidates
-[2m[12.06ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.51ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 7.27ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ✓ Compiled in 464ms
-
-[2m[92.44ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.03ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.50ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[11.44ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 5.17ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.57ms][22m  [2m ↳ [22mBuild utilities
-[2m[74.54ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[18.06ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.06ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 6.02ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 7.80ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.38ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 3.74ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[95.65ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.03ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.28ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[13.86ms][22m  [2m ↳ [22mScan for candidates
-[2m[11.09ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[50.97ms][22m  [2m ↳ [22mBuild utilities
-[2m[17.56ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[19.49ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.08ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 6.96ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 7.43ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.27ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 4.69ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- GET /teacher/dashboard 200 in 1048ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '3441943503'
-}
- GET /.well-known/appspecific/com.chrome.devtools.json 500 in 577ms
-[TypeError: controller[kState].transformAlgorithm is not a function]
-[TypeError: controller[kState].transformAlgorithm is not a function]
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.45db1c09.ico 500 in 47ms
- GET /api/auth/me 200 in 855ms
- GET /api/news/list?limit=25 200 in 145ms
- GET /api/students/list 200 in 243ms
- GET /api/news/list?limit=25 200 in 127ms
- GET /api/students/list 200 in 166ms
- GET /api/students/list 200 in 157ms
-거래 내역 기록 오류: {
+❌ Update error for asset ab8c50c0-3ffc-4d31-820c-f3181cdc74ae: {
   code: 'PGRST204',
   details: null,
   hint: null,
-  message: "Could not find the 'to_entity_id' column of 'transactions' in the schema cache"
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- POST /api/transactions/tax-collection 200 in 657ms
- GET /api/students/list 200 in 149ms
-=== Transaction List Request ===
-Student ID filter: null
-Limit: 100
-[PRODUCTION ERROR] Transactions fetch error: {
-  error: 'column transactions.from_entity_id does not exist',
-  code: '42703',
-  details: null,
-  hint: 'Perhaps you meant to reference the column "transactions.from_entity".',
-  teacher_id: '0493aeec-42e7-4020-8b56-a30923994bcf',
-  student_filter: null
-}
- GET /api/transactions/list 500 in 586ms
-=== Transaction List Request ===
-Student ID filter: null
-Limit: 100
-[PRODUCTION ERROR] Transactions fetch error: {
-  error: 'column transactions.from_entity_id does not exist',
-  code: '42703',
-  details: null,
-  hint: 'Perhaps you meant to reference the column "transactions.from_entity".',
-  teacher_id: '0493aeec-42e7-4020-8b56-a30923994bcf',
-  student_filter: null
-}
- GET /api/transactions/list 500 in 195ms
-=== Transaction List Request ===
-Student ID filter: 908727b8-6310-41bf-a8de-a597a3fa4d00
-Limit: 100
-[PRODUCTION ERROR] Transactions fetch error: {
-  error: 'column transactions.from_entity_id does not exist',
-  code: '42703',
-  details: null,
-  hint: 'Perhaps you meant to reference the column "transactions.from_entity".',
-  teacher_id: '0493aeec-42e7-4020-8b56-a30923994bcf',
-  student_filter: '908727b8-6310-41bf-a8de-a597a3fa4d00'
-}
- GET /api/transactions/list?student_id=908727b8-6310-41bf-a8de-a597a3fa4d00 500 in 276ms
- GET /api/transactions/list 401 in 206ms
-
-[2m[52.18ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.25ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[28.69ms][22m  [2m ↳ [22mScan for candidates
-[2m[11.08ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 2.17ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 9.76ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[17.39ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.07ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 6.89ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 5.72ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.27ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 4.37ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[89.65ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.14ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[12.39ms][22m  [2m ↳ [22mScan for candidates
-[2m[17.30ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 1.63ms][22m  [2m ↳ [22mBuild utilities
-[2m[57.14ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[20.20ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.07ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 9.40ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 6.12ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.24ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 4.30ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-=== Transaction List Request ===
-Student ID filter: 908727b8-6310-41bf-a8de-a597a3fa4d00
-Limit: 100
-✅ Fetched 5 transactions
-📊 Student statistics calculated: {
-  total_transactions: 5,
-  total_sent: 250008600,
-  total_received: 270000000,
-  net_change: 19991400,
-  sent_count: 4,
-  received_count: 3,
-  type_breakdown: {
-    transfer: 0,
-    multi_transfer: 0,
-    allowance: 1,
-    tax: 0,
-    loan: 0,
-    real_estate_purchase: 0,
-    real_estate_sale: 0,
-    investment_buy: 0,
-    investment_sell: 0,
-    other: 4
-  },
-  student_name: '킹문정'
-}
- GET /api/transactions/list?student_id=908727b8-6310-41bf-a8de-a597a3fa4d00 200 in 933ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- GET /teacher/dashboard 200 in 565ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '3441943503'
-}
- GET /.well-known/appspecific/com.chrome.devtools.json 500 in 653ms
-[TypeError: controller[kState].transformAlgorithm is not a function]
-[TypeError: controller[kState].transformAlgorithm is not a function]
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.45db1c09.ico 500 in 118ms
- GET /api/auth/me 200 in 691ms
- GET /api/news/list?limit=25 200 in 245ms
- GET /api/students/list 200 in 299ms
- GET /api/news/list?limit=25 200 in 105ms
- GET /api/students/list 200 in 127ms
- GET /api/students/list 200 in 118ms
-=== Transaction List Request ===
-Student ID filter: null
-Limit: 100
-✅ Fetched 100 transactions
- GET /api/transactions/list 200 in 332ms
-=== Transaction List Request ===
-Student ID filter: null
-Limit: 100
-✅ Fetched 100 transactions
- GET /api/transactions/list 200 in 216ms
-=== Transaction List Request ===
-Student ID filter: 908727b8-6310-41bf-a8de-a597a3fa4d00
-Limit: 100
-✅ Fetched 5 transactions
-📊 Student statistics calculated: {
-  total_transactions: 5,
-  total_sent: 250008600,
-  total_received: 270000000,
-  net_change: 19991400,
-  sent_count: 4,
-  received_count: 3,
-  type_breakdown: {
-    transfer: 0,
-    multi_transfer: 0,
-    allowance: 1,
-    tax: 0,
-    loan: 0,
-    real_estate_purchase: 0,
-    real_estate_sale: 0,
-    investment_buy: 0,
-    investment_sell: 0,
-    other: 4
-  },
-  student_name: '킹문정'
-}
- GET /api/transactions/list?student_id=908727b8-6310-41bf-a8de-a597a3fa4d00 200 in 285ms
- GET /api/students/list 200 in 372ms
- GET /api/students/list 200 in 156ms
-거래 내역 기록 오류: {
+❌ Update error for asset e41a369d-e0b1-4590-9573-c1da0b6b00c0: {
   code: 'PGRST204',
   details: null,
   hint: null,
-  message: "Could not find the 'to_entity_id' column of 'transactions' in the schema cache"
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- POST /api/transactions/tax-collection 200 in 570ms
- GET /api/students/list 200 in 201ms
-=== Transaction List Request ===
-Student ID filter: null
-Limit: 100
-✅ Fetched 100 transactions
- GET /api/transactions/list 200 in 387ms
-=== Transaction List Request ===
-Student ID filter: null
-Limit: 100
-✅ Fetched 100 transactions
- GET /api/transactions/list 200 in 226ms
-=== Transaction List Request ===
-Student ID filter: 908727b8-6310-41bf-a8de-a597a3fa4d00
-Limit: 100
-✅ Fetched 5 transactions
-📊 Student statistics calculated: {
-  total_transactions: 5,
-  total_sent: 250008600,
-  total_received: 270000000,
-  net_change: 19991400,
-  sent_count: 4,
-  received_count: 3,
-  type_breakdown: {
-    transfer: 0,
-    multi_transfer: 0,
-    allowance: 1,
-    tax: 0,
-    loan: 0,
-    real_estate_purchase: 0,
-    real_estate_sale: 0,
-    investment_buy: 0,
-    investment_sell: 0,
-    other: 4
-  },
-  student_name: '킹문정'
-}
- GET /api/transactions/list?student_id=908727b8-6310-41bf-a8de-a597a3fa4d00 200 in 381ms
-
-[2m[101.39ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[  0.03ms][22m  [2m ↳ [22mQuick bail check
-[2m[  0.32ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 22.27ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 12.28ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[  5.35ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 57.23ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[15.13ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.06ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 5.99ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 4.84ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.26ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 3.93ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- GET /teacher/dashboard 200 in 516ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1568913862'
-}
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <button className=... ref=... onClick={function onClick} children=...>
-                                        ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '3441943503'
-}
- GET /.well-known/appspecific/com.chrome.devtools.json 500 in 739ms
-[TypeError: controller[kState].transformAlgorithm is not a function]
-[TypeError: controller[kState].transformAlgorithm is not a function]
- ⨯ A conflicting public file and page file was found for path /favicon.ico https://nextjs.org/docs/messages/conflicting-public-file-page
- GET /favicon.ico?favicon.45db1c09.ico 500 in 39ms
- GET /api/auth/me 200 in 835ms
- GET /api/news/list?limit=25 200 in 185ms
- GET /api/news/list?limit=25 200 in 100ms
- GET /api/students/list 200 in 290ms
- GET /api/students/list 200 in 147ms
- GET /api/students/list 200 in 272ms
-거래 내역 기록 오류: {
+❌ Update error for asset 642b8952-ed9d-4687-ad9c-1b4e2d4f66d3: {
   code: 'PGRST204',
   details: null,
   hint: null,
-  message: "Could not find the 'teacher_id' column of 'transactions' in the schema cache"
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- POST /api/transactions/tax-collection 200 in 1450ms
- GET /api/students/list 200 in 220ms
-=== Transaction List Request ===
-Student ID filter: null
-Limit: 100
-✅ Fetched 100 transactions
- GET /api/transactions/list 200 in 315ms
-=== Transaction List Request ===
-Student ID filter: null
-Limit: 100
-✅ Fetched 100 transactions
- GET /api/transactions/list 200 in 251ms
-=== Transaction List Request ===
-Student ID filter: 908727b8-6310-41bf-a8de-a597a3fa4d00
-Limit: 100
-✅ Fetched 5 transactions
-📊 Student statistics calculated: {
-  total_transactions: 5,
-  total_sent: 250008600,
-  total_received: 270000000,
-  net_change: 19991400,
-  sent_count: 4,
-  received_count: 3,
-  type_breakdown: {
-    transfer: 0,
-    multi_transfer: 0,
-    allowance: 1,
-    tax: 0,
-    loan: 0,
-    real_estate_purchase: 0,
-    real_estate_sale: 0,
-    investment_buy: 0,
-    investment_sell: 0,
-    other: 4
-  },
-  student_name: '킹문정'
-}
- GET /api/transactions/list?student_id=908727b8-6310-41bf-a8de-a597a3fa4d00 200 in 296ms
-
-[2m[33.07ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.15ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[16.50ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 6.62ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.46ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 9.22ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[59.07ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.07ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 9.11ms][22m  [2m ↳ [22mScan for candidates
-[2m[22.23ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 1.46ms][22m  [2m ↳ [22mBuild utilities
-[2m[26.11ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ✓ Compiled in 536ms
-=== Transaction List Request ===
-Student ID filter: 908727b8-6310-41bf-a8de-a597a3fa4d00
-Limit: 100
-✅ Fetched 5 transactions
-📊 Student statistics calculated: {
-  total_transactions: 5,
-  total_sent: 250008600,
-  total_received: 270000000,
-  net_change: 19991400,
-  sent_count: 4,
-  received_count: 3,
-  type_breakdown: {
-    transfer: 0,
-    multi_transfer: 0,
-    allowance: 1,
-    tax: 0,
-    loan: 0,
-    real_estate_purchase: 0,
-    real_estate_sale: 0,
-    investment_buy: 0,
-    investment_sell: 0,
-    other: 4
-  },
-  student_name: '킹문정'
-}
- GET /api/transactions/list?student_id=908727b8-6310-41bf-a8de-a597a3fa4d00 200 in 657ms
-
-[2m[67.62ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.08ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[15.92ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 4.54ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 1.63ms][22m  [2m ↳ [22mBuild utilities
-[2m[45.36ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[17.05ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.07ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 5.76ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 6.19ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.23ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 4.73ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ✓ Compiled in 325ms
-=== Transaction List Request ===
-Student ID filter: 908727b8-6310-41bf-a8de-a597a3fa4d00
-Limit: 100
-✅ Fetched 5 transactions
-📊 Student statistics calculated: {
-  total_transactions: 5,
-  total_sent: 250008600,
-  total_received: 270000000,
-  net_change: 19991400,
-  sent_count: 4,
-  received_count: 3,
-  type_breakdown: {
-    transfer: 0,
-    multi_transfer: 0,
-    allowance: 1,
-    tax: 0,
-    loan: 0,
-    real_estate_purchase: 0,
-    real_estate_sale: 0,
-    investment_buy: 0,
-    investment_sell: 0,
-    other: 4
-  },
-  student_name: '킹문정'
-}
- GET /api/transactions/list?student_id=908727b8-6310-41bf-a8de-a597a3fa4d00 200 in 377ms
- GET /api/news/list?limit=25 200 in 170ms
-거래 내역 기록 오류: {
+❌ Update error for asset cad97d4e-4b03-4ff8-89ec-9269fd1b6be3: {
   code: 'PGRST204',
   details: null,
   hint: null,
-  message: "Could not find the 'teacher_id' column of 'transactions' in the schema cache"
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- POST /api/transactions/tax-collection 200 in 594ms
- GET /api/students/list 200 in 256ms
-=== Transaction List Request ===
-Student ID filter: null
-Limit: 100
-✅ Fetched 100 transactions
- GET /api/transactions/list 200 in 547ms
-=== Transaction List Request ===
-Student ID filter: null
-Limit: 100
-✅ Fetched 100 transactions
- GET /api/transactions/list 200 in 239ms
-=== Transaction List Request ===
-Student ID filter: 908727b8-6310-41bf-a8de-a597a3fa4d00
-Limit: 100
-✅ Fetched 5 transactions
-📊 Student statistics calculated: {
-  total_transactions: 5,
-  total_sent: 250008600,
-  total_received: 270000000,
-  net_change: 19991400,
-  sent_count: 4,
-  received_count: 3,
-  type_breakdown: {
-    transfer: 0,
-    multi_transfer: 0,
-    allowance: 1,
-    tax: 0,
-    loan: 0,
-    real_estate_purchase: 0,
-    real_estate_sale: 0,
-    investment_buy: 0,
-    investment_sell: 0,
-    other: 4
-  },
-  student_name: '킹문정'
+❌ Update error for asset 5164889d-4250-4b6d-a778-4d1159f14074: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- GET /api/transactions/list?student_id=908727b8-6310-41bf-a8de-a597a3fa4d00 200 in 298ms
-
-[2m[42.43ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.03ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.27ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[23.40ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 6.48ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.73ms][22m  [2m ↳ [22mBuild utilities
-[2m[11.38ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[27.67ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.10ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 7.69ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 7.16ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.52ms][22m  [2m ↳ [22mBuild utilities
-[2m[12.10ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[45.63ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.68ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[23.94ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 9.51ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.70ms][22m  [2m ↳ [22mBuild utilities
-[2m[10.40ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[20.88ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.18ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 7.42ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 7.25ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.25ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 5.69ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[112.96ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[  0.03ms][22m  [2m ↳ [22mQuick bail check
-[2m[  0.64ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 33.11ms][22m  [2m ↳ [22mScan for candidates
-[2m[  9.72ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[  3.65ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 64.63ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[17.28ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.07ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 6.64ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 6.64ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.26ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 3.61ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[61.46ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.85ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[36.58ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 9.90ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.60ms][22m  [2m ↳ [22mBuild utilities
-[2m[13.33ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[22.17ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.11ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 8.56ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 6.38ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.49ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 6.54ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ✓ Compiled in 380ms
-
-[2m[47.74ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.25ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 2.99ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[22.54ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 7.23ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.61ms][22m  [2m ↳ [22mBuild utilities
-[2m[13.80ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[15.56ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.12ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 6.09ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 5.38ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.35ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 3.56ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ✓ Compiled in 1671ms
- ✓ Compiled /teacher/dashboard in 377ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <... variant="outline" size="lg" onClick={function onClick} className=... children=...>
-                                           ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1233678019'
+❌ Update error for asset 95cb93ec-5988-41ca-b6f0-55c27b2218d4: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- GET /teacher/dashboard 200 in 2082ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <... variant="outline" size="lg" onClick={function onClick} className=... children=...>
-                                           ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1233678019'
+❌ Update error for asset bc60ca61-495e-4035-bbe3-c24abcf34bab: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- GET /teacher/dashboard 200 in 274ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <... variant="outline" size="lg" onClick={function onClick} className=... children=...>
-                                           ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1233678019'
+❌ Update error for asset 56db0434-95fb-46b1-8b0a-b3c9a331d97c: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- GET /teacher/dashboard 200 in 419ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <... variant="outline" size="lg" onClick={function onClick} className=... children=...>
-                                           ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1233678019'
+❌ Update error for asset 3c8f0d75-19ea-437f-ad00-f534193dcacf: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- GET /teacher/dashboard 200 in 293ms
-
-[2m[22.17ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.03ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 1.00ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[11.99ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 5.36ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.35ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 3.27ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[15.89ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.12ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 5.62ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 6.02ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.49ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 3.55ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ✓ Compiled in 163ms
-
-[2m[58.28ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.21ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[14.95ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 6.11ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[20.20ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 7.26ms][22m  [2m ↳ [22mTransform Tailwind CSS AST into PostCSS AST
-[2m[ 8.19ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[27.60ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.13ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[12.17ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 7.79ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.61ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 6.82ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ✓ Compiled in 657ms
- GET /api/news/list?limit=25 200 in 843ms
-
-[2m[59.70ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.10ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.31ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[26.36ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 7.94ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 6.31ms][22m  [2m ↳ [22mBuild utilities
-[2m[13.92ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[29.23ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.06ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 9.10ms][22m  [2m ↳ [22mScan for candidates
-[2m[11.30ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.27ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 8.42ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[33.87ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.08ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[16.08ms][22m  [2m ↳ [22mScan for candidates
-[2m[11.56ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 1.60ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 4.44ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[25.36ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.13ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[10.79ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 7.93ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.49ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 5.90ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ✓ Compiled in 714ms
- ⨯ Error: Event handlers cannot be passed to Client Component props.
-  <... variant="outline" size="lg" onClick={function onClick} className=... children=...>
-                                           ^^^^^^^^^^^^^^^^^^
-If you need interactivity, consider converting part of this to a Client Component.
-    at stringify (<anonymous>)
-    at stringify (<anonymous>)
-    at stringify (<anonymous>) {
-  digest: '1233678019'
+❌ Update error for asset ba20fd83-e032-4293-b248-b3a6ca896580: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- GET /teacher/dashboard 200 in 1802ms
-
-[2m[36.94ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.18ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[11.31ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 9.68ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.67ms][22m  [2m ↳ [22mBuild utilities
-[2m[14.93ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[21.56ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.12ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 5.97ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 9.64ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.54ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 5.13ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[27.52ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.20ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 7.29ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 9.63ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 3.90ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 6.36ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[47.53ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.10ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 7.83ms][22m  [2m ↳ [22mScan for candidates
-[2m[29.96ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.27ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 9.30ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[27.72ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.24ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[10.24ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 8.96ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.87ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 7.22ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[19.67ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.08ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 8.08ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 8.85ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.28ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 2.30ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[103.70ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[  0.02ms][22m  [2m ↳ [22mQuick bail check
-[2m[  0.23ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 35.93ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 16.68ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[  1.34ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 49.20ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[32.21ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.10ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[13.04ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 9.74ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.60ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 8.59ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+❌ Update error for asset e410cae6-e951-4d4f-a825-82fac724aad3: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- ✓ Compiled in 1053ms
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+❌ Update error for asset 4e7f00ab-c567-43ec-9d70-2613c260146a: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
-[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+❌ Update error for asset 4d1c2964-f5c0-43ac-8eea-2842e3a9dd96: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+❌ Update error for asset d3126b90-317a-4aa2-8cd1-5bdbd090e372: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
-[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+❌ Update error for asset 9fda8ac4-ad3b-4df0-965d-094088372320: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- ✓ Compiled /teacher/dashboard in 4ms
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+❌ Update error for asset 7c1a11fc-abf3-4696-95ef-aa30515f937c: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+❌ Update error for asset 001f8767-a820-4cf4-a51f-cefbac722832: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
-[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+❌ Update error for asset e15edd74-8ed0-4125-8c19-2be20b809dea: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+❌ Update error for asset c626533b-d6ee-47d0-9a5e-9effc6deb213: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
-[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+❌ Update error for asset 196bb3bd-1118-4333-be77-a4c2062b6ead: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+❌ Update error for asset b995d383-0e89-4c36-869c-fefcde30670e: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+❌ Update error for asset 26d2e7f4-e0d0-4a2a-bfe5-e5e5c864e58e: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
-[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+❌ Update error for asset 52ab605a-b94c-4dcc-a938-820f17897a07: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+❌ Update error for asset d90beb6f-ca41-4edd-9b32-fbe4da77ff23: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
-[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+❌ Update error for asset 1c416704-ce59-4240-a18c-8d088ac5fe33: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+❌ Update error for asset 082e1b73-e369-47a8-b208-5ffa2745ebfd: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+❌ Update error for asset d3f6f5ec-1417-4dba-8432-310b54354e4d: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
-[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+❌ Update error for asset 814cf060-94bc-4795-be78-21e8d71257bb: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+❌ Update error for asset 19429175-36e6-4072-b34a-6669ece7afc5: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
-[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+❌ Update error for asset ad0fb676-77d0-41f2-a78d-2f3b9fff6747: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
+❌ Update error for asset 65df30b5-7ee6-469b-b773-a1c6ebb7daec: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+❌ Update error for asset 46c0a8d7-1f45-49cc-9baa-a8d5bbd8a6bf: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
-[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/teacher/dashboard/page/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
-}
- ✓ Compiled /_not-found/page in 108ms
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/app/_not-found/page/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/app/_not-found/page/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
-}
- ⨯ [Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
-}
-[Error: ENOENT: no such file or directory, open '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'] {
-  errno: -2,
-  code: 'ENOENT',
-  syscall: 'open',
-  path: '/Users/moon/Desktop/richstudent-main/.next/server/pages/_app/build-manifest.json'
+❌ Update error for asset 35c78762-380a-4495-9b9d-8bd0b847ed09: {
+  code: 'PGRST204',
+  details: null,
+  hint: null,
+  message: "Could not find the 'change_percent' column of 'market_assets' in the schema cache"
 }
 
-[2m[174.21ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[  0.06ms][22m  [2m ↳ [22mQuick bail check
-[2m[  2.02ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 29.80ms][22m  [2m ↳ [22mScan for candidates
-[2m[  9.24ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 10.91ms][22m  [2m ↳ [22mBuild utilities
-[2m[121.06ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[26.65ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.11ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 9.07ms][22m  [2m ↳ [22mScan for candidates
-[2m[10.74ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.28ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 6.36ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[30.51ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.20ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[11.92ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 8.90ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.72ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 8.58ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[24.22ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.13ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 9.69ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 9.89ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.43ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 3.99ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[31.55ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.25ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[14.56ms][22m  [2m ↳ [22mScan for candidates
-[2m[11.29ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.72ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 4.53ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[16.75ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.07ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 6.80ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 6.01ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.23ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 3.58ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[53.37ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.19ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[23.85ms][22m  [2m ↳ [22mScan for candidates
-[2m[12.63ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.96ms][22m  [2m ↳ [22mBuild utilities
-[2m[15.50ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[20.08ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.12ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 8.08ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 5.33ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.24ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 6.25ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[34.19ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.27ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[13.29ms][22m  [2m ↳ [22mScan for candidates
-[2m[10.51ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.65ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 9.21ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[15.11ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.01ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.14ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 5.02ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 7.15ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.22ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 2.46ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ✓ Compiled in 269ms
-
-[2m[57.81ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.21ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[18.67ms][22m  [2m ↳ [22mScan for candidates
-[2m[17.30ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 1.05ms][22m  [2m ↳ [22mBuild utilities
-[2m[20.44ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[29.29ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.06ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[10.24ms][22m  [2m ↳ [22mScan for candidates
-[2m[13.51ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.50ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 4.91ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[52.22ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.77ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 2.87ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[26.68ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 9.76ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.64ms][22m  [2m ↳ [22mBuild utilities
-[2m[10.18ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[20.51ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.07ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 7.16ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 6.97ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.27ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 5.99ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[63.87ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.02ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.23ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[13.36ms][22m  [2m ↳ [22mScan for candidates
-[2m[42.08ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.48ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 7.56ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[16.57ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.05ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 6.73ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 5.71ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.25ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 3.78ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ✓ Compiled in 202ms
-
-[2m[46.18ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.59ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 1.52ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[26.53ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 7.49ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.52ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 9.16ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
-
-[2m[19.36ms][22m [@tailwindcss/postcss] src/app/globals.css
-[2m[ 0.00ms][22m  [2m ↳ [22mQuick bail check
-[2m[ 0.11ms][22m  [2m ↳ [22mRegister full rebuild paths
-[2m[ 7.60ms][22m  [2m ↳ [22mScan for candidates
-[2m[ 6.12ms][22m  [2m ↳ [22mRegister dependency messages
-[2m[ 0.27ms][22m  [2m ↳ [22mBuild utilities
-[2m[ 5.20ms][22m  [2m ↳ [22mUpdate PostCSS AST
-
- ⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
-   ▲ Next.js 15.3.3 (Turbopack)
-   - Local:        http://localhost:3007
-   - Network:      http://192.168.123.111:3007
-   - Environments: .env.local
-
- ✓ Starting...
- ⚠ Invalid next.config.ts options detected: 
- ⚠     Unrecognized key(s) in object: 'skipTrailingSlashRedirect' at "experimental"
- ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
- ⚠ `experimental.skipTrailingSlashRedirect` has been moved to `skipTrailingSlashRedirect`. Please update your next.config.ts file accordingly.
-Creating turbopack project { dir: '/Users/moon/Desktop/richstudent-main', testMode: true }
- ✓ Ready in 951ms
- ⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
-   ▲ Next.js 15.3.3 (Turbopack)
-   - Local:        http://localhost:3007
-   - Network:      http://192.168.123.111:3007
-   - Environments: .env.local
-
- ✓ Starting...
-Creating turbopack project { dir: '/Users/moon/Desktop/richstudent-main', testMode: true }
- ✓ Ready in 890ms
-[?25h
+✅ Update complete: 35 success, 5 failed
+ POST /api/market-data/update 200 in 64750ms
