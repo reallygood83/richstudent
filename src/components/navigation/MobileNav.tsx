@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Menu, X, Home, Users, GraduationCap, LogOut } from 'lucide-react'
+import Link from 'next/link'
+import { Menu, Home, Users, GraduationCap, LogOut } from 'lucide-react'
 import {
   Sheet,
   SheetContent,
@@ -63,59 +64,59 @@ export default function MobileNav({
         <div className="mt-8 flex flex-col space-y-4">
           {userType === 'guest' && (
             <>
-              <a
+              <Link
                 href="/"
                 className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
                 onClick={handleLinkClick}
               >
                 <Home className="w-5 h-5 text-gray-600" />
                 <span className="text-gray-900 font-medium">홈</span>
-              </a>
+              </Link>
 
               <div className="border-t pt-4">
                 <p className="text-sm text-gray-500 mb-3 px-3">선생님</p>
-                <a
+                <Link
                   href="/auth/login"
                   className="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors"
                   onClick={handleLinkClick}
                 >
                   <Users className="w-5 h-5 text-blue-600" />
                   <span className="text-gray-900 font-medium">로그인</span>
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/auth/register"
                   className="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors"
                   onClick={handleLinkClick}
                 >
                   <Users className="w-5 h-5 text-blue-600" />
                   <span className="text-gray-900 font-medium">회원가입</span>
-                </a>
+                </Link>
               </div>
 
               <div className="border-t pt-4">
                 <p className="text-sm text-gray-500 mb-3 px-3">학생</p>
-                <a
+                <Link
                   href="/student/login"
                   className="flex items-center space-x-3 p-3 rounded-lg hover:bg-green-50 transition-colors"
                   onClick={handleLinkClick}
                 >
                   <GraduationCap className="w-5 h-5 text-green-600" />
                   <span className="text-gray-900 font-medium">세션 코드로 접속</span>
-                </a>
+                </Link>
               </div>
             </>
           )}
 
           {userType === 'teacher' && (
             <>
-              <a
+              <Link
                 href="/teacher/dashboard"
                 className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
                 onClick={handleLinkClick}
               >
                 <Home className="w-5 h-5 text-gray-600" />
                 <span className="text-gray-900 font-medium">대시보드</span>
-              </a>
+              </Link>
 
               {onLogout && (
                 <div className="border-t pt-4">
@@ -136,14 +137,14 @@ export default function MobileNav({
 
           {userType === 'student' && (
             <>
-              <a
+              <Link
                 href="/student/dashboard"
                 className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
                 onClick={handleLinkClick}
               >
                 <Home className="w-5 h-5 text-gray-600" />
                 <span className="text-gray-900 font-medium">내 대시보드</span>
-              </a>
+              </Link>
 
               {onLogout && (
                 <div className="border-t pt-4">
