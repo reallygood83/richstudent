@@ -17,6 +17,7 @@ import ClassroomSeatsAdmin from '@/components/teacher/ClassroomSeatsAdmin'
 import ClassManagement from '@/components/teacher/ClassManagement'
 import NewsCarousel from '@/components/teacher/NewsCarousel'
 import NewsSettings from '@/components/teacher/NewsSettings'
+import MobileNav from '@/components/navigation/MobileNav'
 import { Student } from '@/types'
 
 export default function TeacherDashboard() {
@@ -76,13 +77,14 @@ export default function TeacherDashboard() {
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-3">
-              <div className="text-2xl">💰</div>
-              <h1 className="text-xl font-bold text-gray-900">RichStudent</h1>
+          <div className="flex justify-between items-center h-16 md:h-20">
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <div className="text-xl sm:text-2xl">💰</div>
+              <h1 className="text-lg sm:text-xl font-bold text-gray-900">RichStudent</h1>
             </div>
-            
-            <div className="flex items-center space-x-4">
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-4">
               <div className="text-right">
                 <p className="text-sm font-medium text-gray-900">{teacher.name}</p>
                 <p className="text-xs text-gray-500">{teacher.school}</p>
@@ -97,6 +99,14 @@ export default function TeacherDashboard() {
                 <span>로그아웃</span>
               </Button>
             </div>
+
+            {/* Mobile Navigation */}
+            <MobileNav
+              userType="teacher"
+              userName={teacher.name}
+              userSchool={teacher.school}
+              onLogout={handleLogout}
+            />
           </div>
         </div>
       </header>
@@ -104,11 +114,11 @@ export default function TeacherDashboard() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
             안녕하세요, {teacher.name} 선생님!
           </h2>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             학생들과 함께 경제 교육을 시작해보세요.
           </p>
         </div>
@@ -145,7 +155,7 @@ export default function TeacherDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">총 학생 수</CardTitle>
@@ -206,44 +216,50 @@ export default function TeacherDashboard() {
 
         {/* Main Tabs */}
         <Tabs defaultValue="students" className="w-full">
-          <TabsList className="grid w-full grid-cols-9">
-            <TabsTrigger value="students" className="flex items-center space-x-2">
-              <Users className="w-4 h-4" />
-              <span>학생 관리</span>
-            </TabsTrigger>
-            <TabsTrigger value="transactions" className="flex items-center space-x-2">
-              <ArrowRightLeft className="w-4 h-4" />
-              <span>거래 관리</span>
-            </TabsTrigger>
-            <TabsTrigger value="real-estate" className="flex items-center space-x-2">
-              <MapPin className="w-4 h-4" />
-              <span>좌석 관리</span>
-            </TabsTrigger>
-            <TabsTrigger value="economic-entities" className="flex items-center space-x-2">
-              <Building2 className="w-4 h-4" />
-              <span>경제 주체</span>
-            </TabsTrigger>
-            <TabsTrigger value="investments" className="flex items-center space-x-2">
-              <TrendingUp className="w-4 h-4" />
-              <span>투자 현황</span>
-            </TabsTrigger>
-            <TabsTrigger value="market" className="flex items-center space-x-2">
-              <DollarSign className="w-4 h-4" />
-              <span>시장 데이터</span>
-            </TabsTrigger>
-            <TabsTrigger value="quiz-settings" className="flex items-center space-x-2">
-              <Brain className="w-4 h-4" />
-              <span>퀴즈 설정</span>
-            </TabsTrigger>
-            <TabsTrigger value="class-management" className="flex items-center space-x-2">
-              <Settings className="w-4 h-4" />
-              <span>학급 관리</span>
-            </TabsTrigger>
-            <TabsTrigger value="news-settings" className="flex items-center space-x-2">
-              <Settings className="w-4 h-4" />
-              <span>뉴스 설정</span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="relative">
+            <TabsList className="w-full inline-flex lg:grid lg:grid-cols-9 h-auto flex-nowrap overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-2 lg:pb-0 gap-1">
+              <TabsTrigger value="students" className="flex items-center space-x-1 sm:space-x-2 whitespace-nowrap px-4 sm:px-4 mobile-touch-friendly min-w-[100px] flex-shrink-0">
+                <Users className="w-4 h-4 flex-shrink-0" />
+                <span className="text-xs sm:text-sm">학생 관리</span>
+              </TabsTrigger>
+              <TabsTrigger value="transactions" className="flex items-center space-x-1 sm:space-x-2 whitespace-nowrap px-4 sm:px-4 mobile-touch-friendly min-w-[100px] flex-shrink-0">
+                <ArrowRightLeft className="w-4 h-4 flex-shrink-0" />
+                <span className="text-xs sm:text-sm">거래 관리</span>
+              </TabsTrigger>
+              <TabsTrigger value="real-estate" className="flex items-center space-x-1 sm:space-x-2 whitespace-nowrap px-4 sm:px-4 mobile-touch-friendly min-w-[100px] flex-shrink-0">
+                <MapPin className="w-4 h-4 flex-shrink-0" />
+                <span className="text-xs sm:text-sm">좌석 관리</span>
+              </TabsTrigger>
+              <TabsTrigger value="economic-entities" className="flex items-center space-x-1 sm:space-x-2 whitespace-nowrap px-4 sm:px-4 mobile-touch-friendly min-w-[100px] flex-shrink-0">
+                <Building2 className="w-4 h-4 flex-shrink-0" />
+                <span className="text-xs sm:text-sm">경제 주체</span>
+              </TabsTrigger>
+              <TabsTrigger value="investments" className="flex items-center space-x-1 sm:space-x-2 whitespace-nowrap px-4 sm:px-4 mobile-touch-friendly min-w-[100px] flex-shrink-0">
+                <TrendingUp className="w-4 h-4 flex-shrink-0" />
+                <span className="text-xs sm:text-sm">투자 현황</span>
+              </TabsTrigger>
+              <TabsTrigger value="market" className="flex items-center space-x-1 sm:space-x-2 whitespace-nowrap px-4 sm:px-4 mobile-touch-friendly min-w-[100px] flex-shrink-0">
+                <DollarSign className="w-4 h-4 flex-shrink-0" />
+                <span className="text-xs sm:text-sm">시장 데이터</span>
+              </TabsTrigger>
+              <TabsTrigger value="quiz-settings" className="flex items-center space-x-1 sm:space-x-2 whitespace-nowrap px-4 sm:px-4 mobile-touch-friendly min-w-[100px] flex-shrink-0">
+                <Brain className="w-4 h-4 flex-shrink-0" />
+                <span className="text-xs sm:text-sm">퀴즈 설정</span>
+              </TabsTrigger>
+              <TabsTrigger value="class-management" className="flex items-center space-x-1 sm:space-x-2 whitespace-nowrap px-4 sm:px-4 mobile-touch-friendly min-w-[100px] flex-shrink-0">
+                <Settings className="w-4 h-4 flex-shrink-0" />
+                <span className="text-xs sm:text-sm">학급 관리</span>
+              </TabsTrigger>
+              <TabsTrigger value="news-settings" className="flex items-center space-x-1 sm:space-x-2 whitespace-nowrap px-4 sm:px-4 mobile-touch-friendly min-w-[100px] flex-shrink-0">
+                <Settings className="w-4 h-4 flex-shrink-0" />
+                <span className="text-xs sm:text-sm">뉴스 설정</span>
+              </TabsTrigger>
+            </TabsList>
+            {/* Scroll indicator for mobile */}
+            <div className="lg:hidden text-center text-xs text-gray-500 mt-1">
+              ← 좌우로 스크롤하세요 →
+            </div>
+          </div>
 
           <TabsContent value="students" className="mt-6">
             <div className="space-y-6">
