@@ -161,7 +161,7 @@
   .text-financial-green {
     color: rgb(var(--financial-green));
   }
-  
+
   /* Gradient Backgrounds */
   .bg-gradient-financial {
     background: var(--gradient-financial);
@@ -175,25 +175,37 @@
   .bg-gradient-tech {
     background: var(--gradient-tech);
   }
-  
+
   /* Glass Effect */
   .glass-effect {
     backdrop-filter: blur(20px);
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
-  
-  /* Financial Card Hover Effect */
+
+  /* Financial Card Hover Effect - Mobile Optimized */
   .financial-card {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(var(--financial-navy), 0.1);
   }
-  .financial-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 25px 50px -12px rgba(var(--financial-navy), 0.25);
-    border-color: rgba(var(--financial-gold), 0.3);
+
+  /* Only apply hover effects on larger screens */
+  @media (min-width: 768px) {
+    .financial-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 50px -12px rgba(var(--financial-navy), 0.25);
+      border-color: rgba(var(--financial-gold), 0.3);
+    }
   }
-  
+
+  /* Mobile touch feedback */
+  @media (max-width: 767px) {
+    .financial-card:active {
+      transform: scale(0.98);
+      box-shadow: 0 10px 25px -5px rgba(var(--financial-navy), 0.15);
+    }
+  }
+
   /* Glow Effect for CTA Buttons */
   .glow-effect {
     box-shadow: 0 0 20px rgba(var(--financial-gold), 0.3);
@@ -202,42 +214,117 @@
   .glow-effect:hover {
     box-shadow: 0 0 30px rgba(var(--financial-gold), 0.5);
   }
-  
+
   /* Animated Background */
   .animated-bg {
-    background: linear-gradient(-45deg, 
-      rgb(var(--financial-navy)), 
-      rgb(var(--financial-slate)), 
-      rgb(var(--financial-teal)), 
+    background: linear-gradient(-45deg,
+      rgb(var(--financial-navy)),
+      rgb(var(--financial-slate)),
+      rgb(var(--financial-teal)),
       rgb(var(--financial-accent-blue))
     );
     background-size: 400% 400%;
     animation: gradientShift 15s ease infinite;
   }
-  
+
   @keyframes gradientShift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
-  
+
   /* Floating Animation */
   .floating {
     animation: floating 6s ease-in-out infinite;
   }
-  
+
   @keyframes floating {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-20px); }
   }
-  
+
   /* Pulse Animation for Financial Elements */
   .pulse-financial {
     animation: pulseFinancial 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
-  
+
   @keyframes pulseFinancial {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; }
+  }
+
+  /* Mobile Optimization Utilities */
+  .mobile-safe-text {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  .mobile-touch-friendly {
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+  }
+
+  .prevent-zoom {
+    touch-action: pan-x pan-y;
+  }
+
+  /* Responsive Container */
+  .responsive-container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .responsive-container {
+      max-width: 640px;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .responsive-container {
+      max-width: 768px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .responsive-container {
+      max-width: 1024px;
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .responsive-container {
+      max-width: 1280px;
+    }
+  }
+
+  /* Mobile Grid Optimization */
+  .mobile-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .mobile-grid {
+      gap: 1.5rem;
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .mobile-grid {
+      gap: 2rem;
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 }

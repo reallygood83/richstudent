@@ -18,6 +18,12 @@ export const metadata: Metadata = {
   authors: [{ name: "RichStudent Team" }],
   creator: "RichStudent",
   publisher: "RichStudent",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
   openGraph: {
     type: "website",
     locale: "ko_KR",
