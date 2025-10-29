@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { GraduationCap, Users, DollarSign, BookOpen } from 'lucide-react';
+import MobileNav from '@/components/navigation/MobileNav';
 
 export default function HomePage() {
   return (
@@ -18,6 +19,9 @@ export default function HomePage() {
                 <p className="text-xs sm:text-sm text-white/80 hidden sm:block">Financial Education Platform</p>
               </div>
             </div>
+
+            {/* Mobile Navigation - Only visible on mobile */}
+            <MobileNav userType="guest" />
           </div>
         </div>
       </header>
